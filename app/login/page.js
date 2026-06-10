@@ -27,7 +27,7 @@ export default function LoginPage() {
     await new Promise(r => setTimeout(r, 1500));
     setLoading(false);
     // Redirect to home (mock)
-    window.location.href = '/home';
+    window.location.href = '/';
   };
 
   const handleChange = (field) => (e) => {

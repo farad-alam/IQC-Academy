@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
         </form>
 
         <div style={{ marginTop: '2rem' }}>
-          <Link href="/home" className="btn btn-ghost btn-sm">
+          <Link href="/" className="btn btn-ghost btn-sm">
             হোমপেজে ফিরে যান
           </Link>
         </div>

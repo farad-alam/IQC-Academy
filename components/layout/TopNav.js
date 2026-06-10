@@ -8,7 +8,7 @@ export default function TopNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { name: 'হোম', href: '/home', icon: Home },
+    { name: 'হোম', href: '/', icon: Home },
     { name: 'কন্টেন্ট', href: '/content', icon: BookOpen },
     { name: 'কোর্স', href: '/courses', icon: GraduationCap },
   ];
@@ -17,7 +17,7 @@ export default function TopNav() {
     <header className={styles.topNav}>
       <div className={styles.container}>
         {/* Logo */}
-        <Link href="/home" className={styles.logoArea}>
+        <Link href="/" className={styles.logoArea}>
           <div className={styles.logoIcon}>📖</div>
           <span className={styles.logoText}>IQC Academy</span>
         </Link>

@@ -43,7 +43,7 @@ export default function DonatePage() {
           <button onClick={() => setSubmitted(false)} className="btn btn-outline" style={{ marginRight: '1rem' }}>
             আরও দান করুন
           </button>
-          <Link href="/home" className="btn btn-primary">
+          <Link href="/" className="btn btn-primary">
             হোমে ফিরে যান
           </Link>
         </div>
