@@ -1,0 +1,189 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--color-bg);
+}
+
+.patternBg {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%231a5c2a' stroke-width='0.5' opacity='0.05'%3E%3Cpolygon points='40,5 52,15 52,35 40,45 28,35 28,15'/%3E%3Cpolygon points='40,15 48,21 48,34 40,40 32,34 32,21'/%3E%3Cline x1='40' y1='5' x2='40' y2='0'/%3E%3Cline x1='52' y1='15' x2='57' y2='12'/%3E%3Cline x1='52' y1='35' x2='57' y2='38'/%3E%3Cline x1='40' y1='45' x2='40' y2='50'/%3E%3Cline x1='28' y1='35' x2='23' y2='38'/%3E%3Cline x1='28' y1='15' x2='23' y2='12'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-6) var(--space-4);
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.backLink {
+  align-self: flex-start;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  transition: color var(--transition-fast);
+}
+
+.backLink:hover {
+  color: var(--color-primary);
+}
+
+.logoArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--space-8);
+  animation: fadeInDown 0.6s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logoIcon {
+  font-size: 2.5rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  background: var(--color-surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-earth-1);
+  margin-bottom: var(--space-3);
+}
+
+.logoTitle {
+  font-size: var(--font-size-2xl);
+  font-family: var(--font-latin);
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+.logoSub {
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+.card {
+  width: 100%;
+  background: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8) var(--space-6);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-earth-1);
+  animation: slideUp 0.6s ease;
+}
+
+.cardHeader {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.cardTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.cardSub {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: var(--space-3);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--space-1);
+  font-size: 1.1rem;
+  transition: color var(--transition-fast);
+}
+
+.eyeBtn:hover {
+  color: var(--color-primary);
+}
+
+.forgotRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: calc(var(--space-2) * -1);
+}
+
+.forgotLink {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+
+.forgotLink:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.submitBtn {
+  margin-top: var(--space-2);
+}
+
+.registerLink {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.registerLinkAnchor {
+  color: var(--color-accent-dark);
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+
+.registerLinkAnchor:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.footerNote {
+  margin-top: auto;
+  font-family: var(--font-arabic);
+  font-size: var(--font-size-lg);
+  color: var(--color-primary-light);
+  opacity: 0.6;
+  text-align: center;
+  padding-top: var(--space-8);
+}

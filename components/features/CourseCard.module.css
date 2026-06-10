@@ -1,0 +1,143 @@
+.courseCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.coverArea {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: var(--color-surface-alt);
+  overflow: hidden;
+  border-bottom: 1px solid var(--color-earth-1);
+}
+
+.placeholderCover {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary-100), var(--color-primary-50));
+  position: relative;
+}
+
+.placeholderIcon {
+  color: var(--color-primary);
+  opacity: 0.3;
+}
+
+.lockedOverlay {
+  position: absolute;
+  inset: 0;
+  background: hsla(145, 20%, 10%, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.badges {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+}
+
+.body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+  line-height: var(--line-height-snug);
+}
+
+.desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  margin-top: auto;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  font-family: var(--font-latin);
+}
+
+.progressSection {
+  margin-bottom: var(--space-4);
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
+.progressText {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.progressPercent {
+  font-size: var(--font-size-xs);
+  font-family: var(--font-latin);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.footer {
+  margin-top: auto;
+}
+
+.completedBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.price {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  font-family: var(--font-latin);
+}

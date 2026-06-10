@@ -1,0 +1,68 @@
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-earth-1);
+  box-shadow: 0 -4px 20px hsla(145, 30%, 10%, 0.05);
+  z-index: var(--z-sticky);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: var(--nav-height-mobile);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  flex: 1;
+  height: 100%;
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+  text-decoration: none;
+  position: relative;
+}
+
+.iconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.activeIndicator {
+  position: absolute;
+  inset: -4px;
+  background: var(--color-primary-50);
+  border-radius: var(--radius-full);
+  z-index: -1;
+  animation: scaleIn var(--transition-spring);
+}
+
+.navLabel {
+  font-size: 0.65rem;
+  font-weight: 600;
+  font-family: var(--font-bengali);
+}
+
+.navItem.active {
+  color: var(--color-primary);
+}
+
+@media (min-width: 769px) {
+  .bottomNav {
+    display: none;
+  }
+}

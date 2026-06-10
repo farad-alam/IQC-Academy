@@ -1,0 +1,108 @@
+.noticeBoard {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-earth-1);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface-alt);
+  border-bottom: 1px solid var(--color-earth-1);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-md);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.icon {
+  color: var(--color-accent);
+}
+
+.viewAll {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  transition: color var(--transition-fast);
+}
+
+.viewAll:hover {
+  color: var(--color-primary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.noticeItem {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-earth-1);
+  transition: background var(--transition-fast);
+}
+
+.noticeItem:last-child {
+  border-bottom: none;
+}
+
+.noticeItem:hover {
+  background: var(--color-surface-alt);
+}
+
+.noticeItem.important {
+  background: var(--color-warning-bg);
+}
+
+.noticeItem.important:hover {
+  background: hsla(38, 80%, 92%, 1);
+}
+
+.noticeDate {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  margin-bottom: var(--space-1);
+  font-family: var(--font-latin);
+}
+
+.noticeTitle {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.important .noticeTitle {
+  color: var(--color-accent-dark);
+}
+
+.noticeBody {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-3);
+}
+
+.noticeLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.noticeLink:hover {
+  text-decoration: underline;
+}

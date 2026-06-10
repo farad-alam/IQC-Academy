@@ -1,0 +1,50 @@
+.optionBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1.5px solid var(--color-earth-2);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-bengali);
+  font-size: var(--font-size-base);
+  text-align: left;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  width: 100%;
+}
+
+.optionBtn:hover {
+  border-color: var(--color-primary-200);
+  background: var(--color-primary-50);
+}
+
+.optionBtn.selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-50);
+}
+
+.radioCircle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--color-earth-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.optionBtn.selected .radioCircle {
+  border-color: var(--color-primary);
+}
+
+.radioInner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: scaleIn var(--transition-fast);
+}
