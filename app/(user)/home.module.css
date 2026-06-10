@@ -1,201 +1,282 @@
 .home {
-  padding-top: var(--space-6);
+  padding-top: 0;
 }
 
-.header {
-  margin-bottom: var(--space-8);
-}
-
-.headerContent {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.greeting {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-1);
-}
-
-.name {
-  font-size: var(--font-size-2xl);
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-.streakBadge {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  background: var(--color-accent-50);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-full);
-  border: 1px solid hsla(38, 80%, 48%, 0.2);
-}
-
-.streakIcon {
-  font-size: 1.2rem;
-}
-
-.streakCount {
-  font-weight: 700;
-  color: var(--color-accent-dark);
-  font-size: var(--font-size-sm);
-}
-
-.section {
-  margin-bottom: var(--space-8);
-}
-
-.navGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-4);
-}
-
-.navCard {
-  background: var(--color-surface);
-  border-radius: var(--radius-xl);
-  padding: var(--space-4);
+/* --- Hero Section --- */
+.hero {
+  min-height: 70vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
-  text-decoration: none;
-  border: 1px solid var(--color-earth-1);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
-}
-
-.navCard:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-primary-200);
-}
-
-.navIcon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
-}
-
-.navLabel {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-text);
   text-align: center;
-}
-
-.progressWidget {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  border-radius: var(--radius-2xl);
-  padding: var(--space-6);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: white;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
+  padding: var(--space-8) var(--space-4);
+  background: linear-gradient(180deg, hsla(145, 63%, 97%, 1) 0%, var(--color-bg) 100%);
   position: relative;
+  overflow: hidden;
 }
 
-.progressWidget::before {
-  content: '';
+.heroBackground {
   position: absolute;
-  top: 0; right: 0;
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, hsla(255,100%,100%,0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  transform: translate(30%, -30%);
+  inset: 0;
+  opacity: 0.4;
+  background-image: radial-gradient(var(--color-primary-100) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0;
 }
 
-.progressInfo {
+.heroContent {
   position: relative;
   z-index: 1;
-}
-
-.progressTitle {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  margin-bottom: var(--space-1);
-}
-
-.progressSub {
-  font-size: var(--font-size-sm);
-  color: hsla(255,100%,100%,0.8);
-  margin-bottom: var(--space-4);
-}
-
-.statsRow {
+  max-width: 800px;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+  animation: slideUp var(--transition-spring);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-earth-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.badgePulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.titleHighlight {
+  color: var(--color-primary);
+}
+
+.subtitle {
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
+  color: var(--color-text-muted);
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.heroActions {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.primaryBtn {
+  font-size: var(--font-size-md);
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-full);
+  box-shadow: 0 8px 20px hsla(145, 63%, 22%, 0.2);
+}
+
+/* --- Services Bento Grid --- */
+.servicesSection {
+  padding: var(--space-12) var(--space-4);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: var(--space-10);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.sectionSubtitle {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}
+
+.bentoGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
   gap: var(--space-6);
 }
 
-.statItem {
+.bentoCard {
+  background: var(--color-surface);
+  border-radius: 2rem; /* Apple squircle look */
+  padding: var(--space-8);
+  border: 1px solid var(--color-earth-1);
+  box-shadow: 0 10px 30px hsla(0, 0%, 0%, 0.03);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  text-decoration: none;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
 }
 
-.statValue {
+.bentoCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px hsla(0, 0%, 0%, 0.06);
+  border-color: var(--color-primary-200);
+}
+
+/* Specific Grid Placements */
+.bentoCourses {
+  grid-column: span 8;
+  background: linear-gradient(135deg, var(--color-primary-50), var(--color-surface));
+}
+
+.bentoMadrasa {
+  grid-column: span 4;
+}
+
+.bentoContent {
+  grid-column: span 6;
+}
+
+.bentoProjects {
+  grid-column: span 6;
+}
+
+@media (max-width: 1024px) {
+  .bentoCourses { grid-column: span 12; }
+  .bentoMadrasa { grid-column: span 12; }
+  .bentoContent { grid-column: span 6; }
+  .bentoProjects { grid-column: span 6; }
+}
+
+@media (max-width: 640px) {
+  .bentoContent { grid-column: span 12; }
+  .bentoProjects { grid-column: span 12; }
+  .bentoCard {
+    padding: var(--space-6);
+    border-radius: 1.5rem;
+  }
+}
+
+.iconWrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 1.25rem;
+  background: var(--color-primary-100);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-6);
+  font-size: 2rem;
+}
+
+.cardTitle {
   font-size: var(--font-size-xl);
   font-weight: 700;
-  font-family: var(--font-latin);
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
 }
 
-.statLabel {
+.cardDesc {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  margin-bottom: var(--space-6);
+  flex: 1;
+}
+
+.cardAction {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+/* --- Featured Highlight --- */
+.highlightSection {
+  padding: var(--space-8) var(--space-4) var(--space-12);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.highlightCard {
+  background: var(--color-surface-alt);
+  border-radius: 2rem;
+  padding: var(--space-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  border: 1px solid var(--color-earth-1);
+}
+
+.highlightContent {
+  flex: 1;
+}
+
+.highlightBadge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-accent-50);
+  color: var(--color-accent-dark);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
-  color: hsla(255,100%,100%,0.7);
-}
-
-.progressRingWrapper {
-  position: relative;
-  z-index: 1;
-}
-
-.progressCircle {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: conic-gradient(var(--color-accent) var(--progress), hsla(255,100%,100%,0.2) 0deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-}
-
-.progressInner {
-  width: 100%;
-  height: 100%;
-  background: var(--color-primary-dark);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.progressValue {
-  font-size: var(--font-size-lg);
   font-weight: 700;
-  font-family: var(--font-latin);
+  margin-bottom: var(--space-4);
+}
+
+.highlightTitle {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.highlightDesc {
+  color: var(--color-text-muted);
+  line-height: 1.6;
 }
 
 @media (max-width: 768px) {
-  .navGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .progressWidget {
+  .highlightCard {
     flex-direction: column;
-    gap: var(--space-6);
     text-align: center;
-  }
-  
-  .statsRow {
-    justify-content: center;
+    padding: var(--space-6);
   }
 }

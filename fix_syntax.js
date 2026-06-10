@@ -23,7 +23,7 @@ files.forEach(file => {
   
   // The code contains literal backslash followed by backtick and literal backslash followed by dollar sign
   // Let's replace them
-  content = content.replace(/\\`/g, '`');
+  content = content.replace(/\`/g, '`');
   content = content.replace(/\\$/g, '$');
   
   if (content !== originalContent) {
