@@ -45,11 +45,7 @@ export default function HomePage() {
             <div className={styles.rightComposition}>
               {/* Main Tutor Image Card */}
               <div className={styles.mainImageCard}>
-                <div style={{ padding: '2rem', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-                  {/* We don't have the actual tutor image, so we put a placeholder or icon */}
-                  <span style={{ fontSize: '4rem' }}>🧕</span>
-                  <p style={{ marginTop: '1rem', fontWeight: 600 }}>Experienced Female Tutors Available</p>
-                </div>
+                <img src="/images/hero_tutor.png" alt="IQC Academy Teacher" />
               </div>
 
               {/* Floating Widget 1 */}
@@ -63,7 +59,7 @@ export default function HomePage() {
 
               {/* Floating Widget 2 */}
               <div className={styles.floatingCard2}>
-                <div className={styles.quranImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>📖</div>
+                <img src="/images/quran_card.png" alt="Quran" className={styles.quranImg} />
                 <div className={styles.fc2Title}>কুরআন হিফজ</div>
                 <div className={styles.fc2Text}>তাজবীদ সহকারে কুরআন তেলাওয়াত ও মুখস্থ করুন</div>
                 <div className={styles.fc2Btn}>ভর্তি চলছে</div>
