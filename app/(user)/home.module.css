@@ -140,7 +140,7 @@
 
 .rightComposition {
   display: flex;
-  gap: 1.5rem;
+  gap: 0.8rem;
   align-items: flex-end; /* aligns the bottom of both columns */
 }
 
@@ -148,16 +148,16 @@
 .rcColLeft {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.8rem;
   width: 250px;
-  margin-bottom: 2rem; /* lifts it slightly relative to the right column */
+  margin-bottom: 0; /* Ensures exact bottom alignment with right column */
 }
 
 /* Right Column of Cards */
 .rcColRight {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.8rem;
   width: 320px;
 }
 
