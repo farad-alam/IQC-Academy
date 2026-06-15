@@ -43,32 +43,52 @@ export default function HomePage() {
           {/* Right Column */}
           <div className={styles.heroRight}>
             <div className={styles.rightComposition}>
-              {/* Main Tutor Image Card */}
-              <div className={styles.mainImageCard}>
-                <img src="/images/hero_tutor.png" alt="IQC Academy Teacher" />
-              </div>
+              {/* Left Column (Cards) */}
+              <div className={styles.rcColLeft}>
+                {/* Floating Widget 1 */}
+                <div className={styles.floatingCard1}>
+                  <div className={styles.fc1IconWrapper}>
+                    <span style={{ fontSize: '1.25rem' }}>📞</span>
+                  </div>
+                  <div>
+                    <div className={styles.boldText}>২৪/৭</div>
+                    <div className={styles.subText}>সাপোর্ট সিস্টেম</div>
+                  </div>
+                </div>
 
-              {/* Floating Widget 1 */}
-              <div className={styles.floatingCard1}>
-                <span style={{ fontSize: '1.5rem' }}>📞</span>
-                <div>
-                  <div className={styles.boldText}>২৪/৭</div>
-                  <div className={styles.subText}>সাপোর্ট সিস্টেম</div>
+                {/* Floating Widget 2 */}
+                <div className={styles.floatingCard2}>
+                  <img src="/images/quran_card.png" alt="Quran" className={styles.quranImg} />
+                  <div className={styles.fc2Title}>কুরআন হিফজ</div>
+                  <div className={styles.fc2Text}>তাজবীদ সহকারে কুরআন তেলাওয়াত ও মুখস্থ করুন</div>
+                  <div className={styles.fc2Btn}>ভর্তি চলছে</div>
                 </div>
               </div>
 
-              {/* Floating Widget 2 */}
-              <div className={styles.floatingCard2}>
-                <img src="/images/quran_card.png" alt="Quran" className={styles.quranImg} />
-                <div className={styles.fc2Title}>কুরআন হিফজ</div>
-                <div className={styles.fc2Text}>তাজবীদ সহকারে কুরআন তেলাওয়াত ও মুখস্থ করুন</div>
-                <div className={styles.fc2Btn}>ভর্তি চলছে</div>
-              </div>
+              {/* Right Column (Images) */}
+              <div className={styles.rcColRight}>
+                {/* Main Tutor Image Card */}
+                <div className={styles.mainImageCard}>
+                  <img src="/images/hero_tutor.png" alt="IQC Academy Teacher" />
+                  {/* Floating Action Icons on Image */}
+                  <div className={styles.imageActionRow}>
+                     <div className={styles.actionIconDark}>🎤</div>
+                     <div className={styles.actionIconDark}>🔊</div>
+                     <div className={styles.actionIconGreen}>💬</div>
+                     <div className={styles.actionIconRed}>✖</div>
+                  </div>
+                </div>
 
-              {/* Floating Widget 3 */}
-              <div className={styles.floatingCard3}>
-                <span style={{ fontSize: '1.25rem' }}>👨‍🏫</span>
-                <span>৫০+ ওস্তাদ</span>
+                {/* Floating Widget 3 */}
+                <div className={styles.floatingCard3}>
+                  <div className={styles.fc3IconWrapper}>
+                    <span style={{ fontSize: '1.25rem' }}>👨‍🏫</span>
+                  </div>
+                  <div>
+                    <div style={{fontWeight: '800', fontSize: '1.1rem', lineHeight: 1.1}}>৫০+</div>
+                    <div style={{fontSize: '0.75rem', opacity: 0.9, fontWeight: 500}}>মেন্টর ও ওস্তাদ</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
