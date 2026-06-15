@@ -1,16 +1,18 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, GraduationCap, User, Bell } from 'lucide-react';
+import { Search } from 'lucide-react';
 import styles from './TopNav.module.css';
 
 export default function TopNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { name: 'হোম', href: '/', icon: Home },
-    { name: 'কন্টেন্ট', href: '/content', icon: BookOpen },
-    { name: 'কোর্স', href: '/courses', icon: GraduationCap },
+    { name: 'Home', href: '/' },
+    { name: 'Courses', href: '/courses' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Contact us', href: '/contact' },
+    { name: 'Pricing', href: '/pricing' },
   ];
 
   return (
@@ -18,14 +20,17 @@ export default function TopNav() {
       <div className={styles.container}>
         {/* Logo */}
         <Link href="/" className={styles.logoArea}>
-          <div className={styles.logoIcon}>📖</div>
-          <span className={styles.logoText}>IQC Academy</span>
+          <div className={styles.logoIcon}>🕌</div>
+          <div className={styles.logoTextWrapper}>
+            <span className={styles.logoTextWhite}>IQC</span>
+            <span className={styles.logoTextYellow}>ACADEMY</span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className={styles.desktopNav}>
           {navItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
             return (
               <Link 
                 key={item.name} 
@@ -40,16 +45,12 @@ export default function TopNav() {
 
         {/* Right Actions */}
         <div className={styles.actions}>
-          <button className={styles.iconBtn} aria-label="Notifications">
-            <Bell size={20} />
-            <span className={styles.badge} />
+          <button className={styles.searchBtn} aria-label="Search">
+            <Search size={20} />
           </button>
           
-          <Link href="/profile" className={styles.profileBtn}>
-            <div className={styles.avatar}>
-              <User size={18} />
-            </div>
-            <span className={styles.userName}>প্রোফাইল</span>
+          <Link href="/courses" className={styles.exploreBtn}>
+            Explore Courses
           </Link>
         </div>
       </div>
