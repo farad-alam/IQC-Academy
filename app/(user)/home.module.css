@@ -8,12 +8,11 @@
   display: flex;
   align-items: center;
   padding: 5rem 2rem;
-  background-color: #1B4332;
-  background-image:
-    radial-gradient(ellipse at 70% 50%, rgba(34, 85, 58, 0.6) 0%, transparent 60%),
-    url('/images/pattern.png');
-  background-blend-mode: normal, soft-light;
-  background-size: cover, 350px;
+  background-color: #0B2A1E;
+  background-image: url('/images/hero_bg.png');
+  background-blend-mode: normal;
+  background-size: cover;
+  background-position: center left;
   position: relative;
   overflow: hidden;
 }
@@ -155,8 +154,8 @@
   height: 88%;
   border-radius: 1.5rem;
   overflow: hidden;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
-  background: #2d6a4f;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+  background: #f3f4f6; /* Light gray */
 }
 
 .mainImageCard img {
@@ -254,15 +253,15 @@
   position: absolute;
   bottom: 2%;
   right: 5%;
-  background: #22c55e;
+  background: #f3f4f6; /* Light gray */
   padding: 0.75rem 1.25rem;
   border-radius: 2rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
   display: flex;
   align-items: center;
   gap: 0.6rem;
   z-index: 3;
-  color: white;
+  color: #111827; /* Dark text */
   font-weight: 700;
   font-size: 0.875rem;
 }
