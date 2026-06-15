@@ -6,29 +6,75 @@ import styles from './home.module.css';
 export default function HomePage() {
   return (
     <div className={styles.home}>
-      {/* Clean Hero Section */}
+      {/* Clean Hero Section (Inspired by Noorayn Academy) */}
       <section className={styles.hero}>
-        <div className={styles.heroBackground} aria-hidden="true" />
-        <div className={styles.heroContent}>
-          <div className={styles.badge}>
-            <div className={styles.badgePulse} />
-            নতুন ব্যাচে ভর্তি চলছে
-          </div>
-          
-          <h1 className={styles.title}>
-            কুরআন ও সুন্নাহর <br />
-            <span className={styles.titleHighlight}>আলোকে জীবন</span>
-          </h1>
-          
-          <p className={styles.subtitle}>
-            ইসলাম শেখার একটি আনন্দময়, সহজ ও অনুপ্রেরণাদায়ক প্ল্যাটফর্ম। 
-            বিশুদ্ধ ইলম অর্জন করুন এবং নিজের জীবনকে আলোকিত করুন।
-          </p>
-          
-          <div className={styles.heroActions}>
-            <Link href="/courses" className={`btn btn-primary \${styles.primaryBtn}`}>
+        <div className={styles.heroContainer}>
+          {/* Left Column */}
+          <div className={styles.heroLeft}>
+            <h1 className={styles.title}>
+              কুরআন ও সুন্নাহর <br />
+              <span className={styles.titleHighlight}>আলোকে জীবন</span>
+            </h1>
+            
+            <p className={styles.subtitle}>
+              ইসলাম শেখার একটি আনন্দময়, সহজ ও অনুপ্রেরণাদায়ক প্ল্যাটফর্ম। 
+              বিশুদ্ধ ইলম অর্জন করুন এবং নিজের জীবনকে আলোকিত করুন।
+            </p>
+            
+            <Link href="/courses" className={`btn ${styles.primaryBtn}`}>
               কোর্সসমূহ শুরু করুন
             </Link>
+
+            <div className={styles.statsWidget}>
+              <div className={styles.avatars}>
+                <div className={styles.avatar}>A</div>
+                <div className={styles.avatar}>U</div>
+                <div className={styles.avatar}>F</div>
+                <div className={styles.avatar}>M</div>
+              </div>
+              <div className={styles.statsText}>
+                <span className={styles.statsCount}>৭০০+</span>
+                <span className={styles.statsLabel}>সন্তুষ্ট শিক্ষার্থী</span>
+                <div className={styles.stars}>★★★★★ <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '10px' }}>৪.৯ এক্সেলেন্ট</span></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className={styles.heroRight}>
+            <div className={styles.rightComposition}>
+              {/* Main Tutor Image Card */}
+              <div className={styles.mainImageCard}>
+                <div style={{ padding: '2rem', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                  {/* We don't have the actual tutor image, so we put a placeholder or icon */}
+                  <span style={{ fontSize: '4rem' }}>🧕</span>
+                  <p style={{ marginTop: '1rem', fontWeight: 600 }}>Experienced Female Tutors Available</p>
+                </div>
+              </div>
+
+              {/* Floating Widget 1 */}
+              <div className={styles.floatingCard1}>
+                <span style={{ fontSize: '1.5rem' }}>📞</span>
+                <div>
+                  <div className={styles.boldText}>২৪/৭</div>
+                  <div className={styles.subText}>সাপোর্ট সিস্টেম</div>
+                </div>
+              </div>
+
+              {/* Floating Widget 2 */}
+              <div className={styles.floatingCard2}>
+                <div className={styles.quranImg} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>📖</div>
+                <div className={styles.fc2Title}>কুরআন হিফজ</div>
+                <div className={styles.fc2Text}>তাজবীদ সহকারে কুরআন তেলাওয়াত ও মুখস্থ করুন</div>
+                <div className={styles.fc2Btn}>ভর্তি চলছে</div>
+              </div>
+
+              {/* Floating Widget 3 */}
+              <div className={styles.floatingCard3}>
+                <span style={{ fontSize: '1.25rem' }}>👨‍🏫</span>
+                <span>৫০+ ওস্তাদ</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
