@@ -334,6 +334,169 @@
   }
 }
 
+/* ─── Premium Stats Section (Neon Glow) ─── */
+.statsSection {
+  padding: 6rem 2rem;
+  background-color: #050b08; /* Very dark background to match the glow aesthetic */
+  display: flex;
+  justify-content: center;
+}
+
+.statsGrid {
+  max-width: 1200px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.statCard {
+  background: #0d1410;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.statCardSmall {
+  height: 100%;
+}
+
+.statCardTall {
+  grid-row: span 2;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+/* Neon Glow Effects */
+.glowEffect {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 60px;
+  background: rgba(16, 185, 129, 0.6); /* Emerald glow */
+  filter: blur(40px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.glowEffectCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background: rgba(16, 185, 129, 0.25);
+  filter: blur(60px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.statIcon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.statIconLarge {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+  font-family: var(--font-latin);
+}
+
+.statNumberLarge {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-latin);
+}
+
+.statLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #10b981;
+  margin-bottom: 1rem;
+}
+
+.statDesc {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+}
+
+.statDescCenter {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.statBtn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.statBtn:hover {
+  background: #ffffff;
+  color: #050b08;
+}
+
+@media (max-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .statCardTall {
+    grid-column: span 2;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  .statCardTall {
+    grid-column: span 1;
+  }
+}
+
 /* --- Services Bento Grid --- */
 .servicesSection {
   padding: var(--space-12) var(--space-4);
