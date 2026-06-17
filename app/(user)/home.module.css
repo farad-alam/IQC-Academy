@@ -499,11 +499,32 @@
 
 /* --- Services Bento Grid (New Asymmetric Layout) --- */
 .servicesSection {
-  padding: 6rem 2rem;
+  padding: 3rem 2rem 4rem;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.sectionTitle {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #064E3B;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.sectionSubtitle {
+  color: #6B7280;
+  font-size: 1.1rem;
+  font-weight: 400;
 }
 
 .bentoGrid {
@@ -511,29 +532,30 @@
   width: 100%;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-auto-rows: 250px;
-  gap: 1.5rem;
+  grid-auto-rows: 210px;
+  gap: 1rem;
 }
 
 .bentoCard {
-  border-radius: 1.5rem;
-  padding: 2rem;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   text-decoration: none;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .bentoCard:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
 }
 
 .serviceCard1 {
   grid-column: span 4;
   grid-row: span 2;
-  background: #064E3B; /* Dark Green */
+  background: #064E3B;
   color: white;
   justify-content: flex-start;
 }
@@ -541,15 +563,18 @@
 .serviceCard2 {
   grid-column: span 8;
   grid-row: span 1;
-  background: #ECFDF5; /* Light Green */
+  background: #ECFDF5;
+  border: 1.5px solid #A7F3D0; /* Visible border for light card */
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 }
 
 .serviceCard3 {
   grid-column: span 4;
   grid-row: span 1;
-  background: #ECFDF5; /* Light Green */
+  background: #ECFDF5;
+  border: 1.5px solid #A7F3D0; /* Visible border for light card */
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -558,13 +583,13 @@
 .serviceCard4 {
   grid-column: span 4;
   grid-row: span 1;
-  background: #064E3B; /* Dark Green */
+  background: #064E3B;
 }
 
 .serviceCard5 {
   grid-column: span 7;
   grid-row: span 1;
-  background: #10B981; /* Vibrant Green */
+  background: #10B981;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -573,66 +598,109 @@
 .serviceCard6 {
   grid-column: span 5;
   grid-row: span 1;
-  background: #ECFDF5; /* Light Green */
+  background: #ECFDF5;
+  border: 1.5px solid #A7F3D0; /* Visible border for light card */
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
-.bentoTitleDark { color: #ffffff; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
-.bentoDescDark { color: rgba(255,255,255,0.8); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem; }
+.bentoTitleDark { color: #ffffff; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.4rem; line-height: 1.2; }
+.bentoDescDark { color: rgba(255,255,255,0.8); font-size: 0.85rem; line-height: 1.5; margin-bottom: 0.5rem; }
 
-.bentoTitleLight { color: #064E3B; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; }
-.bentoDescLight { color: #4B5563; font-size: 0.95rem; line-height: 1.5; }
+.bentoTitleLight { color: #064E3B; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.4rem; line-height: 1.2; }
+.bentoDescLight { color: #374151; font-size: 0.85rem; line-height: 1.5; }
 
-.bentoTitleVibrant { color: #ffffff; font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; }
-.bentoDescVibrant { color: rgba(255,255,255,0.9); font-size: 0.9rem; line-height: 1.5; }
+.bentoTitleVibrant { color: #ffffff; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.4rem; line-height: 1.2; }
+.bentoDescVibrant { color: rgba(255,255,255,0.95); font-size: 0.85rem; line-height: 1.5; }
 
-.bentoTitleCenter { color: #064E3B; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
-.bentoDescCenter { color: #4B5563; font-size: 0.9rem; margin-bottom: 1.5rem; }
+.bentoTitleCenter { color: #064E3B; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem; line-height: 1.2; }
+.bentoDescCenter { color: #374151; font-size: 0.85rem; margin-bottom: 1rem; }
 
-.serviceContentWide { max-width: 50%; }
-.serviceContentWideLeft { max-width: 55%; }
+.serviceContentWide { max-width: 45%; flex-shrink: 0; }
+.serviceContentWideLeft { max-width: 50%; flex-shrink: 0; }
 
 /* Image Wrappers and Images */
 .bentoImageWrapperTall {
   flex-grow: 1;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  overflow: hidden;
 }
-.bentoImgTall { width: 90%; object-fit: contain; transform: translateY(2rem); }
+.bentoImgTall {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 0.75rem 0.75rem 0 0;
+  transform: none;
+}
 
 .bentoImageWrapperWide {
-  width: 45%;
+  width: 50%;
+  height: 100%;
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
+  justify-content: flex-end;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 0.75rem;
 }
-.bentoImgWide { width: 100%; object-fit: contain; transform: translateY(2rem); }
+.bentoImgWide {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 0.75rem;
+}
 
-.bentoImgSquare { width: 80%; object-fit: contain; align-self: flex-end; margin-top: auto; transform: translate(1rem, 1rem); }
-.bentoImgSquareRight { width: 40%; object-fit: contain; }
-.bentoImgVibrant { width: 40%; object-fit: contain; }
+.bentoImgSquare {
+  width: 55%;
+  height: 80%;
+  object-fit: cover;
+  object-position: top center;
+  align-self: flex-end;
+  margin-top: auto;
+  border-radius: 0.75rem 0.75rem 0 0;
+  margin-left: auto;
+}
+
+.bentoImgSquareRight {
+  width: 45%;
+  height: 80%;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+.bentoImgVibrant {
+  width: 42%;
+  height: 90%;
+  object-fit: contain;
+  flex-shrink: 0;
+}
 
 /* Mentors Avatars for Card 3 */
-.mentorsAvatars { display: flex; align-items: center; justify-content: center; margin-top: 1rem; }
-.mAvatar { width: 40px; height: 40px; border-radius: 50%; background: #D1FAE5; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #064E3B; margin-left: -10px; }
+.mentorsAvatars { display: flex; align-items: center; justify-content: center; margin-top: 0.75rem; }
+.mAvatar { width: 38px; height: 38px; border-radius: 50%; background: #D1FAE5; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; color: #064E3B; margin-left: -10px; }
 .mAvatar:first-child { margin-left: 0; }
-.mAvatarStar { width: 40px; height: 40px; border-radius: 50%; background: #064E3B; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #F59E0B; margin-left: -10px; }
+.mAvatarStar { width: 38px; height: 38px; border-radius: 50%; background: #064E3B; border: 2px solid #ffffff; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #F59E0B; margin-left: -10px; }
 
 @media (max-width: 1024px) {
-  .bentoGrid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: minmax(200px, auto); }
+  .bentoGrid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: minmax(180px, auto); }
   .serviceCard1, .serviceCard2, .serviceCard3, .serviceCard4, .serviceCard5, .serviceCard6 { grid-column: span 1; grid-row: span 1; flex-direction: column; }
   .serviceCard1 { grid-column: span 2; }
   .serviceContentWide, .serviceContentWideLeft { max-width: 100%; margin-bottom: 1rem; }
-  .bentoImageWrapperWide, .bentoImgSquareRight, .bentoImgVibrant { width: 80%; align-self: center; transform: none; }
+  .bentoImageWrapperWide, .bentoImgSquareRight, .bentoImgVibrant { width: 80%; align-self: center; }
+  .sectionTitle { font-size: 2.2rem; }
 }
 
 @media (max-width: 640px) {
   .bentoGrid { grid-template-columns: 1fr; }
   .serviceCard1, .serviceCard2, .serviceCard3, .serviceCard4, .serviceCard5, .serviceCard6 { grid-column: span 1; }
+  .sectionTitle { font-size: 1.8rem; }
 }
 
 /* --- Featured Highlight --- */
