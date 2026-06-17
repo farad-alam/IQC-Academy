@@ -155,60 +155,61 @@ export default function HomePage() {
 
         <div className={styles.bentoGrid}>
           
-          {/* Courses - Wide Card */}
-          <Link href="/courses" className={`\${styles.bentoCard} \${styles.bentoCourses}`}>
-            <div className={styles.iconWrapper}>
-              <GraduationCap size={32} />
-            </div>
-            <h3 className={styles.cardTitle}>সার্টিফিকেট কোর্স</h3>
-            <p className={styles.cardDesc}>
-              অভিজ্ঞ আলেমদের পরিচালনায় বিভিন্ন মেয়াদের ইসলামিক কোর্স। ধাপে ধাপে শিখুন এবং প্রতিটি কোর্স শেষে যাচাইয়ের মাধ্যমে সার্টিফিকেট অর্জন করুন।
-            </p>
-            <div className={styles.cardAction}>
-              কোর্স এক্সপ্লোর করুন <ArrowRight size={16} />
+          {/* Card 1: Courses (Tall Left) - Dark Green */}
+          <Link href="/courses" className={`${styles.bentoCard} ${styles.serviceCard1}`}>
+            <h3 className={styles.bentoTitleDark}>সার্টিফিকেট কোর্স</h3>
+            <p className={styles.bentoDescDark}>ধাপে ধাপে শিখুন এবং কোর্স শেষে যাচাইয়ের মাধ্যমে সার্টিফিকেট অর্জন করুন।</p>
+            <div className={styles.bentoImageWrapperTall}>
+              <img src="/images/service_courses_1781698562396.png" alt="Courses App UI" className={styles.bentoImgTall} />
             </div>
           </Link>
 
-          {/* Madrasa - Square Card */}
-          <Link href="/madrasa" className={`\${styles.bentoCard} \${styles.bentoMadrasa}`}>
-            <div className={styles.iconWrapper}>
-              <span style={{ fontSize: '1.8rem' }}>🕌</span>
+          {/* Card 2: Madrasa (Top Right Wide) - Light Green */}
+          <Link href="/madrasa" className={`${styles.bentoCard} ${styles.serviceCard2}`}>
+            <div className={styles.serviceContentWide}>
+              <h3 className={styles.bentoTitleLight}>অনলাইন মাদ্রাসা</h3>
+              <p className={styles.bentoDescLight}>সিস্টেমেটিক সিলেবাস ভিত্তিক ইসলামিক পড়াশোনার সুযোগ।</p>
             </div>
-            <h3 className={styles.cardTitle}>অনলাইন মাদ্রাসা</h3>
-            <p className={styles.cardDesc}>
-              সিস্টেমেটিক সিলেবাস ভিত্তিক ইসলামিক পড়াশোনার সুযোগ।
-            </p>
-            <div className={styles.cardAction}>
-              বিস্তারিত <ArrowRight size={16} />
+            <div className={styles.bentoImageWrapperWide}>
+              <img src="/images/service_madrasa_1781698576449.png" alt="Madrasa Dashboard" className={styles.bentoImgWide} />
             </div>
           </Link>
 
-          {/* Content - Square Card */}
-          <Link href="/content" className={`\${styles.bentoCard} \${styles.bentoContent}`}>
-            <div className={styles.iconWrapper} style={{ backgroundColor: 'var(--color-info-bg)', color: 'var(--color-info)' }}>
-              <BookOpen size={32} />
-            </div>
-            <h3 className={styles.cardTitle}>আর্টিকেল ও ভিডিও</h3>
-            <p className={styles.cardDesc}>
-              কুরআন, হাদিস ও মাসআলা বিষয়ক জ্ঞানগর্ভ প্রবন্ধ ও ভিডিও লেকচার।
-            </p>
-            <div className={styles.cardAction}>
-              পড়তে থাকুন <ArrowRight size={16} />
+          {/* Card 3: Mentors (Middle Square 1) - Light Green Wavy */}
+          <Link href="/about" className={`${styles.bentoCard} ${styles.serviceCard3}`}>
+            <h3 className={styles.bentoTitleCenter}>১-টু-১ মেন্টরিং</h3>
+            <p className={styles.bentoDescCenter}>অভিজ্ঞ স্কলারদের গাইডলাইন</p>
+            <div className={styles.mentorsAvatars}>
+               <div className={styles.mAvatar}>A</div>
+               <div className={styles.mAvatar}>U</div>
+               <div className={styles.mAvatar}>F</div>
+               <div className={styles.mAvatarStar}>★</div>
             </div>
           </Link>
 
-          {/* Projects/Donation - Square Card */}
-          <Link href="/projects" className={`\${styles.bentoCard} \${styles.bentoProjects}`}>
-            <div className={styles.iconWrapper} style={{ backgroundColor: 'var(--color-accent-50)', color: 'var(--color-accent-dark)' }}>
-              <Heart size={32} />
+          {/* Card 4: Articles (Middle Square 2) - Dark Green */}
+          <Link href="/content" className={`${styles.bentoCard} ${styles.serviceCard4}`}>
+            <h3 className={styles.bentoTitleDark}>আর্টিকেল ও পাবলিকেশনস</h3>
+            <p className={styles.bentoDescDark}>কুরআন, হাদিস ও মাসআলা বিষয়ক জ্ঞানগর্ভ প্রবন্ধ।</p>
+            <img src="/images/service_articles_1781698588762.png" alt="Articles" className={styles.bentoImgSquare} />
+          </Link>
+
+          {/* Card 5: Charity (Bottom Left Wide) - Vibrant Green */}
+          <Link href="/projects" className={`${styles.bentoCard} ${styles.serviceCard5}`}>
+            <div className={styles.serviceContentWideLeft}>
+              <h3 className={styles.bentoTitleVibrant}>সদকাহ ও প্রজেক্ট</h3>
+              <p className={styles.bentoDescVibrant}>আমাদের মানবিক ও দা'ওয়াহ কার্যক্রমে অংশগ্রহণ করে সওয়াবের অংশীদার হোন।</p>
             </div>
-            <h3 className={styles.cardTitle}>সদকাহ ও প্রজেক্ট</h3>
-            <p className={styles.cardDesc}>
-              আমাদের মানবিক ও দা'ওয়াহ কার্যক্রমে অংশগ্রহণ করে সওয়াবের অংশীদার হোন।
-            </p>
-            <div className={styles.cardAction}>
-              অংশগ্রহণ করুন <ArrowRight size={16} />
+            <img src="/images/service_charity_1781698611474.png" alt="Charity" className={styles.bentoImgVibrant} />
+          </Link>
+
+          {/* Card 6: Quiz (Bottom Right Wide) - Light Green */}
+          <Link href="/quiz" className={`${styles.bentoCard} ${styles.serviceCard6}`}>
+            <div className={styles.serviceContentWideLeft}>
+              <h3 className={styles.bentoTitleLight}>কুইজ ও এক্সাম</h3>
+              <p className={styles.bentoDescLight}>প্রতিযোগিতায় অংশ নিন</p>
             </div>
+            <img src="/images/service_quiz_1781698622854.png" alt="Quiz" className={styles.bentoImgSquareRight} />
           </Link>
 
         </div>
