@@ -630,8 +630,9 @@
   min-height: 0; /* Prevents flex child from overflowing */
 }
 .bentoImgTall {
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
+  max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   object-position: bottom center;
@@ -679,14 +680,16 @@
 }
 
 .bentoImgVibrant {
-  width: 42%;
-  height: 140px;
+  width: auto;
+  height: auto;
+  max-width: 45%;
+  max-height: 140px;
   object-fit: contain;
   object-position: right center;
   flex-shrink: 0;
-  transform: scale(1.3); /* Slightly reduced scale */
+  transform: scale(1.3);
   transform-origin: right center;
-  border-radius: 0.75rem; /* Added border radius */
+  border-radius: 0.75rem;
 }
 
 /* Mentors Avatars for Card 3 */
