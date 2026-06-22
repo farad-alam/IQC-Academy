@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { BookOpen, GraduationCap, ArrowRight, Heart, PlayCircle, Bell } from 'lucide-react';
+import { BookOpen, GraduationCap, ArrowRight, Heart, PlayCircle, Bell, Clock, Users, Star, Lock, CheckCircle } from 'lucide-react';
 import styles from './home.module.css';
+import { mockCourses } from '@/lib/mockData';
 
 export default function HomePage() {
   return (
@@ -212,6 +213,106 @@ export default function HomePage() {
             <img src="/images/service_quiz_1781698622854.png" alt="Quiz" className={styles.bentoImgSquareRight} />
           </Link>
 
+        </div>
+      </section>
+
+      {/* Free Courses Section */}
+      <section className={styles.coursesSection}>
+        <div className={styles.coursesSectionInner}>
+          <div className={styles.coursesSectionHeader}>
+            <div>
+              <span className={styles.coursesBadge}>ফ্রি কোর্স</span>
+              <h2 className={styles.coursesSectionTitle}>আমাদের কোর্সসমূহ</h2>
+              <p className={styles.coursesSectionSubtitle}>অভিজ্ঞ আলেমদের পরিচালনায় বিনামূল্যে ইসলামিক জ্ঞান অর্জন করুন</p>
+            </div>
+            <Link href="/courses" className={styles.seeAllBtn}>
+              সব কোর্স দেখুন <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className={styles.coursesGrid}>
+            {mockCourses.filter(c => c.type === 'free').map(course => (
+              <Link href={`/courses/${course.id}`} key={course.id} className={styles.courseCard}>
+                <div className={styles.courseCardThumb}>
+                  <div className={styles.courseCardThumbInner}>
+                    <GraduationCap size={40} className={styles.courseThumbIcon} />
+                  </div>
+                  <span className={`${styles.courseLevel} ${styles[`level_${course.level === 'বেসিক' ? 'basic' : course.level === 'মাঝারি' ? 'mid' : 'adv'}`]}`}>
+                    {course.level}
+                  </span>
+                  {course.status === 'completed' && (
+                    <span className={styles.completedBadge}><CheckCircle size={14} /> সম্পন্ন</span>
+                  )}
+                </div>
+                <div className={styles.courseCardBody}>
+                  <h3 className={styles.courseCardTitle}>{course.title}</h3>
+                  <p className={styles.courseCardDesc}>{course.description}</p>
+                  <div className={styles.courseCardMeta}>
+                    <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
+                    <span className={styles.metaItem}><BookOpen size={13} /> {course.totalModules} মডিউল</span>
+                  </div>
+                  {course.status === 'enrolled' && (
+                    <div className={styles.progressWrapper}>
+                      <div className={styles.progressBar}>
+                        <div className={styles.progressFill} style={{ width: `${course.progress}%` }} />
+                      </div>
+                      <span className={styles.progressText}>{course.progress}% সম্পন্ন</span>
+                    </div>
+                  )}
+                  <div className={styles.courseCardFooter}>
+                    <span className={styles.instructorName}>👤 {course.instructor}</span>
+                    <span className={styles.freeBadge}>বিনামূল্যে</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Courses Section */}
+      <section className={styles.premiumSection}>
+        <div className={styles.premiumInner}>
+          <div className={styles.premiumHeader}>
+            <div>
+              <span className={styles.premiumBadge}>💎 প্রিমিয়াম</span>
+              <h2 className={styles.premiumTitle}>প্রিমিয়াম কোর্সসমূহ</h2>
+              <p className={styles.premiumSubtitle}>বিশেষজ্ঞ আলেমদের তত্ত্বাবধানে গভীর ও বিস্তারিত ইসলামিক শিক্ষা লাভ করুন</p>
+            </div>
+            <Link href="/courses?type=paid" className={styles.seeAllBtnLight}>
+              সব প্রিমিয়াম কোর্স <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className={styles.premiumGrid}>
+            {mockCourses.filter(c => c.type === 'paid').map(course => (
+              <Link href={`/courses/${course.id}`} key={course.id} className={styles.premiumCard}>
+                <div className={styles.premiumCardGlow}></div>
+                <div className={styles.premiumCardThumb}>
+                  <Lock size={36} className={styles.premiumLockIcon} />
+                  <div className={styles.premiumStars}>
+                    {[1,2,3,4,5].map(s => <Star key={s} size={12} fill="#F59E0B" color="#F59E0B" />)}
+                  </div>
+                </div>
+                <div className={styles.premiumCardBody}>
+                  <div className={styles.premiumLevelBadge}>{course.level}</div>
+                  <h3 className={styles.premiumCardTitle}>{course.title}</h3>
+                  <p className={styles.premiumCardDesc}>{course.description}</p>
+                  <div className={styles.premiumCardMeta}>
+                    <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
+                    <span className={styles.metaItem}><BookOpen size={13} /> {course.totalModules} মডিউল</span>
+                  </div>
+                  <div className={styles.premiumCardFooter}>
+                    <span className={styles.premiumInstructor}>👤 {course.instructor}</span>
+                    <span className={styles.premiumPrice}>৳ {course.price}</span>
+                  </div>
+                  <div className={styles.enrollNowBtn}>
+                    এখনই ভর্তি হন <ArrowRight size={14} />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

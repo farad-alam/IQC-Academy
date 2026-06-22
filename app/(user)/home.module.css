@@ -764,3 +764,450 @@
     padding: var(--space-6);
   }
 }
+
+/* ─── Free Courses Section ─── */
+.coursesSection {
+  background: #f8fffe;
+  padding: 5rem 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.coursesSectionInner {
+  max-width: 1200px;
+  width: 100%;
+}
+
+.coursesSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  gap: 1rem;
+}
+
+.coursesBadge {
+  display: inline-block;
+  background: #D1FAE5;
+  color: #065F46;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.coursesSectionTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #064E3B;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.coursesSectionSubtitle {
+  color: #6B7280;
+  font-size: 1rem;
+}
+
+.seeAllBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #064E3B;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.25s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+.seeAllBtn:hover { background: #065F46; transform: translateY(-2px); }
+
+.coursesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.courseCard {
+  background: #ffffff;
+  border: 1.5px solid #D1FAE5;
+  border-radius: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.courseCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(6, 78, 59, 0.1);
+  border-color: #6EE7B7;
+}
+
+.courseCardThumb {
+  position: relative;
+  background: linear-gradient(135deg, #064E3B 0%, #065F46 100%);
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.courseCardThumbInner {
+  width: 72px;
+  height: 72px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.courseThumbIcon { color: #ffffff; }
+
+.courseLevel {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+}
+.level_basic { background: #D1FAE5; color: #065F46; }
+.level_mid    { background: #FEF3C7; color: #92400E; }
+.level_adv    { background: #FCE7F3; color: #9D174D; }
+
+.completedBadge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255,255,255,0.2);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.courseCardBody {
+  padding: 1.25rem 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.courseCardTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+}
+
+.courseCardDesc {
+  font-size: 0.85rem;
+  color: #6B7280;
+  line-height: 1.55;
+  margin-bottom: 0.75rem;
+  flex-grow: 1;
+}
+
+.courseCardMeta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: #6B7280;
+}
+
+.progressWrapper {
+  margin-bottom: 0.75rem;
+}
+
+.progressBar {
+  height: 6px;
+  background: #E5E7EB;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.3rem;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981, #064E3B);
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+.progressText {
+  font-size: 0.75rem;
+  color: #065F46;
+  font-weight: 600;
+}
+
+.courseCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  border-top: 1px solid #F3F4F6;
+}
+
+.instructorName {
+  font-size: 0.8rem;
+  color: #6B7280;
+}
+
+.freeBadge {
+  background: #D1FAE5;
+  color: #065F46;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* ─── Premium Courses Section ─── */
+.premiumSection {
+  background: linear-gradient(135deg, #064E3B 0%, #0F3D2E 50%, #1a1a2e 100%);
+  padding: 5rem 2rem;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.premiumSection::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(16, 185, 129, 0.12) 0%, transparent 70%),
+              radial-gradient(ellipse at 70% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.premiumInner {
+  max-width: 1200px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.premiumHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  gap: 1rem;
+}
+
+.premiumBadge {
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.15);
+  color: #F59E0B;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  letter-spacing: 0.05em;
+}
+
+.premiumTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.premiumSubtitle {
+  color: rgba(255,255,255,0.65);
+  font-size: 1rem;
+}
+
+.seeAllBtnLight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.2);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.25s ease, transform 0.2s ease;
+  flex-shrink: 0;
+  backdrop-filter: blur(8px);
+}
+.seeAllBtnLight:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+.premiumGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.premiumCard {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+.premiumCard:hover {
+  transform: translateY(-6px);
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 30px rgba(245, 158, 11, 0.08);
+}
+
+.premiumCardGlow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.premiumCardThumb {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(6, 78, 59, 0.5) 100%);
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.premiumLockIcon { color: rgba(245, 158, 11, 0.8); }
+
+.premiumStars {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.premiumCardBody {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.premiumLevelBadge {
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.15);
+  color: #F59E0B;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  margin-bottom: 0.6rem;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  align-self: flex-start;
+}
+
+.premiumCardTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+}
+
+.premiumCardDesc {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.55;
+  margin-bottom: 0.75rem;
+  flex-grow: 1;
+}
+
+.premiumCardMeta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.premiumCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 0.75rem;
+}
+
+.premiumInstructor {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.premiumPrice {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #F59E0B;
+}
+
+.enrollNowBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.premiumCard:hover .enrollNowBtn {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1024px) {
+  .coursesGrid, .premiumGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .coursesGrid, .premiumGrid { grid-template-columns: 1fr; }
+  .coursesSectionHeader, .premiumHeader { flex-direction: column; align-items: flex-start; }
+  .coursesSectionTitle, .premiumTitle { font-size: 1.8rem; }
+  .seeAllBtn, .seeAllBtnLight { align-self: flex-start; }
+}
+
