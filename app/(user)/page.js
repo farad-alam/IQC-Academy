@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { BookOpen, GraduationCap, ArrowRight, Heart, PlayCircle, Bell, Clock, Users, Star, Lock, CheckCircle } from 'lucide-react';
+import { BookOpen, GraduationCap, ArrowRight, Heart, PlayCircle, Bell, Clock, Users, Star, Lock, CheckCircle, Target, MapPin, Users2, Image as ImageIcon } from 'lucide-react';
 import styles from './home.module.css';
-import { mockCourses } from '@/lib/mockData';
+import { mockCourses, mockProjects, mockGallery } from '@/lib/mockData';
 
 export default function HomePage() {
   return (
@@ -311,6 +311,90 @@ export default function HomePage() {
                   </div>
                 </div>
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Projects Section */}
+      <section className={styles.projectsSection}>
+        <div className={styles.projectsInner}>
+          <div className={styles.projectsHeader}>
+            <div>
+              <span className={styles.projectsBadge}>🌟 सদকাহ ও প্রজেক্ট</span>
+              <h2 className={styles.projectsTitle}>আমাদের চলমান প্রকল্পসমূহ</h2>
+              <p className={styles.projectsSubtitle}>সদকায়ে জারিয়ার সুযোগে অংশ নিন — প্রতিটি দান আপনার আমলনামায় স্থায়ী হয়ে যাবে</p>
+            </div>
+            <Link href="/projects" className={styles.seeAllBtn}>
+              সব প্রকল্প দেখুন <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className={styles.projectsGrid}>
+            {mockProjects.map(project => (
+              <div key={project.id} className={styles.projectCard}>
+                <div className={styles.projectCardImg}>
+                  <img src={project.image} alt={project.title} className={styles.projectImg} />
+                  <div className={styles.projectImgOverlay}>
+                    <span className={`${styles.projectStatus} ${project.progress >= 90 ? styles.statusAlmost : styles.statusActive}`}>
+                      {project.status}
+                    </span>
+                  </div>
+                </div>
+                <div className={styles.projectCardBody}>
+                  <div className={styles.projectMeta}>
+                    <span className={styles.projectCategory}>{project.icon} {project.category}</span>
+                    <span className={styles.projectLocation}><MapPin size={12} /> {project.location}</span>
+                  </div>
+                  <h3 className={styles.projectCardTitle}>{project.title}</h3>
+                  <p className={styles.projectCardDesc}>{project.description}</p>
+                  <div className={styles.projectProgress}>
+                    <div className={styles.projectProgressTop}>
+                      <span className={styles.projectRaised}>৳{project.raised.toLocaleString('bn-BD')}</span>
+                      <span className={styles.projectTarget}>লক্ষ্য: ৳{project.target.toLocaleString('bn-BD')}</span>
+                    </div>
+                    <div className={styles.projectProgressBar}>
+                      <div className={styles.projectProgressFill} style={{ width: `${project.progress}%` }} />
+                    </div>
+                    <div className={styles.projectProgressBottom}>
+                      <span className={styles.projectDonors}><Users2 size={13} /> {project.donors} জন দানকারী</span>
+                      <span className={styles.projectPercent}>{project.progress}% সম্পন্ন</span>
+                    </div>
+                  </div>
+                  <Link href="/donate" className={styles.donateBtn}>
+                    <Heart size={15} /> এখনই দান করুন
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section className={styles.gallerySection}>
+        <div className={styles.galleryInner}>
+          <div className={styles.galleryHeader}>
+            <div>
+              <span className={styles.galleryBadge}>🖼️ গ্যালারি</span>
+              <h2 className={styles.galleryTitle}>আমাদের কার্যক্রমের ছবি</h2>
+              <p className={styles.gallerySubtitle}>ইকিউ অ্যাকাডেমির বিভিন্ন কার্যক্রম, ইভেন্ট ও প্রকল্পের আলোকচিত্র দেখুন</p>
+            </div>
+            <Link href="/gallery" className={styles.seeAllBtn}>
+              পূর্ণ গ্যালারি <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          <div className={styles.galleryGrid}>
+            {mockGallery.map((item, index) => (
+              <div key={item.id} className={`${styles.galleryItem} ${index === 0 ? styles.galleryItemLarge : ''}`}>
+                <img src={item.image} alt={item.title} className={styles.galleryImg} />
+                <div className={styles.galleryOverlay}>
+                  <span className={styles.galleryItemType}>{item.type === 'event' ? 'ইভেন্ট' : item.type === 'class' ? 'ক্লাস' : 'প্রকল্প'}</span>
+                  <h4 className={styles.galleryItemTitle}>{item.title}</h4>
+                  <p className={styles.galleryItemDate}>{item.date}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
