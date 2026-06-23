@@ -951,3 +951,7 @@ tbody tr:hover { background: var(--color-primary-50); }
   background: var(--color-primary-100);
   color: var(--color-primary-dark);
 }
+
+@media (max-width: 640px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}

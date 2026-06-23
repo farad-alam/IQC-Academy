@@ -45,7 +45,7 @@ export default function CourseListPage() {
       </div>
 
       {filteredCourses.length > 0 ? (
-        <div className="grid-3 gap-6">
+        <div className="grid grid-3 gap-6">
           {filteredCourses.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
