@@ -8,24 +8,25 @@ export default function Footer() {
       {/* Left Panel */}
       <div className={styles.leftPanel}>
         <div className={styles.topGrid}>
-          {/* Column 1: Contact */}
-          <div className={styles.gridItem}>
-            <h3 className={styles.contactTitle}>যোগাযোগ</h3>
-            <ul className={styles.contactList}>
-              <li>ইমেইল: info@iqcacademy.com</li>
-              <li>মোবাইল: +880 1234 567890</li>
-              <li>ঠিকানা: ঢাকা, বাংলাদেশ</li>
-            </ul>
-          </div>
+          {/* Column 1: Communication Area */}
+          <div className={`${styles.gridItem} ${styles.communicationArea}`}>
+            <div className={styles.contactBlock}>
+              <h3 className={styles.contactTitle}>যোগাযোগ</h3>
+              <ul className={styles.contactList}>
+                <li>ইমেইল: info@iqcacademy.com</li>
+                <li>মোবাইল: +880 1234 567890</li>
+                <li>ঠিকানা: ঢাকা, বাংলাদেশ</li>
+              </ul>
+            </div>
 
-          {/* Column 2: Social Media */}
-          <div className={styles.gridItem}>
-            <h3 className={styles.contactTitle}>সোশ্যাল মিডিয়া</h3>
-            <div className={styles.socialsGrid}>
-              <a href="#" aria-label="Facebook">FB</a>
-              <a href="#" aria-label="YouTube">YT</a>
-              <a href="#" aria-label="Instagram">IG</a>
-              <a href="#" aria-label="Twitter">X</a>
+            <div className={styles.socialsBlock}>
+              <h3 className={styles.contactTitle}>সোশ্যাল মিডিয়া</h3>
+              <div className={styles.socialsGrid}>
+                <a href="#" aria-label="Facebook">FB</a>
+                <a href="#" aria-label="YouTube">YT</a>
+                <a href="#" aria-label="Instagram">IG</a>
+                <a href="#" aria-label="Twitter">X</a>
+              </div>
             </div>
           </div>
 
