@@ -1,4 +1,5 @@
 'use client';
+import { FaFacebookF, FaYoutube, FaInstagram, FaXTwitter } from 'react-icons/fa6';
 import Link from 'next/link';
 import styles from './Footer.module.css';
 
@@ -22,10 +23,10 @@ export default function Footer() {
             <div className={styles.socialsBlock}>
               <h3 className={styles.contactTitle}>সোশ্যাল মিডিয়া</h3>
               <div className={styles.socialsGrid}>
-                <a href="#" aria-label="Facebook">FB</a>
-                <a href="#" aria-label="YouTube">YT</a>
-                <a href="#" aria-label="Instagram">IG</a>
-                <a href="#" aria-label="Twitter">X</a>
+                <a href="#" aria-label="Facebook"><FaFacebookF size={18} /></a>
+                <a href="#" aria-label="YouTube"><FaYoutube size={20} /></a>
+                <a href="#" aria-label="Instagram"><FaInstagram size={20} /></a>
+                <a href="#" aria-label="Twitter"><FaXTwitter size={18} /></a>
               </div>
             </div>
           </div>
