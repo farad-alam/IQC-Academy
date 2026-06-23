@@ -16,6 +16,7 @@
 .heroSection {
   padding: 8rem 0 6rem;
   border-bottom: 1px solid var(--color-earth-1);
+  background: linear-gradient(180deg, var(--color-primary-50) 0%, transparent 100%);
 }
 
 .heroGrid {
@@ -80,9 +81,9 @@
 }
 
 .missionCard {
-  background-color: var(--color-surface);
+  background-color: var(--color-primary-50);
   padding: 4rem;
-  border: 1px solid var(--color-earth-1);
+  border: 1px solid var(--color-primary-100);
   border-radius: 16px;
   position: relative;
   overflow: hidden;
@@ -90,8 +91,8 @@
 }
 
 .visionCard {
-  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-primary-50) 100%);
-  border-color: var(--color-primary-100);
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+  border-color: var(--color-primary-200);
 }
 
 .sectionTitle {
@@ -124,8 +125,8 @@
 
 .valueItem {
   padding: 3rem;
-  border: 1px solid var(--color-earth-1);
-  background-color: var(--color-surface);
+  border: 1px solid var(--color-primary-100);
+  background-color: var(--color-primary-50);
   border-radius: 12px;
   transition: all 0.3s ease;
   position: relative;
