@@ -2,6 +2,8 @@
 import Image from 'next/image';
 import { FaEnvelope, FaPhoneAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import styles from './contact.module.css';
+import FadeIn from '@/components/ui/FadeIn';
+import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer';
 
 export default function ContactPage() {
   const handleSubmit = (e) => {
@@ -16,13 +18,13 @@ export default function ContactPage() {
       <section className={styles.headerSection}>
         <div className={styles.container}>
           <div className={styles.headerContent}>
-            <div className={styles.textContent}>
+            <FadeIn direction="up" className={styles.textContent}>
               <h1 className={styles.pageTitle}>যোগাযোগ করুন</h1>
               <p className={styles.pageSubtitle}>
                 আমরা আপনার কথা শুনতে চাই। কোর্স, ভর্তি বা অন্য যে কোনও বিষয়ে আপনার যদি কোনও প্রশ্ন থাকে, আমাদের দল আপনার সমস্ত প্রশ্নের উত্তর দিতে প্রস্তুত।
               </p>
-            </div>
-            <div className={styles.headerIllustration}>
+            </FadeIn>
+            <FadeIn direction="left" delay={0.2} className={styles.headerIllustration}>
               <Image 
                 src="/images/contact-hero.png"
                 alt="3D Communication Illustration"
@@ -30,7 +32,7 @@ export default function ContactPage() {
                 className={styles.illustrationImage}
                 priority
               />
-            </div>
+            </FadeIn>
           </div>
         </div>
       </section>
@@ -41,7 +43,7 @@ export default function ContactPage() {
           <div className={styles.mainGrid}>
             
             {/* Contact Form */}
-            <div className={styles.formWrapper}>
+            <FadeIn direction="up" className={styles.formWrapper}>
               <h2 className={styles.formTitle}>আমাদের বার্তা পাঠান</h2>
               <form onSubmit={handleSubmit} className={styles.contactForm}>
                 <div className={styles.inputGroup}>
@@ -60,11 +62,11 @@ export default function ContactPage() {
                   বার্তা পাঠান
                 </button>
               </form>
-            </div>
+            </FadeIn>
 
             {/* Info Cards */}
-            <div className={styles.infoWrapper}>
-              <div className={styles.infoCard}>
+            <StaggerContainer className={styles.infoWrapper}>
+              <StaggerItem direction="up" className={styles.infoCard}>
                 <div className={styles.iconBox}>
                   <FaEnvelope size={24} />
                 </div>
@@ -73,9 +75,9 @@ export default function ContactPage() {
                   <p className={styles.infoText}>info@iqcacademy.com</p>
                   <p className={styles.infoText}>support@iqcacademy.com</p>
                 </div>
-              </div>
+              </StaggerItem>
               
-              <div className={styles.infoCard}>
+              <StaggerItem direction="up" className={styles.infoCard}>
                 <div className={styles.iconBox}>
                   <FaPhoneAlt size={24} />
                 </div>
@@ -84,9 +86,9 @@ export default function ContactPage() {
                   <p className={styles.infoText}>+880 1234 567890</p>
                   <p className={styles.infoText}>শনি-বৃহস্পতি, সকাল ৯টা - সন্ধ্যা ৬টা</p>
                 </div>
-              </div>
+              </StaggerItem>
 
-              <div className={styles.infoCard}>
+              <StaggerItem direction="up" className={styles.infoCard}>
                 <div className={styles.iconBox}>
                   <FaMapMarkerAlt size={24} />
                 </div>
@@ -94,8 +96,8 @@ export default function ContactPage() {
                   <h3 className={styles.infoTitle}>পরিদর্শন করুন</h3>
                   <p className={styles.infoText}>IQC Academy HQ<br/>Dhanmondi, Dhaka 1205<br/>Bangladesh</p>
                 </div>
-              </div>
-            </div>
+              </StaggerItem>
+            </StaggerContainer>
 
           </div>
         </div>
@@ -104,7 +106,7 @@ export default function ContactPage() {
       {/* Map Section */}
       <section className={styles.mapSection}>
         <div className={styles.container}>
-          <div className={styles.mapContainer}>
+          <FadeIn direction="up" className={styles.mapContainer}>
             <iframe 
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14608.0369448503!2d90.3671072!3d23.74705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b33cffc3fb%3A0x4a826f475fd312af!2sDhanmondi%2C%20Dhaka%201205!5e0!3m2!1sen!2sbd!4v1717600000000!5m2!1sen!2sbd" 
               width="100%" 
@@ -114,7 +116,7 @@ export default function ContactPage() {
               loading="lazy" 
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
-          </div>
+          </FadeIn>
         </div>
       </section>
     </div>
