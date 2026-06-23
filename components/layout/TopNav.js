@@ -12,7 +12,6 @@ export default function TopNav() {
     { name: 'Courses', href: '/courses' },
     { name: 'About Us', href: '/about' },
     { name: 'Contact us', href: '/contact' },
-    { name: 'Pricing', href: '/pricing' },
   ];
 
   return (
