@@ -1,47 +1,52 @@
+'use client';
 import Link from 'next/link';
 import styles from './Footer.module.css';
 
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-      <div className={styles.container}>
-        <div className={styles.grid}>
-          <div className={styles.brandSection}>
-            <div className={styles.logoArea}>
-              <div className={styles.logoIcon}>📖</div>
-              <span className={styles.logoText}>IQC Academy</span>
-            </div>
-            <p className={styles.description}>
-              ইসলাম শেখার একটি আনন্দময় ও অনুপ্রেরণাদায়ক প্ল্যাটফর্ম। মানুষকে আনন্দের সাথে দ্বীন শেখানো ও দ্বীন শেখার প্রতি অনুপ্রাণিত করাই আমাদের লক্ষ্য।
-            </p>
-          </div>
-
-          <div className={styles.linkSection}>
-            <h3 className={styles.title}>গুরুত্বপূর্ণ লিংক</h3>
-            <ul className={styles.linkList}>
-              <li><Link href="/courses">কোর্সসমূহ</Link></li>
-              <li><Link href="/madrasa">অনলাইন মাদ্রাসা</Link></li>
-              <li><Link href="/projects">আমাদের প্রজেক্ট</Link></li>
-              <li><Link href="/donate">ডোনেট করুন</Link></li>
-            </ul>
-          </div>
-
-          <div className={styles.linkSection}>
-            <h3 className={styles.title}>যোগাযোগ</h3>
-            <ul className={styles.contactList}>
-              <li>ইমেইল: info@iqcacademy.com</li>
-              <li>মোবাইল: +880 1234 567890</li>
-              <li>ঠিকানা: ঢাকা, বাংলাদেশ</li>
-            </ul>
-            <div className={styles.socials}>
-              <a href="#" aria-label="Facebook">FB</a>
-              <a href="#" aria-label="YouTube">YT</a>
-            </div>
-          </div>
+      {/* Left Panel */}
+      <div className={styles.leftPanel}>
+        <div className={styles.topSection}>
+          <p className={styles.subscribeText}>
+            Sign up to receive our updates, or to stay up to date<br />
+            on information about our courses.
+          </p>
+          <form className={styles.subscribeForm} onSubmit={(e) => e.preventDefault()}>
+            <input type="text" placeholder="First name" className={styles.input} />
+            <input type="text" placeholder="Last name" className={styles.input} />
+            <input type="email" placeholder="Email" className={styles.input} />
+            <button type="submit" className={styles.submitBtn}>Submit</button>
+          </form>
         </div>
 
-        <div className={styles.bottom}>
-          <p>&copy; {new Date().getFullYear()} IQC Academy. All rights reserved.</p>
+        <div className={styles.brandHuge}>
+          <span>IQC</span>
+          <span>Academy</span>
+        </div>
+      </div>
+
+      {/* Right Panel */}
+      <div className={styles.rightPanel}>
+        <Link href="/" className={styles.navLink}>
+          Home
+        </Link>
+        <Link href="/courses" className={styles.navLink}>
+          Courses
+        </Link>
+        <Link href="/projects" className={styles.navLink}>
+          Projects
+        </Link>
+        <Link href="/madrasa" className={styles.navLink}>
+          Madrasa
+        </Link>
+        <Link href="/donate" className={styles.navLink}>
+          Donate
+        </Link>
+        
+        <div className={styles.bottomRow}>
+          <button className={styles.langBtn}>EN</button>
+          <button className={styles.langBtn}>বাংলা</button>
         </div>
       </div>
     </footer>
