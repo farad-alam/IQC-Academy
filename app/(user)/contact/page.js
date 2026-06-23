@@ -7,7 +7,7 @@ export default function ContactPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Form submission logic
-    alert("Message sent successfully! (Demo)");
+    alert("বার্তা সফলভাবে পাঠানো হয়েছে! (ডেমো)");
   };
 
   return (
@@ -17,9 +17,9 @@ export default function ContactPage() {
         <div className={styles.container}>
           <div className={styles.headerContent}>
             <div className={styles.textContent}>
-              <h1 className={styles.pageTitle}>Get in Touch</h1>
+              <h1 className={styles.pageTitle}>যোগাযোগ করুন</h1>
               <p className={styles.pageSubtitle}>
-                We'd love to hear from you. Whether you have a question about courses, admissions, or anything else, our team is ready to answer all your questions.
+                আমরা আপনার কথা শুনতে চাই। কোর্স, ভর্তি বা অন্য যে কোনও বিষয়ে আপনার যদি কোনও প্রশ্ন থাকে, আমাদের দল আপনার সমস্ত প্রশ্নের উত্তর দিতে প্রস্তুত।
               </p>
             </div>
             <div className={styles.headerIllustration}>
@@ -42,22 +42,22 @@ export default function ContactPage() {
             
             {/* Contact Form */}
             <div className={styles.formWrapper}>
-              <h2 className={styles.formTitle}>Send us a Message</h2>
+              <h2 className={styles.formTitle}>আমাদের বার্তা পাঠান</h2>
               <form onSubmit={handleSubmit} className={styles.contactForm}>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="name">Full Name</label>
-                  <input type="text" id="name" required placeholder="John Doe" />
+                  <label htmlFor="name">পুরো নাম</label>
+                  <input type="text" id="name" required placeholder="আপনার নাম" />
                 </div>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="email">Email Address</label>
-                  <input type="email" id="email" required placeholder="john@example.com" />
+                  <label htmlFor="email">ইমেইল ঠিকানা</label>
+                  <input type="email" id="email" required placeholder="আপনার ইমেইল" />
                 </div>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="message">Your Message</label>
-                  <textarea id="message" rows="6" required placeholder="How can we help you?"></textarea>
+                  <label htmlFor="message">আপনার বার্তা</label>
+                  <textarea id="message" rows="6" required placeholder="আমরা আপনাকে কীভাবে সাহায্য করতে পারি?"></textarea>
                 </div>
                 <button type="submit" className={styles.submitBtn}>
-                  Send Message
+                  বার্তা পাঠান
                 </button>
               </form>
             </div>
@@ -69,7 +69,7 @@ export default function ContactPage() {
                   <FaEnvelope size={24} />
                 </div>
                 <div>
-                  <h3 className={styles.infoTitle}>Email Us</h3>
+                  <h3 className={styles.infoTitle}>ইমেইল করুন</h3>
                   <p className={styles.infoText}>info@iqcacademy.com</p>
                   <p className={styles.infoText}>support@iqcacademy.com</p>
                 </div>
@@ -80,9 +80,9 @@ export default function ContactPage() {
                   <FaPhoneAlt size={24} />
                 </div>
                 <div>
-                  <h3 className={styles.infoTitle}>Call Us</h3>
+                  <h3 className={styles.infoTitle}>কল করুন</h3>
                   <p className={styles.infoText}>+880 1234 567890</p>
-                  <p className={styles.infoText}>Sat-Thu, 9am - 6pm (BST)</p>
+                  <p className={styles.infoText}>শনি-বৃহস্পতি, সকাল ৯টা - সন্ধ্যা ৬টা</p>
                 </div>
               </div>
 
@@ -91,7 +91,7 @@ export default function ContactPage() {
                   <FaMapMarkerAlt size={24} />
                 </div>
                 <div>
-                  <h3 className={styles.infoTitle}>Visit Us</h3>
+                  <h3 className={styles.infoTitle}>পরিদর্শন করুন</h3>
                   <p className={styles.infoText}>IQC Academy HQ<br/>Dhanmondi, Dhaka 1205<br/>Bangladesh</p>
                 </div>
               </div>
