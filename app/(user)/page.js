@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { BookOpen, GraduationCap, ArrowRight, Heart, PlayCircle, Bell, Clock, Users, Star, Lock, CheckCircle, Target, MapPin, Users2, Image as ImageIcon, MessageCircle, Phone, HelpCircle, ChevronDown, Send } from 'lucide-react';
+import { BookOpen, GraduationCap, ArrowRight, Heart, PlayCircle, Bell, Clock, Users, Star, Lock, CheckCircle, Target, MapPin, Users2, Image as ImageIcon, MessageCircle, Phone, HelpCircle, ChevronDown, Send, Quote } from 'lucide-react';
 import styles from './home.module.css';
-import { mockCourses, mockProjects, mockGallery, mockFaq } from '@/lib/mockData';
+import { mockCourses, mockProjects, mockGallery, mockFaq, mockTestimonials } from '@/lib/mockData';
 
 export default function HomePage() {
   return (
@@ -393,6 +393,40 @@ export default function HomePage() {
                   <span className={styles.galleryItemType}>{item.type === 'event' ? 'ইভেন্ট' : item.type === 'class' ? 'ক্লাস' : 'প্রকল্প'}</span>
                   <h4 className={styles.galleryItemTitle}>{item.title}</h4>
                   <p className={styles.galleryItemDate}>{item.date}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className={styles.testimonialsSection}>
+        <div className={styles.testimonialsInner}>
+          <div className={styles.testimonialsHeader}>
+            <span className={styles.testimonialsBadge}>✨ শিক্ষার্থী ও অভিভাবকদের মতামত</span>
+            <h2 className={styles.testimonialsTitle}>যাদের জীবন ইকিউ অ্যাকাডেমির মাধ্যমে আলোকিত</h2>
+            <p className={styles.testimonialsSubtitle}>আমাদের শিক্ষার্থীদের বাস্তব অভিজ্ঞতা ও সাফল্যের গল্প</p>
+          </div>
+
+          <div className={styles.testimonialsGrid}>
+            {mockTestimonials.map(testimonial => (
+              <div key={testimonial.id} className={styles.testimonialCard}>
+                <Quote className={styles.testimonialQuoteIcon} size={40} />
+                <div className={styles.testimonialStars}>
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} size={16} fill="#F59E0B" color="#F59E0B" />
+                  ))}
+                </div>
+                <p className={styles.testimonialContent}>"{testimonial.content}"</p>
+                <div className={styles.testimonialAuthor}>
+                  <div className={styles.testimonialAvatar} style={{ background: testimonial.avatarColor }}>
+                    {testimonial.initials}
+                  </div>
+                  <div>
+                    <h4 className={styles.testimonialName}>{testimonial.name}</h4>
+                    <span className={styles.testimonialRole}>{testimonial.role}</span>
+                  </div>
                 </div>
               </div>
             ))}
