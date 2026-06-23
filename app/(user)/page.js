@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { BookOpen, GraduationCap, ArrowRight, Heart, PlayCircle, Bell, Clock, Users, Star, Lock, CheckCircle, Target, MapPin, Users2, Image as ImageIcon } from 'lucide-react';
+import { BookOpen, GraduationCap, ArrowRight, Heart, PlayCircle, Bell, Clock, Users, Star, Lock, CheckCircle, Target, MapPin, Users2, Image as ImageIcon, MessageCircle, Phone, HelpCircle, ChevronDown, Send } from 'lucide-react';
 import styles from './home.module.css';
-import { mockCourses, mockProjects, mockGallery } from '@/lib/mockData';
+import { mockCourses, mockProjects, mockGallery, mockFaq } from '@/lib/mockData';
 
 export default function HomePage() {
   return (
@@ -396,6 +396,55 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className={styles.faqSection}>
+        <div className={styles.faqInner}>
+          <div className={styles.faqHeader}>
+            <span className={styles.faqBadge}><HelpCircle size={14} /> সাধারণ জিজ্ঞাসা</span>
+            <h2 className={styles.faqTitle}>আপনার প্রশ্ন, আমাদের উত্তর</h2>
+            <p className={styles.faqSubtitle}>ইকিউ অ্যাকাডেমি সম্পর্কে সচরাচর জিজ্ঞাসিত প্রশ্নসমূহ</p>
+          </div>
+
+          <div className={styles.faqList}>
+            {mockFaq.map(faq => (
+              <details key={faq.id} className={styles.faqItem}>
+                <summary className={styles.faqQuestion}>
+                  <span>{faq.question}</span>
+                  <ChevronDown className={styles.faqIcon} size={20} />
+                </summary>
+                <div className={styles.faqAnswer}>
+                  <p>{faq.answer}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA / Contact Section */}
+      <section className={styles.ctaSection}>
+        <div className={styles.ctaInner}>
+          <div className={styles.ctaContent}>
+            <h2 className={styles.ctaTitle}>দ্বীনি জ্ঞান অর্জনের পথে আপনার সঙ্গী</h2>
+            <p className={styles.ctaDesc}>
+              যেকোনো প্রশ্ন, পরামর্শ বা ভর্তির বিষয়ে জানতে সরাসরি আমাদের সাথে যোগাযোগ করুন। আমাদের সাপোর্ট টিম সবসময় আপনার সেবায় প্রস্তুত।
+            </p>
+            <div className={styles.ctaButtons}>
+              <a href="https://wa.me/8801700000000" target="_blank" rel="noopener noreferrer" className={styles.whatsappBtn}>
+                <MessageCircle size={20} /> হোয়াটসঅ্যাপে মেসেজ দিন
+              </a>
+              <a href="tel:+8801700000000" className={styles.callBtn}>
+                <Phone size={20} /> সরাসরি কল করুন
+              </a>
+            </div>
+          </div>
+          <div className={styles.ctaDecorative}>
+            <div className={styles.ctaCircle1}></div>
+            <div className={styles.ctaCircle2}></div>
           </div>
         </div>
       </section>
