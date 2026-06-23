@@ -327,7 +327,7 @@ export default function HomePage() {
             <div>
               <span className={styles.galleryBadge}>🖼️ গ্যালারি</span>
               <h2 className={styles.galleryTitle}>আমাদের কার্যক্রমের ছবি</h2>
-              <p className={styles.gallerySubtitle}>ইকিউ অ্যাকাডেমির বিভিন্ন কার্যক্রম, ইভেন্ট ও প্রকল্পের আলোকচিত্র দেখুন</p>
+              <p className={styles.gallerySubtitle}>আইকিউসি অ্যাকাডেমির বিভিন্ন কার্যক্রম, ইভেন্ট ও প্রকল্পের আলোকচিত্র দেখুন</p>
             </div>
             <Link href="/gallery" className={styles.seeAllBtn}>
               পূর্ণ গ্যালারি <ArrowRight size={16} />
@@ -405,7 +405,7 @@ export default function HomePage() {
         <div className={styles.testimonialsInner}>
           <div className={styles.testimonialsHeader}>
             <span className={styles.testimonialsBadge}>✨ শিক্ষার্থী ও অভিভাবকদের মতামত</span>
-            <h2 className={styles.testimonialsTitle}>যাদের জীবন ইকিউ অ্যাকাডেমির মাধ্যমে আলোকিত</h2>
+            <h2 className={styles.testimonialsTitle}>যাদের জীবন আইকিউসি অ্যাকাডেমির মাধ্যমে আলোকিত</h2>
             <p className={styles.testimonialsSubtitle}>আমাদের শিক্ষার্থীদের বাস্তব অভিজ্ঞতা ও সাফল্যের গল্প</p>
           </div>
 
@@ -440,7 +440,7 @@ export default function HomePage() {
           <div className={styles.faqHeader}>
             <span className={styles.faqBadge}><HelpCircle size={14} /> সাধারণ জিজ্ঞাসা</span>
             <h2 className={styles.faqTitle}>আপনার প্রশ্ন, আমাদের উত্তর</h2>
-            <p className={styles.faqSubtitle}>ইকিউ অ্যাকাডেমি সম্পর্কে সচরাচর জিজ্ঞাসিত প্রশ্নসমূহ</p>
+            <p className={styles.faqSubtitle}>আইকিউসি অ্যাকাডেমি সম্পর্কে সচরাচর জিজ্ঞাসিত প্রশ্নসমূহ</p>
           </div>
 
           <div className={styles.faqList}>
