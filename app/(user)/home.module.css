@@ -767,7 +767,7 @@
 
 /* ─── Free Courses Section ─── */
 .coursesSection {
-  background: #f8fffe;
+  background: var(--color-primary-50);
   padding: 5rem 2rem;
   display: flex;
   justify-content: center;
@@ -1213,10 +1213,36 @@
 
 /* ─── Projects Section ─── */
 .projectsSection {
-  background: #ffffff;
+  background: var(--color-primary-50);
   padding: 5rem 2rem;
   display: flex;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.projectsSection::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.projectsSection::after {
+  content: '';
+  position: absolute;
+  bottom: -150px;
+  right: -50px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: 50%;
 }
 
 .projectsInner {
@@ -1456,7 +1482,7 @@
 
 /* ─── Gallery Section ─── */
 .gallerySection {
-  background: #0a0a0a;
+  background: #ffffff;
   padding: 5rem 2rem;
   display: flex;
   justify-content: center;
@@ -1477,27 +1503,27 @@
 
 .galleryBadge {
   display: inline-block;
-  background: rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.8);
+  background: rgba(16, 185, 129, 0.1);
+  color: #064E3B;
   font-size: 0.8rem;
   font-weight: 700;
   padding: 0.3rem 0.9rem;
   border-radius: 999px;
   margin-bottom: 0.75rem;
-  border: 1px solid rgba(255,255,255,0.15);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   letter-spacing: 0.04em;
 }
 
 .galleryTitle {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #111827;
   margin-bottom: 0.5rem;
   line-height: 1.2;
 }
 
 .gallerySubtitle {
-  color: rgba(255,255,255,0.5);
+  color: #6B7280;
   font-size: 1rem;
 }
 
