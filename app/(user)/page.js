@@ -96,57 +96,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Premium Stats Section (Neon Glow Style) */}
-      <section className={styles.statsSection}>
-        <div className={styles.statsGrid}>
-          {/* Card 1: Students */}
-          <div className={`${styles.statCard} ${styles.statCardSmall}`}>
-            <div className={styles.glowEffect}></div>
-            <div className={styles.statIcon}>👥</div>
-            <h3 className={styles.statNumber}>১০০০+</h3>
-            <p className={styles.statLabel}>সন্তুষ্ট শিক্ষার্থী</p>
-            <p className={styles.statDesc}>দেশ ও বিদেশের অসংখ্য শিক্ষার্থী আমাদের সাথে দ্বীন শিখছেন।</p>
-          </div>
-
-          {/* Card 2: Courses */}
-          <div className={`${styles.statCard} ${styles.statCardSmall}`}>
-            <div className={styles.glowEffect}></div>
-            <div className={styles.statIcon}>📚</div>
-            <h3 className={styles.statNumber}>২০+</h3>
-            <p className={styles.statLabel}>ইসলামিক কোর্স</p>
-            <p className={styles.statDesc}>কুরআন, হাদিস ও ফিকহ সহ বিভিন্ন বিষয়ে সমৃদ্ধ কোর্স।</p>
-          </div>
-
-          {/* Card 3: Center Highlight (Mentors) */}
-          <div className={`${styles.statCard} ${styles.statCardTall}`}>
-            <div className={styles.glowEffectCenter}></div>
-            <div className={styles.statIconLarge}>🕌</div>
-            <h3 className={styles.statNumberLarge}>৫০+</h3>
-            <p className={styles.statLabel}>অভিজ্ঞ ওস্তাদ</p>
-            <p className={styles.statDescCenter}>স্বীকৃত ইসলামী স্কলার ও হাফেজদের নিবিড় তত্ত্বাবধান এবং সার্বক্ষণিক গাইডলাইন।</p>
-            <Link href="/about" className={styles.statBtn}>আমাদের সম্পর্কে জানুন</Link>
-          </div>
-
-          {/* Card 4: Years */}
-          <div className={`${styles.statCard} ${styles.statCardSmall}`}>
-            <div className={styles.glowEffect}></div>
-            <div className={styles.statIcon}>⭐</div>
-            <h3 className={styles.statNumber}>৫+</h3>
-            <p className={styles.statLabel}>বছর দ্বীনি খিদমতে</p>
-            <p className={styles.statDesc}>দীর্ঘদিন ধরে বিশ্বস্ততার সাথে দ্বীনি শিক্ষা প্রদান করে আসছি।</p>
-          </div>
-
-          {/* Card 5: Satisfaction */}
-          <div className={`${styles.statCard} ${styles.statCardSmall}`}>
-            <div className={styles.glowEffect}></div>
-            <div className={styles.statIcon}>🎯</div>
-            <h3 className={styles.statNumber}>৯৯%</h3>
-            <p className={styles.statLabel}>সফলতার হার</p>
-            <p className={styles.statDesc}>শিক্ষার্থীদের সর্বোচ্চ সন্তুষ্টি ও সাফল্য আমাদের মূল লক্ষ্য।</p>
-          </div>
-        </div>
-      </section>
-
       {/* Services Bento Grid */}
       <section className={styles.servicesSection}>
         <div className={styles.sectionHeader}>
@@ -396,6 +345,57 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Stats Section (Neon Glow Style) */}
+      <section className={styles.statsSection}>
+        <div className={styles.statsGrid}>
+          {/* Card 1: Students */}
+          <div className={`${styles.statCard} ${styles.statCardSmall}`}>
+            <div className={styles.glowEffect}></div>
+            <div className={styles.statIcon}>👥</div>
+            <h3 className={styles.statNumber}>১০০০+</h3>
+            <p className={styles.statLabel}>সন্তুষ্ট শিক্ষার্থী</p>
+            <p className={styles.statDesc}>দেশ ও বিদেশের অসংখ্য শিক্ষার্থী আমাদের সাথে দ্বীন শিখছেন।</p>
+          </div>
+
+          {/* Card 2: Courses */}
+          <div className={`${styles.statCard} ${styles.statCardSmall}`}>
+            <div className={styles.glowEffect}></div>
+            <div className={styles.statIcon}>📚</div>
+            <h3 className={styles.statNumber}>২০+</h3>
+            <p className={styles.statLabel}>ইসলামিক কোর্স</p>
+            <p className={styles.statDesc}>কুরআন, হাদিস ও ফিকহ সহ বিভিন্ন বিষয়ে সমৃদ্ধ কোর্স।</p>
+          </div>
+
+          {/* Card 3: Center Highlight (Mentors) */}
+          <div className={`${styles.statCard} ${styles.statCardTall}`}>
+            <div className={styles.glowEffectCenter}></div>
+            <div className={styles.statIconLarge}>🕌</div>
+            <h3 className={styles.statNumberLarge}>৫০+</h3>
+            <p className={styles.statLabel}>অভিজ্ঞ ওস্তাদ</p>
+            <p className={styles.statDescCenter}>স্বীকৃত ইসলামী স্কলার ও হাফেজদের নিবিড় তত্ত্বাবধান এবং সার্বক্ষণিক গাইডলাইন।</p>
+            <Link href="/about" className={styles.statBtn}>আমাদের সম্পর্কে জানুন</Link>
+          </div>
+
+          {/* Card 4: Years */}
+          <div className={`${styles.statCard} ${styles.statCardSmall}`}>
+            <div className={styles.glowEffect}></div>
+            <div className={styles.statIcon}>⭐</div>
+            <h3 className={styles.statNumber}>৫+</h3>
+            <p className={styles.statLabel}>বছর দ্বীনি খিদমতে</p>
+            <p className={styles.statDesc}>দীর্ঘদিন ধরে বিশ্বস্ততার সাথে দ্বীনি শিক্ষা প্রদান করে আসছি।</p>
+          </div>
+
+          {/* Card 5: Satisfaction */}
+          <div className={`${styles.statCard} ${styles.statCardSmall}`}>
+            <div className={styles.glowEffect}></div>
+            <div className={styles.statIcon}>🎯</div>
+            <h3 className={styles.statNumber}>৯৯%</h3>
+            <p className={styles.statLabel}>সফলতার হার</p>
+            <p className={styles.statDesc}>শিক্ষার্থীদের সর্বোচ্চ সন্তুষ্টি ও সাফল্য আমাদের মূল লক্ষ্য।</p>
           </div>
         </div>
       </section>
