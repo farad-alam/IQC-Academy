@@ -7,17 +7,17 @@ export default function Footer() {
     <footer className={styles.footer}>
       {/* Left Panel */}
       <div className={styles.leftPanel}>
-        <div className={styles.topSection}>
-          <p className={styles.subscribeText}>
-            Sign up to receive our updates, or to stay up to date<br />
-            on information about our courses.
-          </p>
-          <form className={styles.subscribeForm} onSubmit={(e) => e.preventDefault()}>
-            <input type="text" placeholder="First name" className={styles.input} />
-            <input type="text" placeholder="Last name" className={styles.input} />
-            <input type="email" placeholder="Email" className={styles.input} />
-            <button type="submit" className={styles.submitBtn}>Submit</button>
-          </form>
+        <div className={styles.contactSection}>
+          <h3 className={styles.contactTitle}>যোগাযোগ</h3>
+          <ul className={styles.contactList}>
+            <li>ইমেইল: info@iqcacademy.com</li>
+            <li>মোবাইল: +880 1234 567890</li>
+            <li>ঠিকানা: ঢাকা, বাংলাদেশ</li>
+          </ul>
+          <div className={styles.socials}>
+            <a href="#" aria-label="Facebook">FB</a>
+            <a href="#" aria-label="YouTube">YT</a>
+          </div>
         </div>
 
         <div className={styles.brandHuge}>
