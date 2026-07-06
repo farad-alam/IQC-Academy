@@ -1,7 +1,15 @@
-import { mockProjects } from '@/lib/mockData';
+import prisma from '@/lib/db';
 import Link from 'next/link';
 
-export default function ProjectsPage() {
+// Configure Next.js to dynamically render this page to get fresh data
+export const dynamic = 'force-dynamic';
+
+export default async function ProjectsPage() {
+  const projects = await prisma.project.findMany({
+    where: { status: 'ACTIVE' },
+    orderBy: { createdAt: 'desc' }
+  });
+
   return (
     <div className="container" style={{ padding: '2rem 1rem' }}>
       <header style={{ marginBottom: '2rem', textAlign: 'center' }}>
@@ -12,30 +20,38 @@ export default function ProjectsPage() {
       </header>
 
       <div className="grid-2 gap-6" style={{ maxWidth: '900px', margin: '0 auto' }}>
-        {mockProjects.map(project => (
-          <div key={project.id} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{project.icon}</div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>{project.title}</h2>
-            <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', flex: 1 }}>{project.description}</p>
-            
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>
-                <span style={{ color: 'var(--color-primary-dark)' }}>সংগ্রহ: ৳{project.raised.toLocaleString('bn-BD')}</span>
-                <span style={{ color: 'var(--color-text-muted)' }}>লক্ষ্য: ৳{project.target.toLocaleString('bn-BD')}</span>
-              </div>
-              <div className="progress-bar-track" style={{ marginBottom: '1rem' }}>
-                <div className="progress-bar-fill" style={{ width: `${project.progress}%` }} />
-              </div>
-              <div style={{ textAlign: 'right', fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '1rem', fontFamily: 'var(--font-latin)' }}>
-                {project.progress}% সম্পূর্ণ
-              </div>
+        {projects.length === 0 ? (
+          <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--color-text-muted)' }}>বর্তমানে কোনো সক্রিয় প্রজেক্ট নেই।</p>
+        ) : projects.map(project => {
+          const raised = Number(project.raisedAmount) || 0;
+          const target = Number(project.targetAmount) || 1; // Prevent division by zero
+          const progress = Math.min(100, Math.round((raised / target) * 100));
+
+          return (
+            <div key={project.id} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
+              {project.icon && <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{project.icon}</div>}
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>{project.title}</h2>
+              <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', flex: 1 }}>{project.description}</p>
               
-              <Link href="/donate" className="btn btn-primary w-full">
-                ডোনেট করুন
-              </Link>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--color-primary-dark)' }}>সংগ্রহ: ৳{raised.toLocaleString('bn-BD')}</span>
+                  <span style={{ color: 'var(--color-text-muted)' }}>লক্ষ্য: ৳{target.toLocaleString('bn-BD')}</span>
+                </div>
+                <div className="progress-bar-track" style={{ marginBottom: '1rem' }}>
+                  <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+                </div>
+                <div style={{ textAlign: 'right', fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '1rem', fontFamily: 'var(--font-latin)' }}>
+                  {progress}% সম্পূর্ণ
+                </div>
+                
+                <Link href={`/donate?project=${project.id}`} className="btn btn-primary w-full">
+                  ডোনেট করুন
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

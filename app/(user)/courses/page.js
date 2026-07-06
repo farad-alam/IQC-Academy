@@ -1,17 +1,43 @@
-'use client';
-import { useState } from 'react';
+import prisma from '@/lib/db';
+import Link from 'next/link';
 import CourseCard from '@/components/features/CourseCard';
-import { mockCourses } from '@/lib/mockData';
+import { getAuthUser } from '@/lib/middleware/withAuth';
 
-export default function CourseListPage() {
-  const [filter, setFilter] = useState('all');
+export const dynamic = 'force-dynamic';
 
-  const filteredCourses = mockCourses.filter(c => {
-    if (filter === 'all') return true;
-    if (filter === 'enrolled') return c.status === 'enrolled' || c.status === 'completed';
-    if (filter === 'paid') return c.type === 'paid';
-    return true;
+export default async function CourseListPage({ searchParams }) {
+  const filter = searchParams?.filter || 'all';
+  const user = await getAuthUser();
+
+  // Base query for PUBLISHED courses
+  const where = { status: 'PUBLISHED' };
+  if (filter === 'paid') {
+    where.type = 'PAID';
+  } else if (filter === 'free') {
+    where.type = 'FREE';
+  }
+
+  // Fetch courses with their instructors and module counts
+  const courses = await prisma.course.findMany({
+    where,
+    include: { 
+      instructor: true,
+      _count: { select: { modules: true } }
+    },
+    orderBy: { createdAt: 'desc' }
   });
+
+  // Fetch user enrollments if logged in
+  let enrollments = [];
+  if (user) {
+    enrollments = await prisma.enrollment.findMany({
+      where: { userId: user.id }
+    });
+  }
+
+  const displayCourses = filter === 'enrolled' 
+    ? courses.filter(c => enrollments.some(e => e.courseId === c.id))
+    : courses;
 
   return (
     <div className="container" style={{ padding: '2rem 1rem' }}>
@@ -22,33 +48,48 @@ export default function CourseListPage() {
         </p>
       </header>
 
-      {/* Filter Tabs */}
-      <div className="tabs" style={{ marginBottom: '2rem', maxWidth: '400px' }}>
-        <button 
-          className={`tab ${filter === 'all' ? 'active' : ''}`}
-          onClick={() => setFilter('all')}
-        >
+      <div className="tabs" style={{ marginBottom: '2rem', maxWidth: '500px' }}>
+        <Link href="/courses?filter=all" className={`tab ${filter === 'all' ? 'active' : ''}`}>
           সকল কোর্স
-        </button>
-        <button 
-          className={`tab ${filter === 'enrolled' ? 'active' : ''}`}
-          onClick={() => setFilter('enrolled')}
-        >
+        </Link>
+        <Link href="/courses?filter=enrolled" className={`tab ${filter === 'enrolled' ? 'active' : ''}`}>
           আমার কোর্স
-        </button>
-        <button 
-          className={`tab ${filter === 'paid' ? 'active' : ''}`}
-          onClick={() => setFilter('paid')}
-        >
+        </Link>
+        <Link href="/courses?filter=free" className={`tab ${filter === 'free' ? 'active' : ''}`}>
+          ফ্রি কোর্স
+        </Link>
+        <Link href="/courses?filter=paid" className={`tab ${filter === 'paid' ? 'active' : ''}`}>
           প্রিমিয়াম
-        </button>
+        </Link>
       </div>
 
-      {filteredCourses.length > 0 ? (
+      {displayCourses.length > 0 ? (
         <div className="grid grid-3 gap-6">
-          {filteredCourses.map((course) => (
-            <CourseCard key={course.id} course={course} />
-          ))}
+          {displayCourses.map((course) => {
+            const enrollment = enrollments.find(e => e.courseId === course.id);
+            let status = course.type === 'PAID' ? 'locked' : 'available';
+            if (enrollment) {
+              status = enrollment.status === 'COMPLETED' ? 'completed' : 'enrolled';
+            }
+            
+            const uiCourse = {
+              id: course.id,
+              title: course.title,
+              description: course.description,
+              level: course.level,
+              duration: course.duration,
+              type: course.type === 'PAID' ? 'paid' : 'free',
+              price: course.price ? course.price.toString() : 0,
+              cover: course.coverImageUrl,
+              instructor: course.instructor?.name || 'IQC Instructor',
+              status,
+              progress: enrollment ? enrollment.progress : 0,
+              completedModules: enrollment ? enrollment.completedModules : 0,
+              totalModules: course._count.modules
+            };
+
+            return <CourseCard key={course.id} course={uiCourse} />;
+          })}
         </div>
       ) : (
         <div className="empty-state">

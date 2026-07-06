@@ -1,11 +1,12 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, BookOpen, GraduationCap, Gift, Layers, Bell, LogOut } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { LayoutDashboard, Users, BookOpen, GraduationCap, Gift, Layers, Bell, LogOut, Target } from 'lucide-react';
 import styles from './AdminSidebar.module.css';
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const navItems = [
     { name: 'ড্যাশবোর্ড', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -13,9 +14,16 @@ export default function AdminSidebar() {
     { name: 'কন্টেন্ট', href: '/admin/content', icon: BookOpen },
     { name: 'কোর্সসমূহ', href: '/admin/courses', icon: GraduationCap },
     { name: 'ডোনেশন', href: '/admin/donations', icon: Gift },
-    { name: 'ব্যাচ', href: '/admin/batches', icon: Layers },
+    { name: 'প্রজেক্টস', href: '/admin/projects', icon: Target },
     { name: 'নোটিশ', href: '/admin/notices', icon: Bell },
   ];
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+    router.refresh();
+  };
 
   return (
     <aside className={styles.sidebar}>
@@ -46,10 +54,10 @@ export default function AdminSidebar() {
       </nav>
 
       <div className={styles.footer}>
-        <Link href="/admin/login" className={styles.logoutBtn}>
+        <button onClick={handleLogout} className={styles.logoutBtn} style={{ border: 'none', width: '100%', cursor: 'pointer', backgroundColor: 'transparent' }}>
           <LogOut size={20} />
           <span>লগআউট</span>
-        </Link>
+        </button>
       </div>
     </aside>
   );

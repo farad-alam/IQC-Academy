@@ -1,12 +1,31 @@
-'use client';
+import prisma from '@/lib/db';
 import Link from 'next/link';
 import { BookOpen, GraduationCap, ArrowRight, Heart, PlayCircle, Bell, Clock, Users, Star, Lock, CheckCircle, Target, MapPin, Users2, Image as ImageIcon, MessageCircle, Phone, HelpCircle, ChevronDown, Send, Quote } from 'lucide-react';
 import styles from './home.module.css';
-import { mockCourses, mockProjects, mockGallery, mockFaq, mockTestimonials } from '@/lib/mockData';
+import { mockFaq, mockTestimonials } from '@/lib/mockData';
 import FadeIn from '@/components/ui/FadeIn';
 import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer';
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic';
+
+export default async function HomePage() {
+  const [courses, projects, galleryItems] = await Promise.all([
+    prisma.course.findMany({
+      where: { status: 'PUBLISHED' },
+      include: { _count: { select: { modules: true } }, instructor: true },
+      orderBy: { createdAt: 'desc' },
+      take: 6
+    }),
+    prisma.project.findMany({
+      where: { status: 'ACTIVE' },
+      orderBy: { createdAt: 'desc' },
+      take: 4
+    }),
+    prisma.galleryItem.findMany({
+      orderBy: { date: 'desc' },
+      take: 6
+    })
+  ]);
   return (
     <div className={styles.home}>
       {/* Clean Hero Section (Inspired by Noorayn Academy) */}
@@ -194,7 +213,7 @@ export default function HomePage() {
           </FadeIn>
 
           <StaggerContainer className={styles.coursesGrid}>
-            {mockCourses.filter(c => c.type === 'free').map(course => (
+            {courses.filter(c => c.type === 'FREE').map(course => (
               <StaggerItem key={course.id} as={Link} href={`/courses/${course.id}`} className={styles.courseCard}>
                 <div className={styles.courseCardThumb}>
                   <div className={styles.courseCardThumbInner}>
@@ -203,27 +222,16 @@ export default function HomePage() {
                   <span className={`${styles.courseLevel} ${styles[`level_${course.level === 'বেসিক' ? 'basic' : course.level === 'মাঝারি' ? 'mid' : 'adv'}`]}`}>
                     {course.level}
                   </span>
-                  {course.status === 'completed' && (
-                    <span className={styles.completedBadge}><CheckCircle size={14} /> সম্পন্ন</span>
-                  )}
                 </div>
                 <div className={styles.courseCardBody}>
                   <h3 className={styles.courseCardTitle}>{course.title}</h3>
                   <p className={styles.courseCardDesc}>{course.description}</p>
                   <div className={styles.courseCardMeta}>
                     <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
-                    <span className={styles.metaItem}><BookOpen size={13} /> {course.totalModules} মডিউল</span>
+                    <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.modules || 0} মডিউল</span>
                   </div>
-                  {course.status === 'enrolled' && (
-                    <div className={styles.progressWrapper}>
-                      <div className={styles.progressBar}>
-                        <div className={styles.progressFill} style={{ width: `${course.progress}%` }} />
-                      </div>
-                      <span className={styles.progressText}>{course.progress}% সম্পন্ন</span>
-                    </div>
-                  )}
                   <div className={styles.courseCardFooter}>
-                    <span className={styles.instructorName}>👤 {course.instructor}</span>
+                    <span className={styles.instructorName}>👤 {course.instructor?.name || 'IQC Academy'}</span>
                     <span className={styles.freeBadge}>বিনামূল্যে</span>
                   </div>
                 </div>
@@ -248,7 +256,7 @@ export default function HomePage() {
           </FadeIn>
 
           <StaggerContainer className={styles.premiumGrid}>
-            {mockCourses.filter(c => c.type === 'paid').map(course => (
+            {courses.filter(c => c.type === 'PAID').map(course => (
               <StaggerItem key={course.id} as={Link} href={`/courses/${course.id}`} className={styles.premiumCard}>
                 <div className={styles.premiumCardGlow}></div>
                 <div className={styles.premiumCardThumb}>
@@ -263,11 +271,11 @@ export default function HomePage() {
                   <p className={styles.premiumCardDesc}>{course.description}</p>
                   <div className={styles.premiumCardMeta}>
                     <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
-                    <span className={styles.metaItem}><BookOpen size={13} /> {course.totalModules} মডিউল</span>
+                    <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.modules || 0} মডিউল</span>
                   </div>
                   <div className={styles.premiumCardFooter}>
-                    <span className={styles.premiumInstructor}>👤 {course.instructor}</span>
-                    <span className={styles.premiumPrice}>৳ {course.price}</span>
+                    <span className={styles.premiumInstructor}>👤 {course.instructor?.name || 'IQC Academy'}</span>
+                    <span className={styles.premiumPrice}>৳ {course.price?.toString()}</span>
                   </div>
                   <div className={styles.enrollNowBtn}>
                     এখনই ভর্তি হন <ArrowRight size={14} />
@@ -294,42 +302,49 @@ export default function HomePage() {
           </FadeIn>
 
           <StaggerContainer className={styles.projectsGrid}>
-            {mockProjects.map(project => (
+            {projects.map(project => {
+              const raised = Number(project.raisedAmount) || 0;
+              const target = Number(project.targetAmount) || 1;
+              const progress = Math.min(100, Math.round((raised / target) * 100));
+              
+              return (
               <StaggerItem key={project.id} direction="up" className={styles.projectCard}>
                 <div className={styles.projectCardImg}>
-                  <img src={project.image} alt={project.title} className={styles.projectImg} />
+                  {project.icon ? (
+                    <div style={{ fontSize: '4rem', padding: '2rem', textAlign: 'center', backgroundColor: 'var(--color-surface-alt)' }}>{project.icon}</div>
+                  ) : (
+                    <div style={{ height: '200px', backgroundColor: 'var(--color-surface-alt)' }}></div>
+                  )}
                   <div className={styles.projectImgOverlay}>
-                    <span className={`${styles.projectStatus} ${project.progress >= 90 ? styles.statusAlmost : styles.statusActive}`}>
-                      {project.status}
+                    <span className={`${styles.projectStatus} ${progress >= 90 ? styles.statusAlmost : styles.statusActive}`}>
+                      {progress >= 100 ? 'সম্পন্ন' : 'চলমান'}
                     </span>
                   </div>
                 </div>
                 <div className={styles.projectCardBody}>
                   <div className={styles.projectMeta}>
-                    <span className={styles.projectCategory}>{project.icon} {project.category}</span>
-                    <span className={styles.projectLocation}><MapPin size={12} /> {project.location}</span>
+                    <span className={styles.projectCategory}>{project.icon} {project.title}</span>
                   </div>
                   <h3 className={styles.projectCardTitle}>{project.title}</h3>
                   <p className={styles.projectCardDesc}>{project.description}</p>
                   <div className={styles.projectProgress}>
                     <div className={styles.projectProgressTop}>
-                      <span className={styles.projectRaised}>৳{project.raised.toLocaleString('bn-BD')}</span>
-                      <span className={styles.projectTarget}>লক্ষ্য: ৳{project.target.toLocaleString('bn-BD')}</span>
+                      <span className={styles.projectRaised}>৳{raised.toLocaleString('bn-BD')}</span>
+                      <span className={styles.projectTarget}>লক্ষ্য: ৳{target.toLocaleString('bn-BD')}</span>
                     </div>
                     <div className={styles.projectProgressBar}>
-                      <div className={styles.projectProgressFill} style={{ width: `${project.progress}%` }} />
+                      <div className={styles.projectProgressFill} style={{ width: `${progress}%` }} />
                     </div>
                     <div className={styles.projectProgressBottom}>
-                      <span className={styles.projectDonors}><Users2 size={13} /> {project.donors} জন দানকারী</span>
-                      <span className={styles.projectPercent}>{project.progress}% সম্পন্ন</span>
+                      <span className={styles.projectPercent}>{progress}% সম্পন্ন</span>
                     </div>
                   </div>
-                  <Link href="/donate" className={styles.donateBtn}>
+                  <Link href={`/donate?project=${project.id}`} className={styles.donateBtn}>
                     <Heart size={15} /> এখনই দান করুন
                   </Link>
                 </div>
               </StaggerItem>
-            ))}
+            )})}
           </StaggerContainer>
         </div>
       </section>
@@ -349,13 +364,21 @@ export default function HomePage() {
           </FadeIn>
 
           <StaggerContainer className={styles.galleryGrid}>
-            {mockGallery.map((item, index) => (
+            {galleryItems.map((item, index) => (
               <StaggerItem key={item.id} direction="up" className={`${styles.galleryItem} ${index === 0 ? styles.galleryItemLarge : ''}`}>
-                <img src={item.image} alt={item.title} className={styles.galleryImg} />
+                {item.imageUrl ? (
+                  <img src={item.imageUrl} alt={item.title} className={styles.galleryImg} />
+                ) : (
+                  <div className={styles.galleryImg} style={{ backgroundColor: 'var(--color-surface-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', opacity: 0.2 }}>📷</div>
+                )}
                 <div className={styles.galleryOverlay}>
-                  <span className={styles.galleryItemType}>{item.type === 'event' ? 'ইভেন্ট' : item.type === 'class' ? 'ক্লাস' : 'প্রকল্প'}</span>
+                  <span className={styles.galleryItemType}>
+                    {item.type === 'event' ? 'ইভেন্ট' : item.type === 'class' ? 'ক্লাস' : 'প্রজেক্ট'}
+                  </span>
                   <h4 className={styles.galleryItemTitle}>{item.title}</h4>
-                  <p className={styles.galleryItemDate}>{item.date}</p>
+                  <p className={styles.galleryItemDate}>
+                    {new Date(item.date).toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </p>
                 </div>
               </StaggerItem>
             ))}

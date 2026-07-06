@@ -1,12 +1,42 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Settings, LogOut, Award, BookOpen, User as UserIcon, Calendar, Edit3 } from 'lucide-react';
-import { mockUser, mockAchievements } from '@/lib/mockData';
+import { mockAchievements } from '@/lib/mockData';
 import styles from './profile.module.css';
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch('/api/users/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setUser(data.profile);
+        } else {
+          router.push('/login');
+        }
+      })
+      .catch(() => router.push('/login'))
+      .finally(() => setLoading(false));
+  }, [router]);
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/');
+    router.refresh();
+  };
+
+  if (loading) {
+    return <div className="container" style={{ padding: '4rem 1rem', textAlign: 'center' }}>লোড হচ্ছে...</div>;
+  }
+
+  if (!user) return null;
 
   return (
     <div className="container" style={{ padding: '2rem 1rem', maxWidth: '800px' }}>
@@ -17,11 +47,11 @@ export default function ProfilePage() {
         
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', gap: '2rem', alignItems: 'center' }}>
           <div className={styles.avatarContainer}>
-            {mockUser.avatar ? (
-              <img src={mockUser.avatar} alt={mockUser.name} className={styles.avatar} />
+            {user.avatarUrl ? (
+              <img src={user.avatarUrl} alt={user.name} className={styles.avatar} />
             ) : (
               <div className={styles.avatarPlaceholder}>
-                {mockUser.name.charAt(0)}
+                {user.name?.charAt(0) || 'U'}
               </div>
             )}
             <button className={styles.editAvatarBtn} aria-label="Edit Avatar">
@@ -31,14 +61,14 @@ export default function ProfilePage() {
           
           <div style={{ flex: 1 }}>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.25rem', color: 'var(--color-primary-dark)' }}>
-              {mockUser.name}
+              {user.name}
             </h1>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <UserIcon size={16} /> {mockUser.id}
+              <UserIcon size={16} /> {user.id}
             </p>
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <span className="badge badge-primary">পয়েন্ট: {mockUser.totalPoints}</span>
-              <span className="badge badge-accent">স্ট্রিক: {mockUser.currentStreak} দিন</span>
+              <span className="badge badge-primary">পয়েন্ট: {user.totalPoints || 0}</span>
+              <span className="badge badge-accent">স্ট্রিক: {user.currentStreak || 0} দিন</span>
             </div>
           </div>
 
@@ -46,7 +76,7 @@ export default function ProfilePage() {
             <Link href="/profile/edit" className="btn btn-outline btn-sm">
               <Settings size={16} /> সেটিংস
             </Link>
-            <button className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)' }}>
+            <button onClick={handleLogout} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)' }}>
               <LogOut size={16} /> লগআউট
             </button>
           </div>
@@ -83,9 +113,9 @@ export default function ProfilePage() {
           <div className="grid-2 gap-6">
             <div className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>সামগ্রিক অগ্রগতি</h3>
-              <div className={styles.progressCircle} style={{ '--progress': `${mockUser.overallProgress}%` }}>
+              <div className={styles.progressCircle} style={{ '--progress': '0%' }}>
                 <div className={styles.progressInner}>
-                  <span className={styles.progressValue}>{mockUser.overallProgress}%</span>
+                  <span className={styles.progressValue}>0%</span>
                 </div>
               </div>
             </div>
@@ -101,7 +131,7 @@ export default function ProfilePage() {
                     <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>সর্বমোট</p>
                   </div>
                 </div>
-                <span style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'var(--font-latin)' }}>{mockUser.coursesCompleted}</span>
+                <span style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'var(--font-latin)' }}>{user.coursesCompleted || 0}</span>
               </div>
               
               <div className="divider" style={{ margin: 0 }} />
@@ -116,7 +146,7 @@ export default function ProfilePage() {
                     <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>অধ্যয়নরত</p>
                   </div>
                 </div>
-                <span style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'var(--font-latin)' }}>{mockUser.coursesEnrolled}</span>
+                <span style={{ fontSize: '1.5rem', fontWeight: 700, fontFamily: 'var(--font-latin)' }}>{user.coursesEnrolled || 0}</span>
               </div>
             </div>
           </div>
@@ -172,23 +202,25 @@ export default function ProfilePage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div className={styles.infoRow}>
               <div className={styles.infoLabel}>মোবাইল নম্বর</div>
-              <div className={styles.infoValue}>{mockUser.mobile}</div>
+              <div className={styles.infoValue}>{user.mobile || 'যুক্ত করা হয়নি'}</div>
             </div>
             <div className={styles.infoRow}>
               <div className={styles.infoLabel}>ইমেইল</div>
-              <div className={styles.infoValue}>{mockUser.email}</div>
+              <div className={styles.infoValue}>{user.email}</div>
             </div>
             <div className={styles.infoRow}>
               <div className={styles.infoLabel}>শিক্ষা প্রতিষ্ঠান</div>
-              <div className={styles.infoValue}>{mockUser.institution}</div>
+              <div className={styles.infoValue}>{user.institution || 'যুক্ত করা হয়নি'}</div>
             </div>
             <div className={styles.infoRow}>
               <div className={styles.infoLabel}>ঠিকানা</div>
-              <div className={styles.infoValue}>{mockUser.upazila}, {mockUser.district}, {mockUser.division}</div>
+              <div className={styles.infoValue}>
+                {[user.upazila, user.district, user.division].filter(Boolean).join(', ') || 'যুক্ত করা হয়নি'}
+              </div>
             </div>
             <div className={styles.infoRow}>
               <div className={styles.infoLabel}>যোগদানের তারিখ</div>
-              <div className={styles.infoValue}>{mockUser.joinedDate}</div>
+              <div className={styles.infoValue}>{user.joinedDate}</div>
             </div>
           </div>
         </div>

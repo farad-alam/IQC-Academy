@@ -1,6 +1,18 @@
+import prisma from '@/lib/db';
 import { Users, Search, Filter, MoreVertical } from 'lucide-react';
 
-export default function AdminUsersPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function AdminUsersPage() {
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      _count: {
+        select: { enrollments: true }
+      }
+    }
+  });
+
   return (
     <div>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -39,13 +51,7 @@ export default function AdminUsersPage() {
               </tr>
             </thead>
             <tbody>
-              {[
-                { id: '1', name: 'আব্দুল্লাহ', mobile: '01712345678', email: 'abdullah@example.com', date: '১০ জুন, ২০২৬', courses: 2, status: 'Active' },
-                { id: '2', name: 'উমর', mobile: '01912345678', email: 'umar@example.com', date: '০৯ জুন, ২০২৬', courses: 1, status: 'Active' },
-                { id: '3', name: 'ফাতিমা', mobile: '01512345678', email: 'fatima@example.com', date: '০৯ জুন, ২০২৬', courses: 0, status: 'Pending' },
-                { id: '4', name: 'আলী', mobile: '01812345678', email: 'ali@example.com', date: '০৮ জুন, ২০২৬', courses: 4, status: 'Active' },
-                { id: '5', name: 'খাদিজা', mobile: '01612345678', email: 'khadija@example.com', date: '০৭ জুন, ২০২৬', courses: 1, status: 'Suspended' }
-              ].map((user) => (
+              {users.map((user) => (
                 <tr key={user.id} style={{ borderBottom: '1px solid var(--color-earth-1)' }}>
                   <td style={{ padding: '1rem 0', fontWeight: 500 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -54,7 +60,7 @@ export default function AdminUsersPage() {
                       </div>
                       <div>
                         <div>{user.name}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>ID: #{user.id.padStart(4, '0')}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>ID: #{user.id.substring(user.id.length - 4)}</div>
                       </div>
                     </div>
                   </td>
@@ -62,14 +68,16 @@ export default function AdminUsersPage() {
                     <div style={{ fontSize: '0.875rem', fontFamily: 'var(--font-latin)' }}>{user.mobile}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{user.email}</div>
                   </td>
-                  <td style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontFamily: 'var(--font-latin)', fontSize: '0.875rem' }}>{user.date}</td>
-                  <td style={{ padding: '1rem 0', fontFamily: 'var(--font-latin)' }}>{user.courses}</td>
+                  <td style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontFamily: 'var(--font-latin)', fontSize: '0.875rem' }}>
+                    {new Date(user.createdAt).toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  </td>
+                  <td style={{ padding: '1rem 0', fontFamily: 'var(--font-latin)' }}>{user._count?.enrollments || 0}</td>
                   <td style={{ padding: '1rem 0' }}>
                     <span className={`badge ${
-                      user.status === 'Active' ? 'badge-success' : 
-                      user.status === 'Pending' ? 'badge-warning' : 'badge-earth'
+                      user.status === 'ACTIVE' ? 'badge-success' : 
+                      user.status === 'PENDING' ? 'badge-warning' : 'badge-earth'
                     }`}>
-                      {user.status}
+                      {user.status === 'ACTIVE' ? 'Active' : user.status === 'PENDING' ? 'Pending' : 'Banned'}
                     </span>
                   </td>
                   <td style={{ padding: '1rem 0', textAlign: 'right' }}>
@@ -79,16 +87,22 @@ export default function AdminUsersPage() {
                   </td>
                 </tr>
               ))}
+              {users.length === 0 && (
+                <tr>
+                  <td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+                    কোনো ব্যবহারকারী পাওয়া যায়নি।
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
         
-        {/* Pagination placeholder */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-          <span>সর্বমোট ১,২৫০ জন ব্যবহারকারী</span>
+          <span>সর্বমোট {users.length.toLocaleString('bn-BD')} জন ব্যবহারকারী</span>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button className="btn btn-outline btn-sm" disabled>পূর্ববর্তী</button>
-            <button className="btn btn-outline btn-sm">পরবর্তী</button>
+            <button className="btn btn-outline btn-sm" disabled>পরবর্তী</button>
           </div>
         </div>
       </div>
