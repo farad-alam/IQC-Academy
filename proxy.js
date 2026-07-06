@@ -5,7 +5,7 @@ import { verifyAccessToken } from './lib/auth'; // Note: jose works in edge runt
 const protectedRoutes = ['/profile', '/courses', '/quizzes', '/donate'];
 const adminRoutes = ['/admin'];
 
-export async function middleware(request) {
+export default async function proxy(request) {
   const { pathname } = request.nextUrl;
   
   // 1. Security Headers
