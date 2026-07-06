@@ -9,7 +9,8 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { id: targetUserId } = params;
+    const resolvedParams = await params;
+    const { id: targetUserId } = resolvedParams;
     const body = await req.json();
     const { action } = body; // 'APPROVE' or 'BAN'
 

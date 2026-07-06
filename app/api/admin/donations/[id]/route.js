@@ -9,7 +9,8 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { id: donationId } = params;
+    const resolvedParams = await params;
+    const { id: donationId } = resolvedParams;
     const body = await req.json();
     const { action, courseIdToUnlock, rejectionReason } = body; // action: 'VERIFY' or 'REJECT'
 
