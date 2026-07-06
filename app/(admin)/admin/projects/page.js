@@ -1,6 +1,6 @@
 import prisma from '@/lib/db';
-import { Target, Search, Filter, MoreVertical, Edit, Plus, Trash2 } from 'lucide-react';
-import Link from 'next/link';
+import { Edit, Trash2 } from 'lucide-react';
+import CreateProjectModal from '@/components/admin/CreateProjectModal';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,24 +16,10 @@ export default async function AdminProjectsPage() {
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.25rem' }}>প্রজেক্ট ব্যবস্থাপনা</h1>
           <p style={{ color: 'var(--color-text-muted)' }}>সকল সদকাহ ও চ্যারিটি প্রজেক্ট</p>
         </div>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button className="btn btn-primary btn-sm"><Plus size={16} /> নতুন প্রজেক্ট</button>
-        </div>
+        <CreateProjectModal />
       </header>
 
       <div className="card" style={{ padding: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div style={{ display: 'flex', gap: '0.5rem', flex: 1, maxWidth: '400px' }}>
-            <div style={{ position: 'relative', flex: 1 }}>
-              <input type="text" className="form-input" placeholder="প্রজেক্ট খুঁজুন..." style={{ paddingLeft: '2.5rem' }} />
-              <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-light)' }} />
-            </div>
-            <button className="btn btn-outline" style={{ padding: '0 1rem' }}>
-              <Filter size={18} />
-            </button>
-          </div>
-        </div>
-
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
             <thead>
@@ -51,12 +37,11 @@ export default async function AdminProjectsPage() {
                 const target = Number(project.targetAmount) || 1;
                 const raised = Number(project.raisedAmount) || 0;
                 const progress = Math.min(100, Math.round((raised / target) * 100));
-
                 return (
                   <tr key={project.id} style={{ borderBottom: '1px solid var(--color-earth-1)' }}>
                     <td style={{ padding: '1rem 0', fontWeight: 500 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div style={{ width: '40px', height: '40px', backgroundColor: 'var(--color-surface-alt)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+                        <div style={{ width: '40px', height: '40px', backgroundColor: 'var(--color-surface-alt)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
                           {project.icon || '🎯'}
                         </div>
                         <div>
@@ -65,25 +50,18 @@ export default async function AdminProjectsPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '1rem 0', fontFamily: 'var(--font-latin)', fontWeight: 600 }}>
-                      {target.toLocaleString('bn-BD')}
-                    </td>
-                    <td style={{ padding: '1rem 0', fontFamily: 'var(--font-latin)', fontWeight: 600, color: 'var(--color-primary)' }}>
-                      {raised.toLocaleString('bn-BD')}
-                    </td>
+                    <td style={{ padding: '1rem 0', fontWeight: 600 }}>৳{target.toLocaleString('bn-BD')}</td>
+                    <td style={{ padding: '1rem 0', fontWeight: 600, color: 'var(--color-primary)' }}>৳{raised.toLocaleString('bn-BD')}</td>
                     <td style={{ padding: '1rem 0' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <div style={{ flex: 1, height: '6px', backgroundColor: 'var(--color-earth-2)', borderRadius: '3px', overflow: 'hidden', minWidth: '80px' }}>
-                          <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--color-primary)' }}></div>
+                          <div style={{ height: '100%', width: `${progress}%`, backgroundColor: 'var(--color-primary)' }} />
                         </div>
-                        <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-latin)' }}>{progress}%</span>
+                        <span style={{ fontSize: '0.75rem' }}>{progress}%</span>
                       </div>
                     </td>
                     <td style={{ padding: '1rem 0' }}>
-                      <span className={`badge ${
-                        project.status === 'ACTIVE' ? 'badge-success' : 
-                        project.status === 'COMPLETED' ? 'badge-primary' : 'badge-earth'
-                      }`}>
+                      <span className={`badge ${project.status === 'ACTIVE' ? 'badge-success' : project.status === 'COMPLETED' ? 'badge-primary' : 'badge-earth'}`}>
                         {project.status}
                       </span>
                     </td>
@@ -92,20 +70,13 @@ export default async function AdminProjectsPage() {
                         <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }} title="এডিট করুন">
                           <Edit size={16} />
                         </button>
-                        <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', color: 'var(--color-error)' }} title="মুছে ফেলুন">
-                          <Trash2 size={16} />
-                        </button>
                       </div>
                     </td>
                   </tr>
                 );
               })}
               {projects.length === 0 && (
-                <tr>
-                  <td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-                    কোনো প্রজেক্ট পাওয়া যায়নি।
-                  </td>
-                </tr>
+                <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>কোনো প্রজেক্ট পাওয়া যায়নি।</td></tr>
               )}
             </tbody>
           </table>

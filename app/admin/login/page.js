@@ -1,16 +1,51 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Lock } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Lock, AlertCircle } from 'lucide-react';
 
 export default function AdminLoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1000));
-    window.location.href = '/admin/dashboard';
+    setError('');
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'লগইন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+        return;
+      }
+
+      // Block non-admin users
+      if (data.user?.role !== 'ADMIN') {
+        setError('আপনার অ্যাডমিন অ্যাক্সেস নেই।');
+        // Immediately log them out since login set a cookie
+        await fetch('/api/auth/logout', { method: 'POST' });
+        return;
+      }
+
+      // Success — redirect to admin dashboard
+      router.push('/admin/dashboard');
+      router.refresh();
+    } catch (err) {
+      setError('নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -19,18 +54,46 @@ export default function AdminLoginPage() {
         <div style={{ width: '64px', height: '64px', backgroundColor: 'var(--color-primary)', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
           <Lock size={32} />
         </div>
-        
+
         <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-latin)' }}>IQC Academy</h1>
         <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>এডমিন প্যানেলে লগইন করুন</p>
+
+        {error && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+            backgroundColor: 'var(--color-error-bg)', color: 'var(--color-error)',
+            padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1.5rem',
+            fontSize: '0.875rem', textAlign: 'left'
+          }}>
+            <AlertCircle size={16} style={{ flexShrink: 0 }} />
+            <span>{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'left' }}>
           <div className="form-group">
             <label className="form-label">ইমেইল</label>
-            <input type="email" className="form-input" placeholder="admin@iqcacademy.com" required defaultValue="admin@iqcacademy.com" />
+            <input
+              type="email"
+              className="form-input"
+              placeholder="admin@iqcacademy.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+            />
           </div>
           <div className="form-group">
-            <label className="form-label">পাসওয়ার্ড</label>
-            <input type="password" className="form-input" placeholder="••••••••" required defaultValue="password123" />
+            <label className="form-label">পাসওয়ার্ড</label>
+            <input
+              type="password"
+              className="form-input"
+              placeholder="••••••••"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+            />
           </div>
 
           <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }} disabled={loading}>
@@ -47,3 +110,4 @@ export default function AdminLoginPage() {
     </div>
   );
 }
+

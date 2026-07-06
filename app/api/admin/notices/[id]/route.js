@@ -9,14 +9,12 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { id: noticeId } = params;
+    const resolvedParams = await params;
+    const { id: noticeId } = resolvedParams;
 
-    await prisma.notice.delete({
-      where: { id: noticeId }
-    });
+    await prisma.notice.delete({ where: { id: noticeId } });
 
-    return NextResponse.json({ success: true, message: 'Notice deleted successfully' });
-
+    return NextResponse.json({ success: true, message: 'Notice deleted' });
   } catch (error) {
     console.error('[ADMIN_DELETE_NOTICE_ERROR]', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
