@@ -1,0 +1,276 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String     @id @default(cuid())
+  name            String
+  email           String     @unique
+  mobile          String     @unique
+  whatsapp        String?
+  facebook        String?
+  passwordHash    String
+  role            Role       @default(STUDENT)
+  status          UserStatus @default(PENDING)
+  avatarUrl       String?
+  institution     String?
+  division        String?
+  district        String?
+  upazila         String?
+  dob             DateTime?
+  sscYear         String?
+  sscBoard        String?
+  sscGpa          String?
+  totalPoints     Int        @default(0)
+  currentStreak   Int        @default(0)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  enrollments   Enrollment[]
+  quizAttempts  QuizAttempt[]
+  donations     Donation[]
+  refreshTokens RefreshToken[]
+  otps          OtpToken[]
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BANNED
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique  // SHA-256 of the actual token
+  expiresAt DateTime
+  revokedAt DateTime?
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime  @default(now())
+}
+
+model OtpToken {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code      String     // 6-digit OTP (hashed before storing)
+  purpose   OtpPurpose
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime   @default(now())
+}
+
+enum OtpPurpose {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+model Instructor {
+  id         String   @id @default(cuid())
+  name       String
+  title      String?
+  avatarUrl  String?
+  courses    Course[]
+}
+
+model Course {
+  id               String       @id @default(cuid())
+  title            String
+  description      String
+  type             CourseType
+  price            Decimal?
+  originalPrice    Decimal?
+  status           CourseStatus @default(DRAFT)
+  level            String
+  duration         String
+  language         String       @default("বাংলা")
+  certificate      Boolean      @default(false)
+  liveSessions     Boolean      @default(false)
+  liveSessionCount Int          @default(0)
+  coverGradient    String?
+  coverImageUrl    String?
+  instructorId     String
+  instructor       Instructor   @relation(fields: [instructorId], references: [id])
+  modules          Module[]
+  enrollments      Enrollment[]
+  tags             String[]
+  features         String[]
+  rating           Decimal      @default(0)
+  ratingCount      Int          @default(0)
+  enrolledCount    Int          @default(0)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+enum CourseType {
+  FREE
+  PAID
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Module {
+  id          String             @id @default(cuid())
+  courseId    String
+  course      Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  order       Int
+  duration    String?
+  contentType ContentType?
+  body        String?            // For TEXT type
+  videoUrl    String?            // For VIDEO type
+  pdfUrl      String?            // For PDF type
+  quizzes     Quiz[]
+  completions ModuleCompletion[]
+}
+
+enum ContentType {
+  TEXT
+  VIDEO
+  PDF
+}
+
+model Enrollment {
+  id               String       @id @default(cuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId         String
+  course           Course       @relation(fields: [courseId], references: [id])
+  status           EnrollStatus @default(ACTIVE)
+  progress         Int          @default(0)
+  completedModules Int          @default(0)
+  completedAt      DateTime?
+  certificateUrl   String?
+  enrolledAt       DateTime     @default(now())
+  @@unique([userId, courseId])
+}
+
+enum EnrollStatus {
+  ACTIVE
+  COMPLETED
+  SUSPENDED
+}
+
+model ModuleCompletion {
+  id          String   @id @default(cuid())
+  userId      String
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+  @@unique([userId, moduleId])
+}
+
+model Quiz {
+  id          String        @id @default(cuid())
+  moduleId    String
+  module      Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  question    String
+  options     String[]
+  correct     Int
+  explanation String?
+  attempts    QuizAttempt[]
+}
+
+model QuizAttempt {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId     String
+  quiz       Quiz     @relation(fields: [quizId], references: [id])
+  answer     Int
+  passed     Boolean
+  attemptNum Int
+  answeredAt DateTime @default(now())
+  @@unique([userId, quizId, attemptNum])
+}
+
+model Project {
+  id           String        @id @default(cuid())
+  title        String
+  description  String
+  targetAmount Decimal
+  raisedAmount Decimal       @default(0)
+  icon         String?
+  category     String
+  location     String
+  imageUrl     String?
+  deadline     DateTime?
+  status       ProjectStatus @default(ACTIVE)
+  donorCount   Int           @default(0)
+  donations    Donation[]
+  createdAt    DateTime      @default(now())
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+}
+
+model Donation {
+  id              String         @id @default(cuid())
+  userId          String?
+  user            User?          @relation(fields: [userId], references: [id])
+  projectId       String?
+  project         Project?       @relation(fields: [projectId], references: [id])
+  name            String?
+  mobile          String
+  amount          Decimal
+  txId            String         @unique  // Prevents duplicate submissions
+  method          PaymentMethod
+  status          DonationStatus @default(PENDING)
+  verifiedBy      String?
+  verifiedAt      DateTime?
+  rejectionReason String?
+  createdAt       DateTime       @default(now())
+}
+
+enum PaymentMethod {
+  BKASH
+  NAGAD
+  ROCKET
+  BANK
+  OTHER
+}
+
+enum DonationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model Notice {
+  id          String    @id @default(cuid())
+  title       String
+  body        String
+  link        String?
+  linkText    String?
+  important   Boolean   @default(false)
+  publishedAt DateTime  @default(now())
+  expiresAt   DateTime?
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  title     String
+  type      String   // event | class | project
+  imageUrl  String
+  date      DateTime
+  createdAt DateTime @default(now())
+}
