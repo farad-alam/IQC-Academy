@@ -214,28 +214,30 @@ export default async function HomePage() {
 
           <StaggerContainer className={styles.coursesGrid}>
             {courses.filter(c => c.type === 'FREE').map(course => (
-              <StaggerItem key={course.id} as={Link} href={`/courses/${course.id}`} className={styles.courseCard}>
-                <div className={styles.courseCardThumb}>
-                  <div className={styles.courseCardThumbInner}>
-                    <GraduationCap size={40} className={styles.courseThumbIcon} />
+              <Link key={course.id} href={`/courses/${course.id}`} style={{ textDecoration: 'none' }}>
+                <StaggerItem className={styles.courseCard}>
+                  <div className={styles.courseCardThumb}>
+                    <div className={styles.courseCardThumbInner}>
+                      <GraduationCap size={40} className={styles.courseThumbIcon} />
+                    </div>
+                    <span className={`${styles.courseLevel} ${styles[`level_${course.level === 'বেসিক' ? 'basic' : course.level === 'মাঝারি' ? 'mid' : 'adv'}`]}`}>
+                      {course.level}
+                    </span>
                   </div>
-                  <span className={`${styles.courseLevel} ${styles[`level_${course.level === 'বেসিক' ? 'basic' : course.level === 'মাঝারি' ? 'mid' : 'adv'}`]}`}>
-                    {course.level}
-                  </span>
-                </div>
-                <div className={styles.courseCardBody}>
-                  <h3 className={styles.courseCardTitle}>{course.title}</h3>
-                  <p className={styles.courseCardDesc}>{course.description}</p>
-                  <div className={styles.courseCardMeta}>
-                    <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
-                    <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.modules || 0} মডিউল</span>
+                  <div className={styles.courseCardBody}>
+                    <h3 className={styles.courseCardTitle}>{course.title}</h3>
+                    <p className={styles.courseCardDesc}>{course.description}</p>
+                    <div className={styles.courseCardMeta}>
+                      <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
+                      <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.modules || 0} মডিউল</span>
+                    </div>
+                    <div className={styles.courseCardFooter}>
+                      <span className={styles.instructorName}>👤 {course.instructor?.name || 'IQC Academy'}</span>
+                      <span className={styles.freeBadge}>বিনামূল্যে</span>
+                    </div>
                   </div>
-                  <div className={styles.courseCardFooter}>
-                    <span className={styles.instructorName}>👤 {course.instructor?.name || 'IQC Academy'}</span>
-                    <span className={styles.freeBadge}>বিনামূল্যে</span>
-                  </div>
-                </div>
-              </StaggerItem>
+                </StaggerItem>
+              </Link>
             ))}
           </StaggerContainer>
         </div>
@@ -257,31 +259,33 @@ export default async function HomePage() {
 
           <StaggerContainer className={styles.premiumGrid}>
             {courses.filter(c => c.type === 'PAID').map(course => (
-              <StaggerItem key={course.id} as={Link} href={`/courses/${course.id}`} className={styles.premiumCard}>
-                <div className={styles.premiumCardGlow}></div>
-                <div className={styles.premiumCardThumb}>
-                  <Lock size={36} className={styles.premiumLockIcon} />
-                  <div className={styles.premiumStars}>
-                    {[1,2,3,4,5].map(s => <Star key={s} size={12} fill="#F59E0B" color="#F59E0B" />)}
+              <Link key={course.id} href={`/courses/${course.id}`} style={{ textDecoration: 'none' }}>
+                <StaggerItem className={styles.premiumCard}>
+                  <div className={styles.premiumCardGlow}></div>
+                  <div className={styles.premiumCardThumb}>
+                    <Lock size={36} className={styles.premiumLockIcon} />
+                    <div className={styles.premiumStars}>
+                      {[1,2,3,4,5].map(s => <Star key={s} size={12} fill="#F59E0B" color="#F59E0B" />)}
+                    </div>
                   </div>
-                </div>
-                <div className={styles.premiumCardBody}>
-                  <div className={styles.premiumLevelBadge}>{course.level}</div>
-                  <h3 className={styles.premiumCardTitle}>{course.title}</h3>
-                  <p className={styles.premiumCardDesc}>{course.description}</p>
-                  <div className={styles.premiumCardMeta}>
-                    <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
-                    <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.modules || 0} মডিউল</span>
+                  <div className={styles.premiumCardBody}>
+                    <div className={styles.premiumLevelBadge}>{course.level}</div>
+                    <h3 className={styles.premiumCardTitle}>{course.title}</h3>
+                    <p className={styles.premiumCardDesc}>{course.description}</p>
+                    <div className={styles.premiumCardMeta}>
+                      <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
+                      <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.modules || 0} মডিউল</span>
+                    </div>
+                    <div className={styles.premiumCardFooter}>
+                      <span className={styles.premiumInstructor}>👤 {course.instructor?.name || 'IQC Academy'}</span>
+                      <span className={styles.premiumPrice}>৳ {course.price?.toString()}</span>
+                    </div>
+                    <div className={styles.enrollNowBtn}>
+                      এখনই ভর্তি হন <ArrowRight size={14} />
+                    </div>
                   </div>
-                  <div className={styles.premiumCardFooter}>
-                    <span className={styles.premiumInstructor}>👤 {course.instructor?.name || 'IQC Academy'}</span>
-                    <span className={styles.premiumPrice}>৳ {course.price?.toString()}</span>
-                  </div>
-                  <div className={styles.enrollNowBtn}>
-                    এখনই ভর্তি হন <ArrowRight size={14} />
-                  </div>
-                </div>
-              </StaggerItem>
+                </StaggerItem>
+              </Link>
             ))}
           </StaggerContainer>
         </div>
