@@ -24,32 +24,80 @@ export async function GET(req) {
         division: true,
         district: true,
         upazila: true,
+        role: true,
+        status: true,
         totalPoints: true,
         currentStreak: true,
         createdAt: true,
-        _count: {
+        enrollments: {
+          orderBy: { enrolledAt: 'desc' },
           select: {
-            enrollments: { where: { status: 'ACTIVE' } },
+            id: true,
+            status: true,
+            progress: true,
+            completedModules: true,
+            enrolledAt: true,
+            completedAt: true,
+            course: {
+              select: {
+                id: true,
+                title: true,
+                level: true,
+                duration: true,
+                type: true,
+                _count: { select: { modules: true } },
+                instructor: { select: { name: true } }
+              }
+            }
           }
         },
-        enrollments: {
-          where: { status: 'COMPLETED' },
-          select: { id: true }
-        }
+        donations: {
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+          select: {
+            id: true,
+            amount: true,
+            method: true,
+            txId: true,
+            status: true,
+            createdAt: true,
+            project: { select: { title: true } }
+          }
+        },
       }
     });
 
-    // Formatting data to match what the frontend expects
-    const formattedProfile = {
-      ...profile,
-      coursesEnrolled: profile._count.enrollments,
-      coursesCompleted: profile.enrollments.length,
-      joinedDate: profile.createdAt.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' })
-    };
+    const activeEnrollments = profile.enrollments.filter(e => e.status === 'ACTIVE');
+    const completedEnrollments = profile.enrollments.filter(e => e.status === 'COMPLETED');
 
-    delete formattedProfile.createdAt;
-    delete formattedProfile._count;
-    delete formattedProfile.enrollments;
+    const formattedProfile = {
+      id: profile.id,
+      name: profile.name,
+      email: profile.email,
+      mobile: profile.mobile,
+      whatsapp: profile.whatsapp,
+      facebook: profile.facebook,
+      avatarUrl: profile.avatarUrl,
+      institution: profile.institution,
+      division: profile.division,
+      district: profile.district,
+      upazila: profile.upazila,
+      role: profile.role,
+      status: profile.status,
+      totalPoints: profile.totalPoints,
+      currentStreak: profile.currentStreak,
+      joinedDate: profile.createdAt.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' }),
+      coursesEnrolled: activeEnrollments.length,
+      coursesCompleted: completedEnrollments.length,
+      enrollments: profile.enrollments.map(e => ({
+        ...e,
+        amount: undefined, // not on enrollment
+      })),
+      donations: profile.donations.map(d => ({
+        ...d,
+        amount: Number(d.amount),
+      })),
+    };
 
     return NextResponse.json({ success: true, profile: formattedProfile });
 
@@ -58,6 +106,7 @@ export async function GET(req) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
 
 export async function PATCH(req) {
   try {
