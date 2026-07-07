@@ -266,6 +266,26 @@ model Notice {
   expiresAt   DateTime?
 }
 
+model Content {
+  id          String          @id @default(cuid())
+  title       String
+  type        ContentItemType
+  body        String?
+  videoUrl    String?
+  pdfUrl      String?
+  tags        String[]
+  readingTime String?
+  published   Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum ContentItemType {
+  ARTICLE
+  VIDEO
+  PDF
+}
+
 model GalleryItem {
   id        String   @id @default(cuid())
   title     String

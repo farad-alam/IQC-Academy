@@ -2,6 +2,28 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 
+export async function GET(req) {
+  try {
+    const admin = await getAuthUser();
+    if (!admin || admin.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const courses = await prisma.course.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        instructor: { select: { id: true, name: true } },
+        _count: { select: { enrollments: true, modules: true } },
+      },
+    });
+
+    return NextResponse.json({ success: true, courses });
+  } catch (error) {
+    console.error('[ADMIN_GET_COURSES_ERROR]', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
 export async function POST(req) {
   try {
     const admin = await getAuthUser();

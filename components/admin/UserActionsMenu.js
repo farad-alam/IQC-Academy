@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MoreVertical, CheckCircle, Ban, ShieldAlert } from 'lucide-react';
 
-export default function UserActionsMenu({ userId, currentStatus }) {
+export default function UserActionsMenu({ userId, currentStatus, onUpdate }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const menuRef = useRef(null);
@@ -30,7 +30,8 @@ export default function UserActionsMenu({ userId, currentStatus }) {
         const d = await res.json();
         alert(d.error || 'কোনো সমস্যা হয়েছে।');
       } else {
-        router.refresh();
+        if (onUpdate) onUpdate();
+        else router.refresh();
       }
     } catch {
       alert('নেটওয়ার্ক সমস্যা।');

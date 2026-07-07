@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 export default async function AdminDashboardPage() {
   const [
     totalUsers,
+    pendingUsersCount,
     totalCourses,
     totalDonationsAgg,
     pendingDonationsCount,
@@ -13,6 +14,7 @@ export default async function AdminDashboardPage() {
     pendingDonations,
   ] = await Promise.all([
     prisma.user.count({ where: { role: 'STUDENT' } }),
+    prisma.user.count({ where: { role: 'STUDENT', status: 'PENDING' } }),
     prisma.course.count({ where: { status: 'PUBLISHED' } }),
     prisma.donation.aggregate({ where: { status: 'VERIFIED' }, _sum: { amount: true } }),
     prisma.donation.count({ where: { status: 'PENDING' } }),
@@ -34,6 +36,7 @@ export default async function AdminDashboardPage() {
 
   const stats = [
     { title: 'মোট শিক্ষার্থী', value: totalUsers.toLocaleString('bn-BD'), icon: Users, color: 'var(--color-primary)' },
+    { title: 'অপেক্ষমাণ শিক্ষার্থী', value: pendingUsersCount.toLocaleString('bn-BD'), icon: Users, color: 'var(--color-error)', link: '/admin/users?tab=pending' },
     { title: 'প্রকাশিত কোর্স', value: totalCourses.toLocaleString('bn-BD'), icon: BookOpen, color: 'var(--color-accent-dark)' },
     { title: 'মোট সংগ্রহ (৳)', value: `৳${totalDonations.toLocaleString('bn-BD')}`, icon: Gift, color: 'var(--color-success)' },
     { title: 'অপেক্ষমাণ ডোনেশন', value: pendingDonationsCount.toLocaleString('bn-BD'), icon: Clock, color: 'var(--color-warning)' },
@@ -52,8 +55,8 @@ export default async function AdminDashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
         {stats.map((stat, idx) => {
           const Icon = stat.icon;
-          return (
-            <div key={idx} className="card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          const cardContent = (
+            <div className="card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', cursor: stat.link ? 'pointer' : 'default', transition: 'all 0.2s', border: stat.link ? '1px solid transparent' : 'none', ...(stat.link && { ':hover': { borderColor: stat.color, transform: 'translateY(-2px)' } }) }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: `${stat.color}20`, color: stat.color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon size={24} />
               </div>
@@ -63,6 +66,15 @@ export default async function AdminDashboardPage() {
               </div>
             </div>
           );
+
+          if (stat.link) {
+            return (
+              <a key={idx} href={stat.link} style={{ textDecoration: 'none', color: 'inherit' }}>
+                {cardContent}
+              </a>
+            );
+          }
+          return <div key={idx}>{cardContent}</div>;
         })}
       </div>
 

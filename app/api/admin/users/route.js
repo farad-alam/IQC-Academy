@@ -28,6 +28,9 @@ export async function GET(req) {
         status: true,
         institution: true,
         createdAt: true,
+        _count: {
+          select: { enrollments: true }
+        }
       },
       orderBy: { createdAt: 'desc' }
     });
