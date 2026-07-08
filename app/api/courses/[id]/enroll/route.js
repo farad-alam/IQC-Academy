@@ -11,6 +11,10 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (user.status !== 'ACTIVE') {
+      return NextResponse.json({ error: 'Account not approved yet' }, { status: 403 });
+    }
+
     // 1. Fetch course
     const course = await prisma.course.findUnique({
       where: { id: courseId, status: 'PUBLISHED' }

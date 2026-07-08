@@ -117,6 +117,26 @@ export default function AdminCoursesPage() {
                     </td>
                     <td style={{ padding: '1rem 0', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                        <button 
+                          className="btn btn-ghost btn-sm" 
+                          style={{ padding: '0.5rem', color: course.status === 'PUBLISHED' ? 'var(--color-warning)' : 'var(--color-success)' }} 
+                          title={course.status === 'PUBLISHED' ? 'ড্রাফট করুন' : 'প্রকাশ করুন'}
+                          onClick={async () => {
+                            try {
+                              const newStatus = course.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
+                              const res = await fetch(`/api/admin/courses/${course.id}`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: newStatus })
+                              });
+                              if (res.ok) fetchCourses();
+                            } catch (e) {
+                              console.error(e);
+                            }
+                          }}
+                        >
+                          {course.status === 'PUBLISHED' ? 'ড্রাফট' : 'প্রকাশ'}
+                        </button>
                         <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', color: 'var(--color-error)' }} title="মুছে ফেলুন" onClick={() => handleDelete(course.id)}>
                           <Trash2 size={16} />
                         </button>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { sendApprovalEmail } from '@/lib/email';
 
 export async function PATCH(req, { params }) {
   try {
@@ -23,7 +24,7 @@ export async function PATCH(req, { params }) {
     const updatedUser = await prisma.user.update({
       where: { id: targetUserId },
       data: { status: newStatus },
-      select: { id: true, name: true, status: true }
+      select: { id: true, name: true, email: true, status: true }
     });
 
     // If banned, revoke all their refresh tokens to kick them out immediately
@@ -32,6 +33,9 @@ export async function PATCH(req, { params }) {
         where: { userId: targetUserId, revokedAt: null },
         data: { revokedAt: new Date() }
       });
+    } else if (newStatus === 'ACTIVE') {
+      // Send approval email
+      await sendApprovalEmail(updatedUser.email, updatedUser.name);
     }
 
     return NextResponse.json({ 

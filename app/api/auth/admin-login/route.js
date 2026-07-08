@@ -10,7 +10,7 @@ export async function POST(req) {
   try {
     // 1. Rate Limiting
     const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
-    const rateLimit = await checkRateLimit(`login_${ip}`);
+    const rateLimit = await checkRateLimit(`admin_login_${ip}`);
     if (!rateLimit.success) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
@@ -31,13 +31,17 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    // 4. Verify Password
+    // 4. Verify Admin Role FIRST
+    if (user.role !== 'ADMIN') {
+      return NextResponse.json({ error: 'Forbidden: Admin access required.' }, { status: 403 });
+    }
+
+    // 5. Verify Password
     const isValid = await verify(user.passwordHash, password);
     if (!isValid) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    // 5. Check Approval Status
     if (user.status === 'BANNED') {
       return NextResponse.json({ error: 'Account is banned.' }, { status: 403 });
     }
@@ -96,7 +100,7 @@ export async function POST(req) {
     return response;
 
   } catch (error) {
-    console.error('[LOGIN_ERROR]', error);
+    console.error('[ADMIN_LOGIN_ERROR]', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -42,7 +42,7 @@ export default function LoginPage() {
         if (res.status === 401) {
           setServerError('ইমেইল বা পাসওয়ার্ড ভুল। আবার চেষ্টা করুন।');
         } else if (res.status === 403) {
-          setServerError('আপনার অ্যাকাউন্টটি এখনো অনুমোদিত হয়নি। অ্যাডমিন অনুমোদনের পর লগইন করতে পারবেন।');
+          setServerError('আপনার অ্যাকাউন্টটি ব্লক বা স্থগিত করা হয়েছে। এডমিনের সাথে যোগাযোগ করুন।');
         } else {
           setServerError(data.error || 'সার্ভারে সমস্যা হয়েছে। পরে চেষ্টা করুন।');
         }

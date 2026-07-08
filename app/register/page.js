@@ -67,9 +67,19 @@ function validateStep2(form) {
     if (yr < 1990 || yr > currentYear + 1) errs.sscYear = `সাল ১৯৯০ থেকে ${currentYear + 1} এর মধ্যে হতে হবে`;
   }
 
+  if (form.sscBoard && form.sscBoard.trim()) {
+    if (!/^[\u0980-\u09FFa-zA-Z\s]+$/.test(form.sscBoard)) {
+      errs.sscBoard = 'বোর্ডের নাম শুধু অক্ষরে হবে (যেমন: Dhaka, Rajshahi)';
+    }
+  }
+
   if (form.sscGpa && form.sscGpa.trim()) {
-    const g = parseFloat(form.sscGpa);
-    if (isNaN(g) || g < 0 || g > 5) errs.sscGpa = 'জিপিএ ০.০০ থেকে ৫.০০ এর মধ্যে হতে হবে';
+    if (!/^\d+(\.\d{1,2})?$/.test(form.sscGpa)) {
+      errs.sscGpa = 'জিপিএ শুধু সংখ্যায় হবে (যেমন: 5.00 বা 4.26)';
+    } else {
+      const g = parseFloat(form.sscGpa);
+      if (isNaN(g) || g < 0 || g > 5) errs.sscGpa = 'জিপিএ ০.০০ থেকে ৫.০০ এর মধ্যে হতে হবে';
+    }
   }
 
   return errs;
@@ -424,16 +434,25 @@ export default function RegisterPage() {
                     <label className="form-label">বোর্ড</label>
                     <input
                       type="text"
-                      className="form-input"
+                      className={`form-input ${errors.sscBoard ? 'error' : ''}`}
                       value={form.sscBoard}
-                      onChange={handleChange('sscBoard')}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === '' || /^[\u0980-\u09FFa-zA-Z\s]+$/.test(val)) {
+                          handleChange('sscBoard')(e);
+                        }
+                      }}
                       placeholder="যেমন: ঢাকা"
                     />
+                    <FieldError msg={errors.sscBoard} />
                   </div>
                   <div className="form-group">
                     <label className="form-label">জিপিএ</label>
                     <input
-                      type="text"
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="5"
                       className={`form-input ${errors.sscGpa ? 'error' : ''}`}
                       value={form.sscGpa}
                       onChange={handleChange('sscGpa')}

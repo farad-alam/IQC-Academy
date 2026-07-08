@@ -83,9 +83,20 @@ export default async function CourseDetailPage({ params }) {
                   <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-success)' }}>সম্পূর্ণ ফ্রি</div>
                 )}
               </div>
-              <Link href={`/courses/${course.id}/enroll`} className={course.type === 'PAID' ? 'btn btn-accent' : 'btn btn-primary'}>
-                {course.type === 'PAID' ? 'ভর্তি হোন' : 'কোর্স শুরু করুন'}
-              </Link>
+              
+              {!user ? (
+                <Link href={`/login?next=/courses/${course.id}`} className="btn btn-outline">
+                  লগইন করুন
+                </Link>
+              ) : user.status === 'PENDING' ? (
+                <span className="badge badge-warning" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>
+                  অনুমোদনের অপেক্ষায় ⏳
+                </span>
+              ) : (
+                <Link href={`/courses/${course.id}/enroll`} className={course.type === 'PAID' ? 'btn btn-accent' : 'btn btn-primary'}>
+                  {course.type === 'PAID' ? 'ভর্তি হোন' : 'কোর্স শুরু করুন'}
+                </Link>
+              )}
             </div>
           ) : (
             <div style={{ padding: '1.5rem', backgroundColor: 'var(--color-primary-50)', border: '1px solid var(--color-primary-100)', borderRadius: '12px' }}>

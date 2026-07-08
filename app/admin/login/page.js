@@ -17,7 +17,7 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -26,15 +26,11 @@ export default function AdminLoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'লগইন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
-        return;
-      }
-
-      // Block non-admin users
-      if (data.user?.role !== 'ADMIN') {
-        setError('আপনার অ্যাডমিন অ্যাক্সেস নেই।');
-        // Immediately log them out since login set a cookie
-        await fetch('/api/auth/logout', { method: 'POST' });
+        if (res.status === 403 && data.error.includes('Forbidden')) {
+          setError('আপনার অ্যাডমিন অ্যাক্সেস নেই।');
+        } else {
+          setError(data.error || 'লগইন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+        }
         return;
       }
 
