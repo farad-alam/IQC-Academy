@@ -4,7 +4,8 @@ import { getAuthUser } from '@/lib/middleware/withAuth';
 
 export async function POST(req, { params }) {
   try {
-    const { id: courseId } = params;
+    const resolvedParams = await params;
+    const { id: courseId } = resolvedParams;
     const user = await getAuthUser();
 
     if (!user) {

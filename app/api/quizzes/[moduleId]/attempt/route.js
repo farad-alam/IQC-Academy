@@ -5,7 +5,8 @@ import { quizAttemptSchema } from '@/lib/validation/user.schema';
 
 export async function POST(req, { params }) {
   try {
-    const { moduleId } = params;
+    const resolvedParams = await params;
+    const { moduleId } = resolvedParams;
     const user = await getAuthUser();
 
     if (!user) {

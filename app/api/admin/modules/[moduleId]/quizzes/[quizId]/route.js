@@ -9,7 +9,8 @@ export async function DELETE(req, { params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { quizId } = params;
+    const resolvedParams = await params;
+    const { quizId } = resolvedParams;
 
     await prisma.quiz.delete({
       where: { id: quizId }

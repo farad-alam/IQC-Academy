@@ -9,7 +9,8 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { moduleId } = params;
+    const resolvedParams = await params;
+    const { moduleId } = resolvedParams;
     const body = await req.json();
     const { question, options, correct, explanation } = body;
 
