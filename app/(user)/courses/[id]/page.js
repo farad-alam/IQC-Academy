@@ -108,8 +108,13 @@ export default async function CourseDetailPage({ params }) {
                 <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
               </div>
               {isCompleted && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-success)', marginTop: '1rem', fontWeight: 600, fontSize: '0.875rem' }}>
-                  <Award size={18} /> মাশাআল্লাহ! আপনি কোর্সটি সম্পন্ন করেছেন।
+                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed var(--color-primary-100)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-success)', fontWeight: 600, fontSize: '0.875rem', marginBottom: '1rem' }}>
+                    <Award size={18} /> মাশাআল্লাহ! আপনি কোর্সটি সম্পন্ন করেছেন।
+                  </div>
+                  <Link href={`/courses/${course.id}/certificate`} className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center' }}>
+                    সার্টিফিকেট ডাউনলোড করুন
+                  </Link>
                 </div>
               )}
             </div>

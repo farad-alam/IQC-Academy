@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { BookOpen, Search, Edit, Trash2 } from 'lucide-react';
 import CreateCourseModal from '@/components/admin/CreateCourseModal';
 
@@ -137,6 +138,9 @@ export default function AdminCoursesPage() {
                         >
                           {course.status === 'PUBLISHED' ? 'ড্রাফট' : 'প্রকাশ'}
                         </button>
+                        <Link href={`/admin/courses/${course.id}/modules`} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', color: 'var(--color-primary)' }} title="মডিউল পরিচালনা">
+                          <Edit size={16} />
+                        </Link>
                         <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', color: 'var(--color-error)' }} title="মুছে ফেলুন" onClick={() => handleDelete(course.id)}>
                           <Trash2 size={16} />
                         </button>

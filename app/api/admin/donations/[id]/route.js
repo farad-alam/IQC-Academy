@@ -48,24 +48,25 @@ export async function PATCH(req, { params }) {
         });
       }
 
-      // 3. If a course ID was provided, unlock the course for the user
-      if (courseIdToUnlock && donation.userId) {
+      // 3. If a course ID was provided on the donation, unlock the course for the user
+      const targetCourseId = donation.courseId || courseIdToUnlock;
+      if (targetCourseId && donation.userId) {
         // Create active enrollment
         await prisma.enrollment.upsert({
           where: {
-            userId_courseId: { userId: donation.userId, courseId: courseIdToUnlock }
+            userId_courseId: { userId: donation.userId, courseId: targetCourseId }
           },
           update: { status: 'ACTIVE' },
           create: {
             userId: donation.userId,
-            courseId: courseIdToUnlock,
+            courseId: targetCourseId,
             status: 'ACTIVE'
           }
         });
 
         // Increment course enrolled count
         await prisma.course.update({
-          where: { id: courseIdToUnlock },
+          where: { id: targetCourseId },
           data: { enrolledCount: { increment: 1 } }
         });
       }

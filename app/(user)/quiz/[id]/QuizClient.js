@@ -24,18 +24,53 @@ export default function QuizClient({ module, quizzes }) {
     if (currentQuestion < quizzes.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
-      calculateResult();
+      submitQuiz();
     }
   };
 
-  const calculateResult = () => {
-    let finalScore = 0;
-    quizzes.forEach(q => {
-      if (answers[q.id] === q.correct) finalScore++;
-    });
-    setScore(finalScore);
-    setQuizState('result');
-    // We could submit this attempt to a backend endpoint here!
+  const submitQuiz = async () => {
+    // 1. Prepare answers payload
+    const payload = quizzes.map(q => ({
+      quizId: q.id,
+      answer: answers[q.id] !== undefined ? answers[q.id] : -1
+    }));
+
+    try {
+      // 2. Submit to backend
+      const res = await fetch(`/api/quizzes/${module.id}/attempt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        setScore(data.score);
+        setQuizState('result');
+        
+        // The backend `results` array contains { quizId, passed, correctAnswer, explanation }
+        // We'll attach the correct answers to our local `quizzes` state so we can display them
+        data.results.forEach(res => {
+          const quizObj = quizzes.find(q => q.id === res.quizId);
+          if (quizObj) {
+            quizObj.correct = res.correctAnswer;
+            quizObj.explanation = res.explanation;
+          }
+        });
+
+        // 3. If passed, mark module complete
+        if (data.passedModule) {
+          fetch(`/api/courses/${module.courseId}/modules/${module.id}/complete`, {
+            method: 'POST'
+          }).then(() => router.refresh()).catch(console.error);
+        }
+      } else {
+        alert(data.error || 'Failed to submit quiz');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred submitting the quiz.');
+    }
   };
 
   const handleRetry = () => {

@@ -9,7 +9,8 @@ export default async function AdminDonationsPage() {
     orderBy: { createdAt: 'desc' },
     include: {
       user: { select: { name: true } },
-      project: { select: { title: true } }
+      project: { select: { title: true } },
+      course: { select: { title: true } }
     }
   });
 
@@ -51,7 +52,11 @@ export default async function AdminDonationsPage() {
                     <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{donation.mobile}</div>
                   </td>
                   <td style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-                    {donation.project?.title || 'সাধারণ ফান্ড'}
+                    {donation.course ? (
+                      <span className="badge badge-accent">কোর্স: {donation.course.title}</span>
+                    ) : (
+                      donation.project?.title || 'সাধারণ ফান্ড'
+                    )}
                   </td>
                   <td style={{ padding: '1rem 0', fontWeight: 600, color: 'var(--color-primary)' }}>
                     ৳{Number(donation.amount).toLocaleString('bn-BD')}
