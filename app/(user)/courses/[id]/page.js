@@ -14,7 +14,10 @@ export default async function CourseDetailPage({ params }) {
     where: { id },
     include: {
       instructor: true,
-      modules: { orderBy: { order: 'asc' } }
+      modules: { 
+        orderBy: { order: 'asc' },
+        include: { _count: { select: { quizzes: true } } }
+      }
     }
   });
 
@@ -162,13 +165,20 @@ export default async function CourseDetailPage({ params }) {
                 </div>
               </div>
               
-              <div>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                 {isLocked ? (
                   <Lock size={20} color="var(--color-text-light)" />
                 ) : (
-                  <Link href={`/content/${module.id}`} className="btn btn-outline btn-sm" style={{ padding: '6px 12px' }}>
-                    {isModuleCompleted ? 'রিভিউ করুন' : 'শুরু করুন'} <PlayCircle size={16} />
-                  </Link>
+                  <>
+                    <Link href={`/content/${module.id}`} className="btn btn-outline btn-sm" style={{ padding: '6px 12px' }}>
+                      {isModuleCompleted ? 'রিভিউ করুন' : 'শুরু করুন'} <PlayCircle size={16} />
+                    </Link>
+                    {module._count?.quizzes > 0 && (
+                      <Link href={`/quiz/${module.id}`} className="btn btn-accent btn-sm" style={{ padding: '6px 12px' }}>
+                        কুইজ
+                      </Link>
+                    )}
+                  </>
                 )}
               </div>
             </div>
