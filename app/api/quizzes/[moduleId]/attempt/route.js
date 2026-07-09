@@ -41,6 +41,19 @@ export async function POST(req, { params }) {
     let score = 0;
     const results = [];
 
+    // Calculate the next attempt number for each quiz
+    const quizIds = module.quizzes.map(q => q.id);
+    const lastAttempts = await prisma.quizAttempt.groupBy({
+      by: ['quizId'],
+      where: { userId: user.id, quizId: { in: quizIds } },
+      _max: { attemptNum: true }
+    });
+    
+    const maxAttemptMap = {};
+    for (const la of lastAttempts) {
+      maxAttemptMap[la.quizId] = la._max.attemptNum || 0;
+    }
+
     // Evaluate answers
     for (const item of body) {
       const { quizId, answer } = item;
@@ -60,15 +73,16 @@ export async function POST(req, { params }) {
         explanation: quiz.explanation
       });
 
-      // Record attempt (optional: getting latest attemptNum)
-      // This is a simplified approach; usually you do this in a transaction
+      const attemptNum = (maxAttemptMap[quizId] || 0) + 1;
+
+      // Record attempt
       await prisma.quizAttempt.create({
         data: {
           userId: user.id,
           quizId,
           answer,
           passed,
-          attemptNum: 1 // Simplified: hardcoding 1 for now, in prod you'd query max + 1
+          attemptNum
         }
       });
     }
