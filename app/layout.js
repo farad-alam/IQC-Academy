@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import NextTopLoader from 'nextjs-toploader';
 import "./globals.css";
 
 export const metadata = {
@@ -24,7 +25,10 @@ export default function RootLayout({ children }) {
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
-      <body>{children}</body>
+      <body>
+        <NextTopLoader color="var(--color-primary)" height={4} showSpinner={true} easing="ease" speed={200} shadow="0 0 10px var(--color-primary),0 0 5px var(--color-primary)" />
+        {children}
+      </body>
     </html>
   );
 }
