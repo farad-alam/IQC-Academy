@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, BookOpen, GraduationCap, Gift, Layers, Bell, LogOut, Target } from 'lucide-react';
+import { LayoutDashboard, Users, BookOpen, GraduationCap, Gift, Layers, Bell, LogOut, Target, Image as ImageIcon } from 'lucide-react';
 import styles from './AdminSidebar.module.css';
 
 export default function AdminSidebar() {
@@ -15,6 +15,7 @@ export default function AdminSidebar() {
     { name: 'কোর্সসমূহ', href: '/admin/courses', icon: GraduationCap },
     { name: 'ডোনেশন', href: '/admin/donations', icon: Gift },
     { name: 'প্রজেক্টস', href: '/admin/projects', icon: Target },
+    { name: 'গ্যালারি', href: '/admin/gallery', icon: ImageIcon },
     { name: 'নোটিশ', href: '/admin/notices', icon: Bell },
   ];
 
