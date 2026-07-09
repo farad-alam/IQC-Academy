@@ -115,6 +115,23 @@
   margin-top: 4rem;
 }
 
+.credits {
+  margin-top: 2rem;
+  font-size: 0.95rem;
+  color: #a8a29e;
+}
+
+.motionBiteLink {
+  color: #a855f7; /* Brand color purple */
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.motionBiteLink:hover {
+  color: #d8b4fe;
+}
+
 .rightPanel {
   width: 400px;
   display: flex;

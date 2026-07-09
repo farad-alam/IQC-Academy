@@ -49,6 +49,10 @@ export default function Footer() {
           <span>IQC</span>
           <span>Academy</span>
         </div>
+
+        <div className={styles.credits}>
+          Design & Develop by <a href="https://www.motionbite.com/" target="_blank" rel="noopener noreferrer" className={styles.motionBiteLink}>MotionBite</a>
+        </div>
       </div>
 
       {/* Right Panel */}
