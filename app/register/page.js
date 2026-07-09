@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import styles from '../login/login.module.css';
+import Loader from '@/components/ui/Loader';
 
 const DRAFT_KEY = 'iqc_reg_draft';
 
@@ -569,7 +570,7 @@ export default function RegisterPage() {
               ) : (
                 <button type="submit" className="btn btn-accent" style={{ flex: 2 }} disabled={loading}>
                   {loading
-                    ? <><span className="spinner spinner-sm" /> সাবমিট হচ্ছে...</>
+                    ? <Loader variant="button" text="সাবমিট হচ্ছে..." />
                     : 'রেজিস্ট্রেশন সম্পন্ন করুন ✨'
                   }
                 </button>

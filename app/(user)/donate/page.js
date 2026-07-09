@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Heart, Copy, CheckCircle2 } from 'lucide-react';
+import Loader from '@/components/ui/Loader';
 import Link from 'next/link';
 
 export default function DonatePage() {
@@ -123,7 +124,7 @@ export default function DonatePage() {
             </div>
             
             <button type="submit" className="btn btn-primary" disabled={loading} style={{ marginTop: '1rem' }}>
-              {loading ? <><span className="spinner spinner-sm" /> সাবমিট হচ্ছে...</> : 'তথ্য সাবমিট করুন'}
+              {loading ? <Loader variant="button" text="সাবমিট হচ্ছে..." /> : 'তথ্য সাবমিট করুন'}
             </button>
           </form>
         </div>

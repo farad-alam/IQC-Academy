@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import styles from './login.module.css';
+import Loader from '@/components/ui/Loader';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -156,7 +157,7 @@ export default function LoginPage() {
               disabled={loading}
             >
               {loading ? (
-                <><span className="spinner spinner-sm" /> লগইন হচ্ছে...</>
+                <Loader variant="button" text="লগইন হচ্ছে..." />
               ) : (
                 'লগইন করুন'
               )}

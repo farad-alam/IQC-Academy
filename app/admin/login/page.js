@@ -3,11 +3,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Lock, AlertCircle } from 'lucide-react';
+import styles from '@/app/login/login.module.css';
+import Loader from '@/components/ui/Loader';
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -93,7 +96,7 @@ export default function AdminLoginPage() {
           </div>
 
           <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }} disabled={loading}>
-            {loading ? <><span className="spinner spinner-sm" /> প্রবেশ হচ্ছে...</> : 'লগইন করুন'}
+            {loading ? <Loader variant="button" text="প্রবেশ হচ্ছে..." /> : 'লগইন করুন'}
           </button>
         </form>
 

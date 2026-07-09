@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, UserCheck, UserX, AlertTriangle } from 'lucide-react';
+import { Search, UserCheck, UserX, Shield, MoreVertical } from 'lucide-react';
+import Loader from '@/components/ui/Loader';
 import UserActionsMenu from '@/components/admin/UserActionsMenu';
 
 export default function AdminUsersPage() {
@@ -164,7 +165,7 @@ export default function AdminUsersPage() {
               {loading && filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-                    <div className="spinner spinner-sm" style={{ margin: '0 auto 1rem', borderColor: 'var(--color-primary)', borderRightColor: 'transparent' }} />
+                    <Loader variant="button" color="var(--color-primary)" />
                     লোড হচ্ছে...
                   </td>
                 </tr>

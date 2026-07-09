@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, HelpCircle, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import styles from './quiz.module.css';
+import Loader from '@/components/ui/Loader';
 
 export default function QuizClient({ module, quizzes }) {
   const [quizState, setQuizState] = useState('start'); // start, active, result
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const handleStart = () => {
@@ -29,6 +31,7 @@ export default function QuizClient({ module, quizzes }) {
   };
 
   const submitQuiz = async () => {
+    setIsSubmitting(true);
     // 1. Prepare answers payload
     const payload = quizzes.map(q => ({
       quizId: q.id,
@@ -70,6 +73,8 @@ export default function QuizClient({ module, quizzes }) {
     } catch (err) {
       console.error(err);
       alert('An error occurred submitting the quiz.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -159,9 +164,11 @@ export default function QuizClient({ module, quizzes }) {
             onClick={handleNextQuestion} 
             className="btn btn-primary" 
             style={{ width: '100%' }}
-            disabled={answers[q.id] === undefined}
+            disabled={answers[q.id] === undefined || isSubmitting}
           >
-            {currentQuestion === quizzes.length - 1 ? 'ফলাফল দেখুন' : 'পরবর্তী প্রশ্ন'}
+            {currentQuestion === quizzes.length - 1 ? (
+              isSubmitting ? <Loader variant="button" text="অপেক্ষা করুন..." /> : 'ফলাফল দেখুন'
+            ) : 'পরবর্তী প্রশ্ন'}
           </button>
         </div>
       </div>

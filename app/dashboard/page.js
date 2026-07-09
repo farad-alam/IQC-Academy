@@ -6,6 +6,7 @@ import {
   BookOpen, Gift, Star, Zap, CheckCircle, Clock, ArrowRight,
   Bell, AlertTriangle, User, LogOut, ChevronRight, Flame
 } from 'lucide-react';
+import Loader from '@/components/ui/Loader';
 import styles from './dashboard.module.css';
 
 // ─── Status badge helper ─────────────────────────────────────────────────────
@@ -68,7 +69,7 @@ export default function DashboardPage() {
     return (
       <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
-          <div className="spinner" style={{ width: '48px', height: '48px', margin: '0 auto 1rem' }} />
+          <Loader variant="section" text="লোড হচ্ছে..." />
           <p style={{ color: 'var(--color-text-muted)' }}>ড্যাশবোর্ড লোড হচ্ছে...</p>
         </div>
       </div>
