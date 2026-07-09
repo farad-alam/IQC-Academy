@@ -488,6 +488,15 @@ export default function RegisterPage() {
                 <div className="form-group">
                   <label className="form-label">পাসওয়ার্ড<Req /></label>
                   <div className={styles.passwordWrapper}>
+                    {/* Hidden email field to help password managers save the correct username */}
+                    <input 
+                      type="email" 
+                      value={form.email} 
+                      readOnly 
+                      autoComplete="username" 
+                      style={{ display: 'none' }} 
+                      aria-hidden="true" 
+                    />
                     <input
                       type={showPass ? 'text' : 'password'}
                       className={`form-input ${errors.password ? 'error' : ''}`}
