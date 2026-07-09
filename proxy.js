@@ -14,6 +14,21 @@ export default async function proxy(request) {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  // Prevent authenticated users from accessing login/register
+  const isAuthRoute = pathname === '/login' || pathname === '/register';
+  if (isAuthRoute) {
+    const token = request.cookies.get('accessToken')?.value;
+    if (token) {
+      const payload = await verifyAccessToken(token);
+      if (payload) {
+        if (payload.role === 'ADMIN') {
+          return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+        }
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
+    }
+  }
   
   // 2. Auth checks
   const isProtected = protectedRoutes.some(route => pathname.startsWith(route)) || pathname.startsWith('/api/users') || pathname.startsWith('/api/admin');
