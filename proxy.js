@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { verifyAccessToken } from './lib/auth'; // Note: jose works in edge runtime
 
 // Add routes that require authentication
-const protectedRoutes = ['/profile', '/quizzes', '/donate'];
+const protectedRoutes = ['/profile', '/quizzes', '/donate', '/dashboard'];
 const adminRoutes = ['/admin'];
 
 export default async function proxy(request) {
@@ -31,7 +31,7 @@ export default async function proxy(request) {
   }
   
   // 2. Auth checks
-  const isProtected = protectedRoutes.some(route => pathname.startsWith(route)) || pathname.startsWith('/api/users') || pathname.startsWith('/api/admin');
+  const isProtected = protectedRoutes.some(route => pathname.startsWith(route)) || pathname.startsWith('/api/users') || pathname.startsWith('/api/admin') || (pathname.startsWith('/admin') && pathname !== '/admin/login');
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route)) || pathname.startsWith('/api/admin');
 
   if (isProtected) {
