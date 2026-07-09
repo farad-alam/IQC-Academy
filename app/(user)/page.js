@@ -9,7 +9,7 @@ import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer'
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [courses, projects, galleryItems] = await Promise.all([
+  const [courses, projects, galleryItems, latestNotice] = await Promise.all([
     prisma.course.findMany({
       where: { status: 'PUBLISHED' },
       include: { _count: { select: { modules: true } }, instructor: true },
@@ -24,6 +24,10 @@ export default async function HomePage() {
     prisma.galleryItem.findMany({
       orderBy: { date: 'desc' },
       take: 6
+    }),
+    prisma.notice.findFirst({
+      where: { publishedAt: { lte: new Date() } },
+      orderBy: { publishedAt: 'desc' }
     })
   ]);
   return (
@@ -525,22 +529,24 @@ export default async function HomePage() {
       </section>
 
       {/* Featured Highlight */}
-      <section className={styles.highlightSection}>
-        <FadeIn direction="up" className={styles.highlightCard}>
-          <div className={styles.highlightContent}>
-            <span className={styles.highlightBadge}>নতুন নোটিশ</span>
-            <h2 className={styles.highlightTitle}>রমজান প্রস্তুতি কোর্স ২০২৬</h2>
-            <p className={styles.highlightDesc}>
-              রমজানের ফজিলত, মাসআলা এবং আমলের সঠিক নিয়ম জানতে আমাদের নতুন ফ্রি কোর্সে আজই যুক্ত হোন।
-            </p>
-          </div>
-          <div>
-            <Link href="/courses" className="btn btn-primary" style={{ borderRadius: 'var(--radius-full)' }}>
-              বিস্তারিত জানুন
-            </Link>
-          </div>
-        </FadeIn>
-      </section>
+      {latestNotice && (
+        <section className={styles.highlightSection}>
+          <FadeIn direction="up" className={styles.highlightCard}>
+            <div className={styles.highlightContent}>
+              <span className={styles.highlightBadge}>নতুন নোটিশ</span>
+              <h2 className={styles.highlightTitle}>{latestNotice.title}</h2>
+              <p className={styles.highlightDesc}>
+                {latestNotice.body}
+              </p>
+            </div>
+            <div>
+              <Link href={latestNotice.link || '/courses'} className="btn btn-primary" style={{ borderRadius: 'var(--radius-full)' }}>
+                {latestNotice.linkText || 'বিস্তারিত জানুন'}
+              </Link>
+            </div>
+          </FadeIn>
+        </section>
+      )}
 
     </div>
   );

@@ -31,9 +31,37 @@ export async function GET(req, { params }) {
       return NextResponse.json({ error: 'Not actively enrolled in this course' }, { status: 403 });
     }
 
-    // 2. Fetch Quiz questions (without the correct answer)
-    const quizzes = await prisma.quiz.findMany({
+    // 2. Max Attempts Check
+    // Get all quizzes for this module to check attempts
+    const moduleQuizzes = await prisma.quiz.findMany({
       where: { moduleId },
+      select: { id: true }
+    });
+    const moduleQuizIds = moduleQuizzes.map(q => q.id);
+
+    const maxExamAttempt = await prisma.quizAttempt.aggregate({
+      where: { userId: user.id, quizId: { in: moduleQuizIds } },
+      _max: { attemptNum: true }
+    });
+
+    const currentAttemptCount = maxExamAttempt._max.attemptNum || 0;
+    if (currentAttemptCount >= 3) {
+      return NextResponse.json({ error: 'আপনি এই পরীক্ষার সর্বোচ্চ ৩টি সুযোগ ব্যবহার করেছেন। (Max attempts reached)' }, { status: 403 });
+    }
+
+    // 3. Fetch previously attempted quiz IDs to exclude them
+    const previousAttempts = await prisma.quizAttempt.findMany({
+      where: { userId: user.id, quizId: { in: moduleQuizIds } },
+      select: { quizId: true }
+    });
+    const attemptedQuizIds = previousAttempts.map(a => a.quizId);
+
+    // 4. Fetch unattempted Quiz questions (without the correct answer)
+    const unattemptedQuizzes = await prisma.quiz.findMany({
+      where: { 
+        moduleId,
+        id: { notIn: attemptedQuizIds }
+      },
       select: {
         id: true,
         question: true,
@@ -42,7 +70,11 @@ export async function GET(req, { params }) {
       }
     });
 
-    return NextResponse.json({ success: true, quizzes });
+    // 5. Shuffle and pick 20
+    const shuffled = unattemptedQuizzes.sort(() => 0.5 - Math.random());
+    const selectedQuizzes = shuffled.slice(0, 20);
+
+    return NextResponse.json({ success: true, quizzes: selectedQuizzes });
 
   } catch (error) {
     console.error('[GET_QUIZ_ERROR]', error);

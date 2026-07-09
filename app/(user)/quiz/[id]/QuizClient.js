@@ -79,10 +79,7 @@ export default function QuizClient({ module, quizzes }) {
   };
 
   const handleRetry = () => {
-    setAnswers({});
-    setCurrentQuestion(0);
-    setScore(0);
-    setQuizState('start');
+    window.location.reload();
   };
 
   if (quizState === 'start') {

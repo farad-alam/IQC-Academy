@@ -41,17 +41,17 @@ export async function POST(req, { params }) {
     let score = 0;
     const results = [];
 
-    // Calculate the next attempt number for each quiz
     const quizIds = module.quizzes.map(q => q.id);
-    const lastAttempts = await prisma.quizAttempt.groupBy({
-      by: ['quizId'],
+    const maxExamAttempt = await prisma.quizAttempt.aggregate({
       where: { userId: user.id, quizId: { in: quizIds } },
       _max: { attemptNum: true }
     });
     
-    const maxAttemptMap = {};
-    for (const la of lastAttempts) {
-      maxAttemptMap[la.quizId] = la._max.attemptNum || 0;
+    const currentExamAttemptNum = (maxExamAttempt._max.attemptNum || 0) + 1;
+
+    // Max Attempts Logic check
+    if (currentExamAttemptNum > 3) {
+      return NextResponse.json({ error: 'আপনি এই পরীক্ষার সর্বোচ্চ ৩টি সুযোগ ব্যবহার করেছেন।' }, { status: 403 });
     }
 
     // Evaluate answers
@@ -73,8 +73,6 @@ export async function POST(req, { params }) {
         explanation: quiz.explanation
       });
 
-      const attemptNum = (maxAttemptMap[quizId] || 0) + 1;
-
       // Record attempt
       await prisma.quizAttempt.create({
         data: {
@@ -82,7 +80,7 @@ export async function POST(req, { params }) {
           quizId,
           answer,
           passed,
-          attemptNum
+          attemptNum: currentExamAttemptNum
         }
       });
     }
