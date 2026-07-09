@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, BookOpen, GraduationCap, Gift, Layers, Bell, LogOut, Target, Image as ImageIcon } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Gift, Layers, Bell, LogOut, Target, Image as ImageIcon } from 'lucide-react';
 import styles from './AdminSidebar.module.css';
 
 export default function AdminSidebar() {
@@ -11,7 +11,6 @@ export default function AdminSidebar() {
   const navItems = [
     { name: 'ড্যাশবোর্ড', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'ব্যবহারকারী', href: '/admin/users', icon: Users },
-    { name: 'কন্টেন্ট', href: '/admin/content', icon: BookOpen },
     { name: 'কোর্সসমূহ', href: '/admin/courses', icon: GraduationCap },
     { name: 'ডোনেশন', href: '/admin/donations', icon: Gift },
     { name: 'প্রজেক্টস', href: '/admin/projects', icon: Target },
