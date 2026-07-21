@@ -165,7 +165,7 @@ export default function ModulesClient({ course }) {
       </AnimatePresence>
 
       <div className="card" style={{ padding: '1.5rem' }}>
-        <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+        <table className="mobile-card-list" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--color-earth-1)', color: 'var(--color-text-muted)' }}>
               <th style={{ padding: '1rem 0' }}>ক্রমিক</th>
@@ -178,19 +178,19 @@ export default function ModulesClient({ course }) {
           <tbody>
             {modules.map((m, i) => (
               <tr key={m.id} style={{ borderBottom: '1px solid var(--color-earth-1)' }}>
-                <td style={{ padding: '1rem 0' }}>{m.order || i + 1}</td>
-                <td style={{ padding: '1rem 0', fontWeight: 600 }}>{m.title}</td>
-                <td style={{ padding: '1rem 0' }}><span className="badge badge-earth">{m.contentType}</span></td>
-                <td style={{ padding: '1rem 0' }}>{m._count?.quizzes || 0} টি</td>
-                <td style={{ padding: '1rem 0', textAlign: 'right' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                    <Link href={`/admin/courses/${course.id}/modules/${m.id}/quizzes`} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-accent-dark)' }} title="কুইজ পরিচালনা">
+                <td data-label="ক্রমিক" style={{ padding: '1rem 0' }}>{m.order || i + 1}</td>
+                <td data-label="নাম" style={{ padding: '1rem 0', fontWeight: 600 }}>{m.title}</td>
+                <td data-label="টাইপ" style={{ padding: '1rem 0' }}><span className="badge badge-earth">{m.contentType}</span></td>
+                <td data-label="কুইজ" style={{ padding: '1rem 0' }}>{m._count?.quizzes || 0} টি</td>
+                <td data-label="অ্যাকশন" style={{ padding: '1rem 0', textAlign: 'right' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                    <Link href={`/admin/courses/${course.id}/modules/${m.id}/quizzes`} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-accent-dark)', minWidth: '44px', minHeight: '44px' }} title="কুইজ পরিচালনা">
                       <HelpCircle size={16} /> কুইজ
                     </Link>
-                    <button onClick={() => openEditForm(m)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-primary)' }} title="এডিট করুন">
+                    <button onClick={() => openEditForm(m)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-primary)', minWidth: '44px', minHeight: '44px' }} title="এডিট করুন">
                       <Edit size={16} />
                     </button>
-                    <button onClick={() => handleDelete(m.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)' }} title="মুছে ফেলুন">
+                    <button onClick={() => handleDelete(m.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)', minWidth: '44px', minHeight: '44px' }} title="মুছে ফেলুন">
                       <Trash2 size={16} />
                     </button>
                   </div>

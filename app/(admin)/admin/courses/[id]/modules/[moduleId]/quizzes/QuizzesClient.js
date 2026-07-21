@@ -212,11 +212,11 @@ export default function QuizzesClient({ module, courseId }) {
                   </div>
                 )}
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button onClick={() => openEditForm(q)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-primary)', height: 'fit-content' }} title="এডিট করুন">
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <button onClick={() => openEditForm(q)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-primary)', height: 'fit-content', minWidth: '44px', minHeight: '44px' }} title="এডিট করুন">
                   <Edit size={16} />
                 </button>
-                <button onClick={() => handleDelete(q.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)', height: 'fit-content' }} title="মুছে ফেলুন">
+                <button onClick={() => handleDelete(q.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)', height: 'fit-content', minWidth: '44px', minHeight: '44px' }} title="মুছে ফেলুন">
                   <Trash2 size={16} />
                 </button>
               </div>

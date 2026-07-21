@@ -150,7 +150,7 @@ export default function AdminUsersPage() {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <table className="mobile-card-list" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--color-earth-1)', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>নাম</th>
@@ -174,7 +174,7 @@ export default function AdminUsersPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <tr key={user.id} style={{ borderBottom: '1px solid var(--color-earth-1)' }}>
-                    <td style={{ padding: '1rem 0', fontWeight: 500 }}>
+                    <td data-label="নাম" style={{ padding: '1rem 0', fontWeight: 500 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', fontWeight: 700, flexShrink: 0 }}>
                           {user.name.charAt(0)}
@@ -187,20 +187,20 @@ export default function AdminUsersPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '1rem 0' }}>
+                    <td data-label="যোগাযোগ" style={{ padding: '1rem 0' }}>
                       <div style={{ fontSize: '0.875rem' }}>{user.mobile}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{user.email}</div>
                     </td>
-                    <td style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+                    <td data-label="যোগদানের তারিখ" style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
                       {new Date(user.createdAt).toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' })}
                     </td>
-                    <td style={{ padding: '1rem 0' }}>{user._count?.enrollments || 0}</td>
-                    <td style={{ padding: '1rem 0' }}>
+                    <td data-label="কোর্স এনরোলমেন্ট" style={{ padding: '1rem 0' }}>{user._count?.enrollments || 0}</td>
+                    <td data-label="স্ট্যাটাস" style={{ padding: '1rem 0' }}>
                       <span className={`badge ${user.status === 'ACTIVE' ? 'badge-success' : user.status === 'PENDING' ? 'badge-warning' : 'badge-earth'}`}>
                         {user.status === 'PENDING' ? 'অপেক্ষমাণ' : user.status === 'ACTIVE' ? 'সক্রিয়' : 'ব্যান করা'}
                       </span>
                     </td>
-                    <td style={{ padding: '1rem 0', textAlign: 'right' }}>
+                    <td data-label="অ্যাকশন" style={{ padding: '1rem 0', textAlign: 'right' }}>
                       {user.role !== 'ADMIN' && (
                         <UserActionsMenu
                           userId={user.id}

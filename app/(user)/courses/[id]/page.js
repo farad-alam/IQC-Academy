@@ -143,17 +143,19 @@ export default async function CourseDetailPage({ params }) {
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '1rem',
                 opacity: isLocked ? 0.6 : 1,
                 border: isModuleCompleted ? '1px solid var(--color-success-bg)' : '1px solid var(--color-earth-1)'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: '1 1 min-content', minWidth: '200px' }}>
                 <div style={{ 
                   width: '36px', height: '36px', borderRadius: '50%', 
                   backgroundColor: isModuleCompleted ? 'var(--color-success-bg)' : 'var(--color-surface-alt)',
                   color: isModuleCompleted ? 'var(--color-success)' : 'var(--color-text-muted)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 700, fontFamily: 'var(--font-latin)'
+                  fontWeight: 700, fontFamily: 'var(--font-latin)', flexShrink: 0
                 }}>
                   {isModuleCompleted ? <CheckCircle2 size={20} /> : idx + 1}
                 </div>
@@ -165,16 +167,16 @@ export default async function CourseDetailPage({ params }) {
                 </div>
               </div>
               
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 {isLocked ? (
                   <Lock size={20} color="var(--color-text-light)" />
                 ) : (
                   <>
-                    <Link href={`/content/${module.id}`} className="btn btn-outline btn-sm" style={{ padding: '6px 12px' }}>
-                      {isModuleCompleted ? 'রিভিউ করুন' : 'শুরু করুন'} <PlayCircle size={16} />
+                    <Link href={`/content/${module.id}`} className="btn btn-outline" style={{ padding: '0.5rem 1rem', minHeight: '44px', minWidth: '44px' }}>
+                      {isModuleCompleted ? 'রিভিউ করুন' : 'শুরু করুন'} <PlayCircle size={16} style={{ marginLeft: '4px' }} />
                     </Link>
                     {module._count?.quizzes > 0 && (
-                      <Link href={`/quiz/${module.id}`} className="btn btn-accent btn-sm" style={{ padding: '6px 12px' }}>
+                      <Link href={`/quiz/${module.id}`} className="btn btn-accent" style={{ padding: '0.5rem 1rem', minHeight: '44px', minWidth: '44px' }}>
                         কুইজ
                       </Link>
                     )}

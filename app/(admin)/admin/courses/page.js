@@ -69,7 +69,7 @@ export default function AdminCoursesPage() {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <table className="mobile-card-list" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--color-earth-1)', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>কোর্সের নাম</th>
@@ -94,7 +94,7 @@ export default function AdminCoursesPage() {
               ) : (
                 filteredCourses.map((course) => (
                   <tr key={course.id} style={{ borderBottom: '1px solid var(--color-earth-1)' }}>
-                    <td style={{ padding: '1rem 0', fontWeight: 500 }}>
+                    <td data-label="কোর্সের নাম" style={{ padding: '1rem 0', fontWeight: 500 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <div style={{ width: '40px', height: '40px', backgroundColor: 'var(--color-surface-alt)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', flexShrink: 0 }}>
                           <BookOpen size={20} />
@@ -105,22 +105,22 @@ export default function AdminCoursesPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '1rem 0' }}>{course.instructor?.name || '-'}</td>
-                    <td style={{ padding: '1rem 0', fontWeight: 600, color: 'var(--color-primary)' }}>
+                    <td data-label="শিক্ষক" style={{ padding: '1rem 0' }}>{course.instructor?.name || '-'}</td>
+                    <td data-label="মূল্য" style={{ padding: '1rem 0', fontWeight: 600, color: 'var(--color-primary)' }}>
                       {course.type === 'PAID' && course.price > 0 ? `৳${course.price}` : 'ফ্রি'}
                     </td>
-                    <td style={{ padding: '1rem 0' }}>{course._count?.modules || 0} টি</td>
-                    <td style={{ padding: '1rem 0' }}>{course._count?.enrollments || 0} জন</td>
-                    <td style={{ padding: '1rem 0' }}>
+                    <td data-label="মডিউল সংখ্যা" style={{ padding: '1rem 0' }}>{course._count?.modules || 0} টি</td>
+                    <td data-label="শিক্ষার্থী সংখ্যা" style={{ padding: '1rem 0' }}>{course._count?.enrollments || 0} জন</td>
+                    <td data-label="স্ট্যাটাস" style={{ padding: '1rem 0' }}>
                       <span className={`badge ${course.status === 'PUBLISHED' ? 'badge-success' : 'badge-warning'}`}>
                         {course.status === 'PUBLISHED' ? 'প্রকাশিত' : 'ড্রাফট'}
                       </span>
                     </td>
-                    <td style={{ padding: '1rem 0', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                    <td data-label="অ্যাকশন" style={{ padding: '1rem 0', textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                         <button 
                           className="btn btn-ghost btn-sm" 
-                          style={{ padding: '0.5rem', color: course.status === 'PUBLISHED' ? 'var(--color-warning)' : 'var(--color-success)' }} 
+                          style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: course.status === 'PUBLISHED' ? 'var(--color-warning)' : 'var(--color-success)' }} 
                           title={course.status === 'PUBLISHED' ? 'ড্রাফট করুন' : 'প্রকাশ করুন'}
                           onClick={async () => {
                             try {
@@ -138,10 +138,10 @@ export default function AdminCoursesPage() {
                         >
                           {course.status === 'PUBLISHED' ? 'ড্রাফট' : 'প্রকাশ'}
                         </button>
-                        <Link href={`/admin/courses/${course.id}/modules`} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', color: 'var(--color-primary)' }} title="মডিউল পরিচালনা">
+                        <Link href={`/admin/courses/${course.id}/modules`} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-primary)' }} title="মডিউল পরিচালনা">
                           <Edit size={16} />
                         </Link>
-                        <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', color: 'var(--color-error)' }} title="মুছে ফেলুন" onClick={() => handleDelete(course.id)}>
+                        <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-error)' }} title="মুছে ফেলুন" onClick={() => handleDelete(course.id)}>
                           <Trash2 size={16} />
                         </button>
                       </div>

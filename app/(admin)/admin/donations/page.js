@@ -32,7 +32,7 @@ export default async function AdminDonationsPage() {
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <table className="mobile-card-list" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--color-earth-1)', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>দাতা</th>
@@ -47,33 +47,33 @@ export default async function AdminDonationsPage() {
             <tbody>
               {donations.map((donation) => (
                 <tr key={donation.id} style={{ borderBottom: '1px solid var(--color-earth-1)' }}>
-                  <td style={{ padding: '1rem 0', fontWeight: 500 }}>
+                  <td data-label="দাতা" style={{ padding: '1rem 0', fontWeight: 500 }}>
                     <div>{donation.name || donation.user?.name || 'অজ্ঞাত'}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{donation.mobile}</div>
                   </td>
-                  <td style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+                  <td data-label="প্রজেক্ট" style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
                     {donation.course ? (
                       <span className="badge badge-accent">কোর্স: {donation.course.title}</span>
                     ) : (
                       donation.project?.title || 'সাধারণ ফান্ড'
                     )}
                   </td>
-                  <td style={{ padding: '1rem 0', fontWeight: 600, color: 'var(--color-primary)' }}>
+                  <td data-label="পরিমাণ" style={{ padding: '1rem 0', fontWeight: 600, color: 'var(--color-primary)' }}>
                     ৳{Number(donation.amount).toLocaleString('bn-BD')}
                   </td>
-                  <td style={{ padding: '1rem 0' }}>
+                  <td data-label="মেথড ও TxID" style={{ padding: '1rem 0' }}>
                     <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{donation.method}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{donation.txId}</div>
                   </td>
-                  <td style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+                  <td data-label="তারিখ" style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
                     {new Date(donation.createdAt).toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' })}
                   </td>
-                  <td style={{ padding: '1rem 0' }}>
+                  <td data-label="স্ট্যাটাস" style={{ padding: '1rem 0' }}>
                     <span className={`badge ${donation.status === 'VERIFIED' ? 'badge-success' : donation.status === 'PENDING' ? 'badge-warning' : 'badge-earth'}`}>
                       {donation.status}
                     </span>
                   </td>
-                  <td style={{ padding: '1rem 0', textAlign: 'right' }}>
+                  <td data-label="অ্যাকশন" style={{ padding: '1rem 0', textAlign: 'right' }}>
                     <DonationActions donationId={donation.id} status={donation.status} />
                   </td>
                 </tr>

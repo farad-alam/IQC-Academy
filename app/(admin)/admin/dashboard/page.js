@@ -78,14 +78,14 @@ export default async function AdminDashboardPage() {
         })}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }} className="admin-dashboard-grid">
         {/* Recent Registrations */}
-        <div className="card" style={{ padding: '1.5rem' }}>
+        <div className="card" style={{ padding: '1.5rem', flex: 2 }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <TrendingUp size={20} color="var(--color-primary)" /> সাম্প্রতিক রেজিস্ট্রেশন
           </h2>
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+            <table className="mobile-card-list" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--color-earth-1)', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
                   <th style={{ padding: '1rem 0', fontWeight: 500 }}>নাম</th>
@@ -97,12 +97,12 @@ export default async function AdminDashboardPage() {
               <tbody>
                 {recentUsers.map((u) => (
                   <tr key={u.id} style={{ borderBottom: '1px solid var(--color-earth-1)' }}>
-                    <td style={{ padding: '1rem 0', fontWeight: 500 }}>{u.name}</td>
-                    <td style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{u.email}</td>
-                    <td style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+                    <td data-label="নাম" style={{ padding: '1rem 0', fontWeight: 500 }}>{u.name}</td>
+                    <td data-label="ইমেইল" style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{u.email}</td>
+                    <td data-label="তারিখ" style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
                       {new Date(u.createdAt).toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' })}
                     </td>
-                    <td style={{ padding: '1rem 0' }}>
+                    <td data-label="স্ট্যাটাস" style={{ padding: '1rem 0' }}>
                       <span className={`badge ${u.status === 'ACTIVE' ? 'badge-success' : u.status === 'PENDING' ? 'badge-warning' : 'badge-earth'}`}>
                         {u.status}
                       </span>
@@ -118,19 +118,19 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Pending Donations */}
-        <div className="card" style={{ padding: '1.5rem' }}>
+        <div className="card" style={{ padding: '1.5rem', flex: 1 }}>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Gift size={20} color="var(--color-accent-dark)" /> অপেক্ষমাণ ডোনেশন
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {pendingDonations.map((d) => (
-              <div key={d.id} style={{ padding: '1rem', border: '1px solid var(--color-earth-1)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div key={d.id} style={{ padding: '1rem', border: '1px solid var(--color-earth-1)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div>
                   <div style={{ fontWeight: 600 }}>৳{Number(d.amount).toLocaleString('bn-BD')}</div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{d.method} • {d.txId}</div>
                   {d.project && <div style={{ fontSize: '0.75rem', color: 'var(--color-primary)' }}>{d.project.title}</div>}
                 </div>
-                <a href="/admin/donations" className="btn btn-outline btn-sm" style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}>
+                <a href="/admin/donations" className="btn btn-outline btn-sm" style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem', minHeight: '44px', display: 'flex', alignItems: 'center' }}>
                   যাচাই করুন
                 </a>
               </div>

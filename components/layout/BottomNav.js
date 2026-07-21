@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, GraduationCap, User } from 'lucide-react';
+import { Home, BookOpen, GraduationCap, LayoutDashboard, User } from 'lucide-react';
 import styles from './BottomNav.module.css';
 
 export default function BottomNav() {
@@ -9,8 +9,9 @@ export default function BottomNav() {
 
   const navItems = [
     { name: 'হোম', href: '/', icon: Home },
-    { name: 'কন্টেন্ট', href: '/content', icon: BookOpen },
+    { name: 'ড্যাশবোর্ড', href: '/dashboard', icon: LayoutDashboard },
     { name: 'কোর্স', href: '/courses', icon: GraduationCap },
+    { name: 'কন্টেন্ট', href: '/content', icon: BookOpen },
     { name: 'প্রোফাইল', href: '/profile', icon: User },
   ];
 
@@ -19,7 +20,10 @@ export default function BottomNav() {
       <div className={styles.navContainer}>
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname.startsWith(item.href);
+          // Fix active state: exact match for root, startsWith for others
+          const isActive = item.href === '/' 
+            ? pathname === '/' 
+            : pathname.startsWith(item.href);
           
           return (
             <Link 

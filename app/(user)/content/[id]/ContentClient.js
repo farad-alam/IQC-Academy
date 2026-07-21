@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, CheckCircle2, PlayCircle, FileText, File } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText, File } from 'lucide-react';
 
 export default function ContentClient({ module, isCompleted, hasQuiz, nextModuleId }) {
   const router = useRouter();
@@ -112,19 +112,19 @@ export default function ContentClient({ module, isCompleted, hasQuiz, nextModule
 
             {/* If completed, show Next / Quiz buttons */}
             {completedState && (
-              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', width: '100%', flexDirection: 'column', alignItems: 'center' }}>
                 {hasQuiz && (
-                  <Link href={`/quiz/${module.id}`} className="btn btn-accent">
-                    কুইজে অংশ নিন
+                  <Link href={`/quiz/${module.id}`} className="btn btn-accent btn-lg" style={{ width: '100%', maxWidth: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    কুইজে অংশ নিন <ChevronRight size={20} style={{ marginLeft: '8px' }} />
                   </Link>
                 )}
                 {nextModuleId && (
-                  <Link href={`/content/${nextModuleId}`} className="btn btn-outline">
-                    পরবর্তী মডিউল
+                  <Link href={`/content/${nextModuleId}`} className="btn btn-primary btn-lg" style={{ width: '100%', maxWidth: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    পরবর্তী মডিউল <ChevronRight size={20} style={{ marginLeft: '8px' }} />
                   </Link>
                 )}
                 {!hasQuiz && !nextModuleId && (
-                  <Link href={`/courses/${module.courseId}`} className="btn btn-outline">
+                  <Link href={`/courses/${module.courseId}`} className="btn btn-outline btn-lg" style={{ width: '100%', maxWidth: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     কোর্সে ফিরে যান
                   </Link>
                 )}

@@ -119,11 +119,11 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className={styles.welcomeActions}>
-              <Link href="/profile" className="btn btn-outline btn-sm" style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'white' }}>
-                <User size={15} /> প্রোফাইল
+              <Link href="/profile" className="btn btn-outline" style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'white', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <User size={18} style={{ marginRight: '8px' }} /> প্রোফাইল
               </Link>
-              <button onClick={handleLogout} className="btn btn-ghost btn-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                <LogOut size={15} /> লগআউট
+              <button onClick={handleLogout} className="btn btn-ghost" style={{ color: 'rgba(255,255,255,0.7)', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <LogOut size={18} style={{ marginRight: '8px' }} /> লগআউট
               </button>
             </div>
           </div>

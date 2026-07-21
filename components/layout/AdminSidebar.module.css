@@ -7,6 +7,16 @@
   flex-direction: column;
   position: sticky;
   top: 0;
+  z-index: var(--z-dropdown);
+  transition: transform var(--transition-base);
+}
+
+.mobileTopBar {
+  display: none;
+}
+
+.overlay {
+  display: none;
 }
 
 .header {
@@ -98,6 +108,57 @@
 
 @media (max-width: 1024px) {
   .sidebar {
-    display: none; /* In a real app we'd have a mobile drawer, but keeping it simple here */
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .mobileTopBar {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-primary);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    gap: var(--space-4);
+  }
+
+  .mobileTitle {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+  }
+
+  .hamburgerBtn {
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-left: -12px;
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-dropdown) - 1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+  }
+
+  .overlay.open {
+    opacity: 1;
+    pointer-events: auto;
   }
 }

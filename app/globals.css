@@ -118,6 +118,33 @@
 }
 
 /* ========================================
+   ADMIN LAYOUT
+   ======================================== */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.admin-main {
+  flex: 1;
+  padding: var(--space-8);
+  height: 100vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+  .admin-main {
+    padding: var(--space-4);
+    height: auto;
+    overflow-y: visible;
+  }
+}
+
+/* ========================================
    RESET & BASE
    ======================================== */
 
@@ -911,13 +938,14 @@ tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: var(--color-primary-50); }
 
 /* ========================================
-   RESPONSIVE UTILITIES
+   RESPONSIVE UTILITIES & MOBILE-FIRST
    ======================================== */
 
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
+  /* Ensure grids collapse to 1 column on mobile */
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr !important; }
   .container { padding: 0 var(--space-4); }
-  .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 769px) {
@@ -928,6 +956,56 @@ tbody tr:hover { background: var(--color-primary-50); }
 @media (max-width: 768px) {
   .page-content {
     padding-bottom: calc(var(--nav-height-mobile) + var(--space-4));
+  }
+}
+
+/* 
+ * Mobile Card List (Converts Table to Cards on Mobile) 
+ * Add this class to a <table> to make it stack as cards on small screens.
+ */
+@media (max-width: 768px) {
+  .mobile-card-list {
+    display: block;
+    width: 100%;
+    border: none !important;
+  }
+  .mobile-card-list thead {
+    display: none;
+  }
+  .mobile-card-list tbody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .mobile-card-list tr {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-earth-1) !important;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .mobile-card-list td {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-2) 0;
+    border: none !important;
+  }
+  .mobile-card-list td::before {
+    content: attr(data-label);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-bottom: var(--space-1);
+  }
+  .mobile-card-list td:last-child {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-earth-1) !important;
+    flex-direction: row;
+    justify-content: flex-end;
   }
 }
 
@@ -952,6 +1030,13 @@ tbody tr:hover { background: var(--color-primary-50); }
   color: var(--color-primary-dark);
 }
 
-@media (max-width: 640px) {
-  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+.admin-dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+@media (min-width: 900px) {
+  .admin-dashboard-grid {
+    flex-direction: row;
+  }
 }
