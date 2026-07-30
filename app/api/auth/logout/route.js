@@ -40,7 +40,7 @@ export async function POST(req) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/api/auth/refresh',
+      path: '/', // must match the path it was set on
       maxAge: 0,
     });
 

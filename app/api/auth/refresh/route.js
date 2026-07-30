@@ -86,7 +86,7 @@ export async function POST(req) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/api/auth/refresh',
+      path: '/', // '/' so middleware can read it for auto-refresh
       maxAge: 7 * 24 * 60 * 60,
     });
 
