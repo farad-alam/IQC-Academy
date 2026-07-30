@@ -13,8 +13,24 @@ export async function DELETE(req, { params }) {
     const resolvedParams = await params;
     const { moduleId } = resolvedParams;
 
-    await prisma.module.delete({
-      where: { id: moduleId }
+    await prisma.$transaction(async (tx) => {
+      // 1. Delete quiz attempts for quizzes in this module
+      const quizzes = await tx.quiz.findMany({
+        where: { moduleId },
+        select: { id: true }
+      });
+      
+      const quizIds = quizzes.map(q => q.id);
+      if (quizIds.length > 0) {
+        await tx.quizAttempt.deleteMany({
+          where: { quizId: { in: quizIds } }
+        });
+      }
+
+      // 2. Delete the module (Prisma handles cascading for Quiz and ModuleCompletion)
+      await tx.module.delete({
+        where: { id: moduleId }
+      });
     });
 
     return NextResponse.json({ success: true, message: 'Module deleted' });

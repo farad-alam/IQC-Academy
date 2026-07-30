@@ -12,8 +12,15 @@ export async function DELETE(req, { params }) {
     const resolvedParams = await params;
     const { quizId } = resolvedParams;
 
-    await prisma.quiz.delete({
-      where: { id: quizId }
+    await prisma.$transaction(async (tx) => {
+      // 1. Delete quiz attempts for this quiz
+      await tx.quizAttempt.deleteMany({
+        where: { quizId }
+      });
+      // 2. Delete the quiz itself
+      await tx.quiz.delete({
+        where: { id: quizId }
+      });
     });
 
     return NextResponse.json({ success: true, message: 'Quiz deleted' });

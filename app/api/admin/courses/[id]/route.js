@@ -48,11 +48,42 @@ export async function DELETE(req, { params }) {
     }
 
     const { id } = await params;
-    await prisma.course.delete({ where: { id } });
+
+    // We must manually delete/detach relations that don't have onDelete: Cascade in the schema
+    await prisma.$transaction(async (tx) => {
+      // 1. Detach from donations (financial records shouldn't be deleted)
+      await tx.donation.updateMany({
+        where: { courseId: id },
+        data: { courseId: null },
+      });
+
+      // 2. Delete enrollments for this course
+      await tx.enrollment.deleteMany({
+        where: { courseId: id },
+      });
+
+      // 3. Delete quiz attempts for quizzes in this course's modules
+      const modules = await tx.module.findMany({
+        where: { courseId: id },
+        select: { id: true, quizzes: { select: { id: true } } }
+      });
+      
+      const quizIds = modules.flatMap(m => m.quizzes.map(q => q.id));
+      if (quizIds.length > 0) {
+        await tx.quizAttempt.deleteMany({
+          where: { quizId: { in: quizIds } }
+        });
+      }
+
+      // 4. Delete the course (Prisma will cascade delete Modules, Quizzes, ModuleCompletions)
+      await tx.course.delete({
+        where: { id },
+      });
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('[ADMIN_DELETE_COURSE_ERROR]', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
   }
 }
