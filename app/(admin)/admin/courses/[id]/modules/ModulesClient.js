@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, Plus, Edit, Trash2, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Loader from '@/components/ui/Loader';
+import EditCourseModal from '@/components/admin/EditCourseModal';
 
 export default function ModulesClient({ course }) {
   const router = useRouter();
@@ -111,7 +112,10 @@ export default function ModulesClient({ course }) {
           <Link href="/admin/courses" className="btn btn-ghost btn-sm" style={{ padding: 0, marginBottom: '0.5rem' }}>
             <ChevronLeft size={16} /> কোর্সে ফিরে যান
           </Link>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.25rem' }}>মডিউল পরিচালনা</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>মডিউল পরিচালনা</h1>
+            <EditCourseModal course={course} onCourseUpdated={() => router.refresh()} />
+          </div>
           <p style={{ color: 'var(--color-text-muted)' }}>{course.title}</p>
         </div>
         {!isAdding && (
