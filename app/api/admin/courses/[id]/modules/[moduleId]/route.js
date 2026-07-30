@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { uploadImage } from '@/lib/cloudinary';
 
 export async function DELETE(req, { params }) {
   try {
@@ -38,10 +39,20 @@ export async function PATCH(req, { params }) {
     if (body.title !== undefined) updateData.title = body.title;
     if (body.contentType !== undefined) updateData.contentType = body.contentType;
     if (body.videoUrl !== undefined) updateData.videoUrl = body.videoUrl;
-    if (body.pdfUrl !== undefined) updateData.pdfUrl = body.pdfUrl;
     if (body.body !== undefined) updateData.body = body.body;
     if (body.order !== undefined) updateData.order = body.order;
     if (body.duration !== undefined) updateData.duration = body.duration;
+
+    if (body.pdfFile) {
+      try {
+        const url = await uploadImage(body.pdfFile, 'iqc-academy/modules');
+        updateData.pdfUrl = url;
+      } catch (err) {
+        return NextResponse.json({ error: 'Failed to upload PDF' }, { status: 500 });
+      }
+    } else if (body.pdfUrl !== undefined) {
+      updateData.pdfUrl = body.pdfUrl;
+    }
 
     const updated = await prisma.module.update({
       where: { id: moduleId },

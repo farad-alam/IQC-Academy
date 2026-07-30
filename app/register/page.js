@@ -45,7 +45,9 @@ function validateStep1(form) {
     else if (age < 8 || age > 100) errs.dob = 'বয়স ৮ থেকে ১০০ বছরের মধ্যে হতে হবে';
   }
 
-  if (form.facebook && form.facebook.trim()) {
+  if (!form.facebook || !form.facebook.trim()) {
+    errs.facebook = 'ফেসবুক প্রোফাইল লিংক আবশ্যক';
+  } else {
     try { new URL(form.facebook); }
     catch { errs.facebook = 'সঠিক ফেসবুক ইউআরএল দিন (https://... দিয়ে শুরু হবে)'; }
   }
@@ -96,12 +98,8 @@ function validateStep3(form) {
 
   if (!form.password) {
     errs.password = 'পাসওয়ার্ড আবশ্যক';
-  } else if (form.password.length < 8) {
-    errs.password = 'পাসওয়ার্ড কমপক্ষে ৮ অক্ষর হতে হবে';
-  } else if (!/[A-Z]/.test(form.password)) {
-    errs.password = 'পাসওয়ার্ডে কমপক্ষে একটি বড় হাতের অক্ষর (A-Z) থাকতে হবে';
-  } else if (!/[0-9]/.test(form.password)) {
-    errs.password = 'পাসওয়ার্ডে কমপক্ষে একটি সংখ্যা (0-9) থাকতে হবে';
+  } else if (form.password.length < 6) {
+    errs.password = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে';
   }
 
   if (form.password !== form.confirmPassword) errs.confirmPassword = 'পাসওয়ার্ড মিলছে না';
@@ -113,7 +111,7 @@ function validateStep3(form) {
 function getPasswordStrength(password) {
   if (!password) return { score: 0, label: '', color: '' };
   let score = 0;
-  if (password.length >= 8) score++;
+  if (password.length >= 6) score++;
   if (password.length >= 12) score++;
   if (/[A-Z]/.test(password)) score++;
   if (/[0-9]/.test(password)) score++;
@@ -342,7 +340,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">ফেসবুক প্রোফাইল লিংক <span style={{ fontWeight: 400, color: 'var(--color-text-muted)' }}>(ঐচ্ছিক)</span></label>
+                  <label className="form-label">ফেসবুক প্রোফাইল লিংক<Req /></label>
                   <input
                     type="url"
                     className={`form-input ${errors.facebook ? 'error' : ''}`}
@@ -502,7 +500,7 @@ export default function RegisterPage() {
                       className={`form-input ${errors.password ? 'error' : ''}`}
                       value={form.password}
                       onChange={handleChange('password')}
-                      placeholder="কমপক্ষে ৮ অক্ষর, একটি বড় হাতের অক্ষর ও সংখ্যা"
+                      placeholder="পাসওয়ার্ড দিন (কমপক্ষে ৬ অক্ষর)"
                       autoComplete="new-password"
                     />
                     <button type="button" className={styles.eyeBtn} onClick={() => setShowPass(p => !p)} aria-label="পাসওয়ার্ড দেখুন">
@@ -528,9 +526,7 @@ export default function RegisterPage() {
                   {/* Requirement hints */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.5rem' }}>
                     {[
-                      { ok: form.password.length >= 8, text: 'কমপক্ষে ৮ অক্ষর' },
-                      { ok: /[A-Z]/.test(form.password), text: 'একটি বড় হাতের অক্ষর (A-Z)' },
-                      { ok: /[0-9]/.test(form.password), text: 'একটি সংখ্যা (0-9)' },
+                      { ok: form.password.length >= 6, text: 'কমপক্ষে ৬ অক্ষর' }
                     ].map(r => (
                       <span key={r.text} style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: r.ok ? 'var(--color-success)' : 'var(--color-text-muted)' }}>
                         {r.ok ? <CheckCircle size={12} /> : <XCircle size={12} />} {r.text}

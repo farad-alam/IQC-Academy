@@ -1,8 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, Search, Edit, Trash2 } from 'lucide-react';
+import { BookOpen, Search, Trash2 } from 'lucide-react';
 import CreateCourseModal from '@/components/admin/CreateCourseModal';
+import EditCourseModal from '@/components/admin/EditCourseModal';
 
 export default function AdminCoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -138,8 +139,9 @@ export default function AdminCoursesPage() {
                         >
                           {course.status === 'PUBLISHED' ? 'ড্রাফট' : 'প্রকাশ'}
                         </button>
+                        <EditCourseModal course={course} onCourseUpdated={fetchCourses} />
                         <Link href={`/admin/courses/${course.id}/modules`} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-primary)' }} title="মডিউল পরিচালনা">
-                          <Edit size={16} />
+                          মডিউল
                         </Link>
                         <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-error)' }} title="মুছে ফেলুন" onClick={() => handleDelete(course.id)}>
                           <Trash2 size={16} />

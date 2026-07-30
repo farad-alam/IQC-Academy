@@ -11,13 +11,13 @@ export default function ModulesClient({ course }) {
   const [modules, setModules] = useState(course.modules);
   const [isAdding, setIsAdding] = useState(false);
   const [editingModuleId, setEditingModuleId] = useState(null);
-  const [formData, setFormData] = useState({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', body: '' });
+  const [formData, setFormData] = useState({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', pdfFile: '', body: '' });
   const [loading, setLoading] = useState(false);
 
   const openAddForm = () => {
     setIsAdding(true);
     setEditingModuleId(null);
-    setFormData({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', body: '' });
+    setFormData({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', pdfFile: '', body: '' });
   };
 
   const openEditForm = (module) => {
@@ -28,6 +28,7 @@ export default function ModulesClient({ course }) {
       contentType: module.contentType || 'VIDEO',
       videoUrl: module.videoUrl || '',
       pdfUrl: module.pdfUrl || '',
+      pdfFile: '',
       body: module.body || ''
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -36,6 +37,24 @@ export default function ModulesClient({ course }) {
   const closeForm = () => {
     setIsAdding(false);
     setEditingModuleId(null);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 4 * 1024 * 1024) {
+        alert('ফাইল সাইজ 4MB এর নিচে হতে হবে');
+        e.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, pdfFile: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setFormData(prev => ({ ...prev, pdfFile: '' }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -140,8 +159,13 @@ export default function ModulesClient({ course }) {
 
                 {formData.contentType === 'PDF' && (
                   <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">পিডিএফ লিংক</label>
-                    <input type="url" className="form-input" placeholder="https://..." value={formData.pdfUrl} onChange={e => setFormData({ ...formData, pdfUrl: e.target.value })} />
+                    <label className="form-label">পিডিএফ আপলোড করুন</label>
+                    <input type="file" accept="application/pdf" className="form-input" onChange={handleFileChange} />
+                    {formData.pdfUrl && !formData.pdfFile && (
+                      <div style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
+                        বর্তমান পিডিএফ: <a href={formData.pdfUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)' }}>দেখুন</a>
+                      </div>
+                    )}
                   </div>
                 )}
 
