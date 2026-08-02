@@ -100,7 +100,7 @@ export default function AdminSidebar() {
           
           <Link href="/" className={styles.navItem} style={{ marginTop: '0.5rem', color: 'var(--color-primary)' }}>
             <Home size={20} />
-            <span>মূল পেজে যান</span>
+            <span>হোম পেজে যান</span>
           </Link>
         </div>
       </aside>

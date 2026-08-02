@@ -120,7 +120,7 @@ export default function DashboardPage() {
             </div>
             <div className={styles.welcomeActions}>
               <Link href="/" className="btn btn-ghost" style={{ color: 'rgba(255,255,255,0.7)', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Home size={18} style={{ marginRight: '8px' }} /> মূল পাতা
+                <Home size={18} style={{ marginRight: '8px' }} /> হোম পেজে যান
               </Link>
               <Link href="/profile" className="btn btn-outline" style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'white', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <User size={18} style={{ marginRight: '8px' }} /> প্রোফাইল
