@@ -5,41 +5,38 @@ import { quizAttemptSchema } from '@/lib/validation/user.schema';
 
 export async function POST(req, { params }) {
   try {
-    const resolvedParams = await params;
-    const { moduleId } = resolvedParams;
     const user = await getAuthUser();
-
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Validate body
+    const resolvedParams = await params;
+    const { id: courseId } = resolvedParams;
     const body = await req.json();
+
     if (!Array.isArray(body)) {
-        return NextResponse.json({ error: 'Expected array of answers' }, { status: 400 });
+      return NextResponse.json({ error: 'Expected array of answers' }, { status: 400 });
     }
 
-    // Verify enrollment
-    const module = await prisma.module.findUnique({
-      where: { id: moduleId },
-      include: { quizzes: true }
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: { finalExamQuizzes: true }
     });
 
-    if (!module) return NextResponse.json({ error: 'Module not found' }, { status: 404 });
+    if (!course || !course.finalExamEnabled) {
+      return NextResponse.json({ error: 'Final exam not available' }, { status: 404 });
+    }
 
     const enrollment = await prisma.enrollment.findUnique({
-      where: { userId_courseId: { userId: user.id, courseId: module.courseId } }
+      where: { userId_courseId: { userId: user.id, courseId } }
     });
 
     if (!enrollment || enrollment.status !== 'ACTIVE') {
       return NextResponse.json({ error: 'Not actively enrolled' }, { status: 403 });
     }
 
-    // Max Attempts Logic
-    // We are no longer limiting attempts for modules, allowing unlimited retries.
-    // Let's get the current attempt number for this module.
-    const maxExamAttempt = await prisma.moduleQuizSession.aggregate({
-      where: { userId: user.id, moduleId },
+    const maxExamAttempt = await prisma.finalExamSession.aggregate({
+      where: { userId: user.id, courseId },
       _max: { attemptNum: true }
     });
     
@@ -55,7 +52,7 @@ export async function POST(req, { params }) {
       const parsed = quizAttemptSchema.safeParse({ answer });
       if (!parsed.success) continue;
 
-      const quiz = module.quizzes.find(q => q.id === quizId);
+      const quiz = course.finalExamQuizzes.find(q => q.id === quizId);
       if (!quiz) continue;
 
       const passed = quiz.correct === answer;
@@ -75,50 +72,36 @@ export async function POST(req, { params }) {
       });
     }
 
-    const totalQuestions = body.length; // Evaluate against the questions answered (which is displayCount)
+    const totalQuestions = body.length;
     const percentage = totalQuestions > 0 ? (score / totalQuestions) * 100 : 0;
-    const passMark = module.quizPassMark || 80;
-    const passedModule = percentage >= passMark;
+    const passMark = course.finalExamPassMark || 80;
+    const passedExam = percentage >= passMark;
 
     // Record session
-    await prisma.moduleQuizSession.create({
+    await prisma.finalExamSession.create({
       data: {
         userId: user.id,
-        moduleId,
+        courseId,
         attemptNum: currentExamAttemptNum,
         score,
         total: totalQuestions,
-        passed: passedModule,
+        passed: passedExam,
         answers: answersToSave
       }
     });
 
-    // If passed, add points and mark module as completed
-    if (passedModule) {
-      // Upsert module completion so it doesn't fail if already completed
-      await prisma.moduleCompletion.upsert({
-        where: { userId_moduleId: { userId: user.id, moduleId } },
-        update: {},
-        create: {
-          userId: user.id,
-          moduleId
-        }
+    // If passed, mark enrollment as completed and add points
+    if (passedExam) {
+      await prisma.enrollment.update({
+        where: { id: enrollment.id },
+        data: { status: 'COMPLETED', completedAt: new Date(), progress: 100 }
       });
 
       await prisma.user.update({
         where: { id: user.id },
-        data: { totalPoints: { increment: 50 } }
+        data: { totalPoints: { increment: 200 } } // Bonus for course completion
       });
     }
-
-    // Find next module ID for navigation
-    const nextModule = await prisma.module.findFirst({
-      where: { 
-        courseId: module.courseId, 
-        order: { gt: module.order }
-      },
-      orderBy: { order: 'asc' }
-    });
 
     return NextResponse.json({ 
       success: true, 
@@ -126,13 +109,12 @@ export async function POST(req, { params }) {
       totalQuestions,
       percentage,
       passMark,
-      passedModule,
-      results,
-      nextModuleId: nextModule?.id
+      passedExam,
+      results 
     });
 
   } catch (error) {
-    console.error('[QUIZ_ATTEMPT_ERROR]', error);
+    console.error('[FINAL_EXAM_ATTEMPT_ERROR]', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

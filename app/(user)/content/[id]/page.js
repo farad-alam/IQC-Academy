@@ -32,13 +32,51 @@ export default async function ContentPage({ params }) {
     redirect(`/courses/${module.courseId}`);
   }
 
-  // Check if module is already completed by user
+  // --- MODULE LOCK LOGIC ---
+  // If this module has order > 1, check if the previous module's quiz is passed
+  if (module.order > 1) {
+    const prevModule = await prisma.module.findFirst({
+      where: { courseId: module.courseId, order: { lt: module.order } },
+      orderBy: { order: 'desc' },
+      include: { _count: { select: { quizzes: true } } }
+    });
+
+    if (prevModule) {
+      if (prevModule._count.quizzes > 0) {
+        // Must have passed the previous module's quiz
+        const passedQuiz = await prisma.moduleQuizSession.findFirst({
+          where: { userId: user.id, moduleId: prevModule.id, passed: true }
+        });
+        if (!passedQuiz) {
+          redirect(`/quiz/${prevModule.id}?locked=true`);
+        }
+      } else {
+        // If no quizzes, must have completed the previous module
+        const prevCompletion = await prisma.moduleCompletion.findUnique({
+          where: { userId_moduleId: { userId: user.id, moduleId: prevModule.id } }
+        });
+        if (!prevCompletion) {
+          redirect(`/content/${prevModule.id}`);
+        }
+      }
+    }
+  }
+
+  // Check if current module is already completed by user
   const completion = await prisma.moduleCompletion.findUnique({
     where: { userId_moduleId: { userId: user.id, moduleId: id } }
   });
 
   const isCompleted = !!completion;
   const hasQuiz = module.quizzes.length > 0;
+  
+  let quizPassed = false;
+  if (hasQuiz) {
+    const passedSession = await prisma.moduleQuizSession.findFirst({
+      where: { userId: user.id, moduleId: id, passed: true }
+    });
+    quizPassed = !!passedSession;
+  }
 
   // Find the next module in the sequence for navigation
   const nextModule = await prisma.module.findFirst({
@@ -54,6 +92,7 @@ export default async function ContentPage({ params }) {
       module={module} 
       isCompleted={isCompleted} 
       hasQuiz={hasQuiz} 
+      quizPassed={quizPassed}
       nextModuleId={nextModule?.id} 
     />
   );

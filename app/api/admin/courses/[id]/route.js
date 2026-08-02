@@ -26,6 +26,9 @@ export async function PATCH(req, { params }) {
         ...(body.certificate !== undefined && { certificate: body.certificate }),
         ...(body.language !== undefined && { language: body.language }),
         ...(body.tags !== undefined && { tags: Array.isArray(body.tags) ? body.tags : body.tags.split(',').map(t => t.trim()).filter(Boolean) }),
+        ...(body.finalExamEnabled !== undefined && { finalExamEnabled: body.finalExamEnabled }),
+        ...(body.finalExamPassMark !== undefined && { finalExamPassMark: body.finalExamPassMark }),
+        ...(body.finalExamDisplayCount !== undefined && { finalExamDisplayCount: body.finalExamDisplayCount }),
       },
       include: {
         instructor: { select: { id: true, name: true } },

@@ -31,11 +31,13 @@ model User {
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
-  enrollments   Enrollment[]
-  quizAttempts  QuizAttempt[]
-  donations     Donation[]
-  refreshTokens RefreshToken[]
-  otps          OtpToken[]
+  enrollments        Enrollment[]
+  quizAttempts       QuizAttempt[]
+  moduleQuizSessions ModuleQuizSession[]
+  finalExamSessions  FinalExamSession[]
+  donations          Donation[]
+  refreshTokens      RefreshToken[]
+  otps               OtpToken[]
 }
 
 enum Role {
@@ -107,12 +109,17 @@ model Course {
   enrollments      Enrollment[]
   tags             String[]
   features         String[]
-  rating           Decimal      @default(0)
-  ratingCount      Int          @default(0)
-  enrolledCount    Int          @default(0)
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  donations        Donation[]
+  rating                Decimal      @default(0)
+  ratingCount           Int          @default(0)
+  enrolledCount         Int          @default(0)
+  finalExamEnabled      Boolean      @default(false)
+  finalExamPassMark     Int          @default(80)
+  finalExamDisplayCount Int          @default(20)
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  donations             Donation[]
+  finalExamQuizzes      FinalExamQuiz[]
+  finalExamSessions     FinalExamSession[]
 }
 
 enum CourseType {
@@ -133,12 +140,15 @@ model Module {
   title       String
   order       Int
   duration    String?
-  contentType ContentType?
-  body        String?            // For TEXT type
-  videoUrl    String?            // For VIDEO type
-  pdfUrl      String?            // For PDF type
-  quizzes     Quiz[]
-  completions ModuleCompletion[]
+  contentType      ContentType?
+  body             String?            // For TEXT type
+  videoUrl         String?            // For VIDEO type
+  pdfUrl           String?            // For PDF type
+  quizPassMark     Int                @default(80)
+  quizDisplayCount Int                @default(20)
+  quizzes          Quiz[]
+  completions      ModuleCompletion[]
+  quizSessions     ModuleQuizSession[]
 }
 
 enum ContentType {
@@ -199,6 +209,48 @@ model QuizAttempt {
   attemptNum Int
   answeredAt DateTime @default(now())
   @@unique([userId, quizId, attemptNum])
+}
+
+model ModuleQuizSession {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moduleId   String
+  module     Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  attemptNum Int
+  score      Int      @default(0)
+  total      Int      @default(0)
+  passed     Boolean  @default(false)
+  answers    Json
+  takenAt    DateTime @default(now())
+
+  @@index([userId, moduleId])
+}
+
+model FinalExamQuiz {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  question    String
+  options     String[]
+  correct     Int
+  explanation String?
+}
+
+model FinalExamSession {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  attemptNum Int
+  score      Int      @default(0)
+  total      Int      @default(0)
+  passed     Boolean  @default(false)
+  answers    Json
+  takenAt    DateTime @default(now())
+
+  @@index([userId, courseId])
 }
 
 model Project {

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText, File } from 'lucide-react';
 
-export default function ContentClient({ module, isCompleted, hasQuiz, nextModuleId }) {
+export default function ContentClient({ module, isCompleted, hasQuiz, quizPassed, nextModuleId }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [completedState, setCompletedState] = useState(isCompleted);
@@ -114,16 +114,26 @@ export default function ContentClient({ module, isCompleted, hasQuiz, nextModule
             {completedState && (
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', width: '100%', flexDirection: 'column', alignItems: 'center' }}>
                 {hasQuiz && (
-                  <Link href={`/quiz/${module.id}`} className="btn btn-accent btn-lg" style={{ width: '100%', maxWidth: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    কুইজে অংশ নিন <ChevronRight size={20} style={{ marginLeft: '8px' }} />
-                  </Link>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center', width: '100%' }}>
+                    {quizPassed ? (
+                      <div style={{ color: 'var(--color-success)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <CheckCircle2 size={20} /> কুইজ পাস করেছেন
+                      </div>
+                    ) : (
+                      <Link href={`/quiz/${module.id}`} className="btn btn-accent btn-lg" style={{ width: '100%', maxWidth: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        কুইজে অংশ নিন <ChevronRight size={20} style={{ marginLeft: '8px' }} />
+                      </Link>
+                    )}
+                  </div>
                 )}
-                {nextModuleId && (
+                
+                {nextModuleId && (!hasQuiz || quizPassed) && (
                   <Link href={`/content/${nextModuleId}`} className="btn btn-primary btn-lg" style={{ width: '100%', maxWidth: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     পরবর্তী মডিউল <ChevronRight size={20} style={{ marginLeft: '8px' }} />
                   </Link>
                 )}
-                {!hasQuiz && !nextModuleId && (
+                
+                {!nextModuleId && (!hasQuiz || quizPassed) && (
                   <Link href={`/courses/${module.courseId}`} className="btn btn-outline btn-lg" style={{ width: '100%', maxWidth: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     কোর্সে ফিরে যান
                   </Link>

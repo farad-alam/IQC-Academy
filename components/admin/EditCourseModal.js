@@ -16,6 +16,9 @@ export default function EditCourseModal({ course, onCourseUpdated }) {
     duration: '',
     instructorId: '',
     tags: '',
+    finalExamEnabled: false,
+    finalExamPassMark: 80,
+    finalExamDisplayCount: 20,
   });
 
   useEffect(() => {
@@ -36,13 +39,16 @@ export default function EditCourseModal({ course, onCourseUpdated }) {
         duration: course.duration || '',
         instructorId: course.instructorId || '',
         tags: course.tags && Array.isArray(course.tags) ? course.tags.join(', ') : (course.tags || ''),
+        finalExamEnabled: course.finalExamEnabled || false,
+        finalExamPassMark: course.finalExamPassMark || 80,
+        finalExamDisplayCount: course.finalExamDisplayCount || 20,
       });
     }
   }, [open, course]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(p => ({ ...p, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setForm(p => ({ ...p, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = async (e) => {
@@ -56,7 +62,9 @@ export default function EditCourseModal({ course, onCourseUpdated }) {
     try {
       const payload = {
         ...form,
-        tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : []
+        tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        finalExamPassMark: parseInt(form.finalExamPassMark) || 80,
+        finalExamDisplayCount: parseInt(form.finalExamDisplayCount) || 20,
       };
 
       const res = await fetch(`/api/admin/courses/${course.id}`, {
@@ -159,6 +167,28 @@ export default function EditCourseModal({ course, onCourseUpdated }) {
                 <div className="form-group">
                   <label className="form-label">ট্যাগসমূহ</label>
                   <input name="tags" value={form.tags} onChange={handleChange} className="form-input" placeholder="কমা দিয়ে লিখুন (যেমন: কুরআন, তাজবিদ)" />
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--color-earth-1)', paddingTop: '1.25rem', marginTop: '0.5rem' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--color-primary)' }}>ফাইনাল পরীক্ষা সেটিংস</h3>
+                  
+                  <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <input type="checkbox" id="finalExamEnabled" name="finalExamEnabled" checked={form.finalExamEnabled} onChange={handleChange} style={{ width: '1.25rem', height: '1.25rem', accentColor: 'var(--color-primary)' }} />
+                    <label htmlFor="finalExamEnabled" className="form-label" style={{ marginBottom: 0, cursor: 'pointer' }}>ফাইনাল পরীক্ষা চালু করুন</label>
+                  </div>
+
+                  {form.finalExamEnabled && (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                      <div className="form-group">
+                        <label className="form-label">পাস মার্ক (%)</label>
+                        <input type="number" name="finalExamPassMark" value={form.finalExamPassMark} onChange={handleChange} className="form-input" min="0" max="100" placeholder="e.g. 80" />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">প্রদর্শিত প্রশ্নের সংখ্যা</label>
+                        <input type="number" name="finalExamDisplayCount" value={form.finalExamDisplayCount} onChange={handleChange} className="form-input" min="1" placeholder="e.g. 20" />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

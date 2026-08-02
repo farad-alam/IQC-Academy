@@ -58,6 +58,8 @@ export async function PATCH(req, { params }) {
     if (body.body !== undefined) updateData.body = body.body;
     if (body.order !== undefined) updateData.order = body.order;
     if (body.duration !== undefined) updateData.duration = body.duration;
+    if (body.quizPassMark !== undefined) updateData.quizPassMark = body.quizPassMark;
+    if (body.quizDisplayCount !== undefined) updateData.quizDisplayCount = body.quizDisplayCount;
 
     if (body.pdfFile) {
       try {

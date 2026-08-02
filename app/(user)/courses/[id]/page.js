@@ -47,6 +47,26 @@ export default async function CourseDetailPage({ params }) {
   const isCompleted = enrollment?.status === 'COMPLETED';
   const progress = enrollment?.progress || 0;
 
+  let allModulesCompleted = false;
+  let allQuizzesPassed = false;
+
+  if (isEnrolled && course.modules.length > 0) {
+    allModulesCompleted = completedModuleIds.length === course.modules.length;
+    
+    const modulesWithQuizzes = course.modules.filter(m => m._count.quizzes > 0).map(m => m.id);
+    if (modulesWithQuizzes.length > 0) {
+      const passedSessions = await prisma.moduleQuizSession.findMany({
+        where: { userId: user.id, moduleId: { in: modulesWithQuizzes }, passed: true }
+      });
+      const passedModuleIds = new Set(passedSessions.map(s => s.moduleId));
+      allQuizzesPassed = passedModuleIds.size === modulesWithQuizzes.length;
+    } else {
+      allQuizzesPassed = true; // No quizzes to pass
+    }
+  }
+
+  const isEligibleForFinalExam = isEnrolled && allModulesCompleted && allQuizzesPassed;
+
   return (
     <div className="container" style={{ padding: '2rem 1rem', maxWidth: '800px' }}>
       <Link href="/courses" className="btn btn-ghost" style={{ padding: 0, marginBottom: '2rem' }}>
@@ -118,6 +138,25 @@ export default async function CourseDetailPage({ params }) {
                   <Link href={`/courses/${course.id}/certificate`} className="btn btn-primary btn-sm" style={{ width: '100%', justifyContent: 'center' }}>
                     সার্টিফিকেট ডাউনলোড করুন
                   </Link>
+                </div>
+              )}
+              
+              {!isCompleted && course.finalExamEnabled && isEligibleForFinalExam && (
+                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed var(--color-primary-100)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-primary)', fontWeight: 600, fontSize: '0.875rem', marginBottom: '1rem' }}>
+                    🎉 আপনি ফাইনাল পরীক্ষার জন্য যোগ্য!
+                  </div>
+                  <Link href={`/courses/${course.id}/final-exam`} className="btn btn-accent btn-sm" style={{ width: '100%', justifyContent: 'center' }}>
+                    ফাইনাল পরীক্ষা দিন
+                  </Link>
+                </div>
+              )}
+              
+              {!isCompleted && course.finalExamEnabled && !isEligibleForFinalExam && (
+                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px dashed var(--color-primary-100)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+                    <Lock size={16} /> ফাইনাল পরীক্ষা দিতে সবগুলো মডিউল ও কুইজ সম্পন্ন করুন।
+                  </div>
                 </div>
               )}
             </div>

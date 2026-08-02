@@ -12,13 +12,13 @@ export default function ModulesClient({ course }) {
   const [modules, setModules] = useState(course.modules);
   const [isAdding, setIsAdding] = useState(false);
   const [editingModuleId, setEditingModuleId] = useState(null);
-  const [formData, setFormData] = useState({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', pdfFile: '', body: '' });
+  const [formData, setFormData] = useState({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', pdfFile: '', body: '', quizPassMark: 80, quizDisplayCount: 20 });
   const [loading, setLoading] = useState(false);
 
   const openAddForm = () => {
     setIsAdding(true);
     setEditingModuleId(null);
-    setFormData({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', pdfFile: '', body: '' });
+    setFormData({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', pdfFile: '', body: '', quizPassMark: 80, quizDisplayCount: 20 });
   };
 
   const openEditForm = (module) => {
@@ -30,7 +30,9 @@ export default function ModulesClient({ course }) {
       videoUrl: module.videoUrl || '',
       pdfUrl: module.pdfUrl || '',
       pdfFile: '',
-      body: module.body || ''
+      body: module.body || '',
+      quizPassMark: module.quizPassMark || 80,
+      quizDisplayCount: module.quizDisplayCount || 20
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -115,6 +117,11 @@ export default function ModulesClient({ course }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>মডিউল পরিচালনা</h1>
             <EditCourseModal course={course} onCourseUpdated={() => router.refresh()} />
+            {course.finalExamEnabled && (
+              <Link href={`/admin/courses/${course.id}/final-exam`} className="btn btn-outline btn-sm" style={{ marginLeft: '1rem' }}>
+                ফাইনাল পরীক্ষা কুইজ
+              </Link>
+            )}
           </div>
           <p style={{ color: 'var(--color-text-muted)' }}>{course.title}</p>
         </div>
@@ -179,6 +186,18 @@ export default function ModulesClient({ course }) {
                     <textarea className="form-input" rows="6" value={formData.body} onChange={e => setFormData({ ...formData, body: e.target.value })} placeholder="এখানে কন্টেন্ট লিখুন..." />
                   </div>
                 )}
+
+                <div className="grid-2 gap-4">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label">কুইজ পাস মার্ক (%)</label>
+                    <input type="number" className="form-input" min="0" max="100" value={formData.quizPassMark} onChange={e => setFormData({ ...formData, quizPassMark: parseInt(e.target.value) || 0 })} placeholder="e.g. 80" />
+                  </div>
+                  
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label">প্রদর্শিত প্রশ্নের সংখ্যা</label>
+                    <input type="number" className="form-input" min="1" value={formData.quizDisplayCount} onChange={e => setFormData({ ...formData, quizDisplayCount: parseInt(e.target.value) || 1 })} placeholder="e.g. 20" />
+                  </div>
+                </div>
 
                 <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
                   <button type="submit" className="btn btn-primary" disabled={loading}>

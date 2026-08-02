@@ -13,7 +13,7 @@ export async function POST(req, { params }) {
     const resolvedParams = await params;
     const { id: courseId } = resolvedParams;
     const body = await req.json();
-    const { title, contentType, videoUrl, pdfUrl, pdfFile, body: contentBody, order } = body;
+    const { title, contentType, videoUrl, pdfUrl, pdfFile, body: contentBody, order, quizPassMark, quizDisplayCount } = body;
 
     if (!title || !contentType) {
       return NextResponse.json({ error: 'Title and content type are required' }, { status: 400 });
@@ -37,6 +37,8 @@ export async function POST(req, { params }) {
         pdfUrl: contentType === 'PDF' ? finalPdfUrl : null,
         body: contentType === 'TEXT' ? contentBody : null,
         order: order || 1,
+        quizPassMark: quizPassMark || 80,
+        quizDisplayCount: quizDisplayCount || 20,
       },
       include: {
         _count: { select: { quizzes: true } }

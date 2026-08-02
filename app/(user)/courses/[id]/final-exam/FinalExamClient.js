@@ -3,10 +3,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, HelpCircle, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
-import styles from './quiz.module.css';
+import styles from '@/app/(user)/quiz/[id]/quiz.module.css';
 import Loader from '@/components/ui/Loader';
 
-export default function QuizClient({ module, quizzes, history, isLocked, alreadyPassed }) {
+export default function FinalExamClient({ course, quizzes, history, alreadyPassed }) {
   const [quizState, setQuizState] = useState('start'); // start, active, result
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -41,7 +41,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
 
     try {
       // 2. Submit to backend
-      const res = await fetch(`/api/quizzes/${module.id}/attempt`, {
+      const res = await fetch(`/api/courses/${course.id}/final-exam/attempt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -54,7 +54,6 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
         setQuizState('result');
         
         // The backend `results` array contains { quizId, passed, correctAnswer, explanation }
-        // We'll attach the correct answers to our local `quizzes` state so we can display them
         data.results.forEach(res => {
           const quizObj = quizzes.find(q => q.id === res.quizId);
           if (quizObj) {
@@ -63,8 +62,8 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
           }
         });
 
-        // 3. If passed, backend will mark module complete
-        if (data.passedModule) {
+        // 3. If passed, backend will mark enrollment complete
+        if (data.passedExam) {
           router.refresh();
         }
       } else {
@@ -72,7 +71,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
       }
     } catch (err) {
       console.error(err);
-      alert('An error occurred submitting the quiz.');
+      alert('An error occurred submitting the exam.');
     } finally {
       setIsSubmitting(false);
     }
@@ -85,28 +84,18 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
   if (quizState === 'start') {
     return (
       <div className="container" style={{ padding: '2rem 1rem', maxWidth: '600px' }}>
-        <Link href={`/courses/${module.courseId}`} className="btn btn-ghost" style={{ padding: 0, marginBottom: '2rem' }}>
+        <Link href={`/courses/${course.id}`} className="btn btn-ghost" style={{ padding: 0, marginBottom: '2rem' }}>
           <ChevronLeft size={20} /> কোর্সে ফিরে যান
         </Link>
         
-        {isLocked && (
-          <div style={{ backgroundColor: 'var(--color-error-bg)', color: 'var(--color-error)', padding: '1rem', borderRadius: '8px', marginBottom: '2rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <AlertCircle size={24} />
-            <div>
-              <strong>মডিউল লক করা আছে!</strong><br />
-              এই মডিউলের কন্টেন্ট দেখতে হলে আপনাকে আগে এই কুইজে পাস করতে হবে।
-            </div>
-          </div>
-        )}
-
         <div className="card" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
           <div style={{ display: 'inline-flex', padding: '1rem', backgroundColor: 'var(--color-primary-50)', borderRadius: '50%', color: 'var(--color-primary)', marginBottom: '1.5rem' }}>
             <HelpCircle size={48} />
           </div>
           
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>কুইজ: {module.title}</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>ফাইনাল পরীক্ষা: {course.title}</h1>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
-            আপনার জ্ঞান যাচাই করুন। কুইজে {quizzes.length}টি প্রশ্ন রয়েছে।
+            সম্পূর্ণ কোর্সের উপর আপনার জ্ঞান যাচাই করুন। পরীক্ষায় {quizzes.length}টি প্রশ্ন রয়েছে।
           </p>
 
           <div style={{ backgroundColor: 'var(--color-surface-alt)', padding: '1rem', borderRadius: '12px', textAlign: 'left', marginBottom: '2rem' }}>
@@ -115,13 +104,13 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
             </h3>
             <ul style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', paddingLeft: '1.5rem', listStyleType: 'disc', lineHeight: 1.6 }}>
               <li>সর্বমোট {quizzes.length}টি বহুনির্বাচনী প্রশ্ন থাকবে।</li>
-              <li>পাস করতে হলে অন্তত {module.quizPassMark || 80}% নম্বর পেতে হবে।</li>
+              <li>পাস করতে হলে অন্তত {course.finalExamPassMark || 80}% নম্বর পেতে হবে।</li>
               <li>আপনি যতবার খুশি অংশগ্রহণ করতে পারবেন, প্রতিবার নতুন প্রশ্ন আসবে।</li>
             </ul>
           </div>
 
           <button onClick={handleStart} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
-            {alreadyPassed ? 'আবার পরীক্ষা দিন' : 'কুইজ শুরু করুন'}
+            {alreadyPassed ? 'আবার পরীক্ষা দিন' : 'পরীক্ষা শুরু করুন'}
           </button>
         </div>
 
@@ -206,7 +195,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
   }
 
   if (quizState === 'result') {
-    const passed = resultData?.passedModule;
+    const passed = resultData?.passedExam;
 
     return (
       <div className="container" style={{ padding: '2rem 1rem', maxWidth: '600px' }}>
@@ -222,7 +211,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
           </div>
 
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-            {passed ? 'মাশাআল্লাহ! আপনি সফলভাবে পাস করেছেন।' : 'ইনশাআল্লাহ! পরবর্তীতে আরো ভালো হবে।'}
+            {passed ? 'মাশাআল্লাহ! আপনি ফাইনাল পরীক্ষায় পাস করেছেন।' : 'ইনশাআল্লাহ! পরবর্তীতে আরো ভালো হবে।'}
           </h2>
           <p style={{ fontSize: '1.1rem', color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
             আপনার প্রাপ্ত নম্বর: <strong style={{ color: 'var(--color-text)', fontSize: '1.5rem' }}>{score}</strong> / {quizzes.length} ({Math.round(resultData?.percentage)}%)<br/>
@@ -260,13 +249,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
               </button>
             )}
             
-            {passed && resultData?.nextModuleId && (
-              <Link href={`/content/${resultData.nextModuleId}`} className="btn btn-primary">
-                পরবর্তী মডিউলে যান
-              </Link>
-            )}
-            
-            <Link href={`/courses/${module.courseId}`} className={passed && !resultData?.nextModuleId ? "btn btn-primary" : (passed ? "btn btn-outline" : "btn btn-primary")}>
+            <Link href={`/courses/${course.id}`} className={passed ? "btn btn-primary" : "btn btn-primary"}>
               কোর্সে ফিরে যান
             </Link>
           </div>
