@@ -25,9 +25,10 @@ export default async function HomePage() {
       orderBy: { date: 'desc' },
       take: 6
     }),
-    prisma.notice.findFirst({
+    prisma.notice.findMany({
       where: { publishedAt: { lte: new Date() } },
-      orderBy: { publishedAt: 'desc' }
+      orderBy: { order: 'desc' },
+      take: 5
     }),
     import('@/lib/siteSettings').then(m => m.getSiteSettings())
   ]);
@@ -531,22 +532,65 @@ export default async function HomePage() {
       </section>
 
       {/* Featured Highlight */}
-      {latestNotice && (
-        <section className={styles.highlightSection}>
-          <FadeIn direction="up" className={styles.highlightCard}>
-            <div className={styles.highlightContent}>
-              <span className={styles.highlightBadge}>নতুন নোটিশ</span>
-              <h2 className={styles.highlightTitle}>{latestNotice.title}</h2>
-              <p className={styles.highlightDesc}>
-                {latestNotice.body}
-              </p>
-            </div>
-            <div>
-              <Link href={latestNotice.link || '/courses'} className="btn btn-primary" style={{ borderRadius: 'var(--radius-full)' }}>
-                {latestNotice.linkText || 'বিস্তারিত জানুন'}
-              </Link>
-            </div>
-          </FadeIn>
+      {/* Notice Board */}
+      {latestNotice && latestNotice.length > 0 && (
+        <section className={styles.noticeBoardSection}>
+          <div className={styles.container} style={{ maxWidth: '800px', margin: '0 auto', padding: '4rem 1rem' }}>
+            <FadeIn direction="up">
+              <h2 className={styles.sectionTitle} style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <Bell size={24} style={{ color: 'var(--color-primary)' }} /> নোটিশ বোর্ড
+              </h2>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {latestNotice.map((notice) => (
+                  <Link href={`/notices/${notice.id}`} key={notice.id} style={{ textDecoration: 'none' }}>
+                    <div className="card" style={{ 
+                      padding: '1.25rem', 
+                      display: 'flex', 
+                      gap: '1rem', 
+                      alignItems: 'flex-start',
+                      borderLeft: notice.important ? '4px solid var(--color-error)' : '4px solid transparent',
+                      transition: 'transform 0.2s',
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateX(4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
+                    >
+                      <div style={{ 
+                        backgroundColor: notice.important ? 'var(--color-error-light)' : 'var(--color-primary-light)',
+                        color: notice.important ? 'var(--color-error)' : 'var(--color-primary)',
+                        padding: '0.75rem',
+                        borderRadius: '50%',
+                        flexShrink: 0
+                      }}>
+                        <Bell size={20} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 600, margin: '0 0 0.25rem', color: 'var(--color-text)' }}>
+                          {notice.title}
+                        </h3>
+                        <p style={{ 
+                          fontSize: '0.9rem', 
+                          color: 'var(--color-text-muted)', 
+                          margin: '0 0 0.5rem',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden'
+                        }}>
+                          {notice.body}
+                        </p>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                          <Clock size={12} style={{ display: 'inline', verticalAlign: 'text-top', marginRight: '4px' }} />
+                          {new Date(notice.publishedAt).toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' })}
+                        </span>
+                      </div>
+                      <ArrowRight size={18} style={{ color: 'var(--color-text-muted)', alignSelf: 'center', flexShrink: 0 }} />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
         </section>
       )}
 

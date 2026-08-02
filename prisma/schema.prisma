@@ -317,6 +317,7 @@ model Notice {
   link        String?
   linkText    String?
   important   Boolean   @default(false)
+  order       Int       @default(0)
   publishedAt DateTime  @default(now())
   expiresAt   DateTime?
 }

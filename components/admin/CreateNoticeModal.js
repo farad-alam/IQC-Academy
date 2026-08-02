@@ -3,10 +3,17 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, Plus } from 'lucide-react';
 
-export default function CreateNoticeModal() {
+export default function CreateNoticeModal({ notice = null, trigger = null }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(notice ? {
+    title: notice.title || '',
+    body: notice.body || '',
+    link: notice.link || '',
+    linkText: notice.linkText || '',
+    important: notice.important || false,
+    expiresAt: notice.expiresAt ? new Date(notice.expiresAt).toISOString().split('T')[0] : ''
+  } : {
     title: '', body: '', link: '', linkText: '', important: false, expiresAt: ''
   });
   const router = useRouter();
@@ -20,8 +27,11 @@ export default function CreateNoticeModal() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/notices', {
-        method: 'POST',
+      const url = notice ? `/api/admin/notices/${notice.id}` : '/api/admin/notices';
+      const method = notice ? 'PATCH' : 'POST';
+      
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
@@ -35,7 +45,9 @@ export default function CreateNoticeModal() {
         alert(d.error || 'কোনো সমস্যা হয়েছে।');
       } else {
         setOpen(false);
-        setForm({ title: '', body: '', link: '', linkText: '', important: false, expiresAt: '' });
+        if (!notice) {
+          setForm({ title: '', body: '', link: '', linkText: '', important: false, expiresAt: '' });
+        }
         router.refresh();
       }
     } catch {
@@ -47,9 +59,13 @@ export default function CreateNoticeModal() {
 
   return (
     <>
-      <button className="btn btn-primary btn-sm" onClick={() => setOpen(true)}>
-        <Plus size={16} /> নতুন নোটিশ
-      </button>
+      <div onClick={() => setOpen(true)} style={{ display: 'inline-block', cursor: 'pointer' }}>
+        {trigger || (
+          <button className="btn btn-primary btn-sm">
+            <Plus size={16} /> নতুন নোটিশ
+          </button>
+        )}
+      </div>
 
       {open && (
         <div style={{
@@ -65,7 +81,9 @@ export default function CreateNoticeModal() {
               <X size={20} />
             </button>
 
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem' }}>নতুন নোটিশ তৈরি করুন</h2>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem' }}>
+              {notice ? 'নোটিশ আপডেট করুন' : 'নতুন নোটিশ তৈরি করুন'}
+            </h2>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div className="form-group">
@@ -102,7 +120,7 @@ export default function CreateNoticeModal() {
 
               <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
                 <button type="submit" className="btn btn-primary" disabled={loading} style={{ flex: 1 }}>
-                  {loading ? 'প্রকাশ হচ্ছে...' : 'প্রকাশ করুন'}
+                  {loading ? (notice ? 'আপডেট হচ্ছে...' : 'প্রকাশ হচ্ছে...') : (notice ? 'আপডেট করুন' : 'প্রকাশ করুন')}
                 </button>
                 <button type="button" className="btn btn-outline" onClick={() => setOpen(false)} disabled={loading}>
                   বাতিল
