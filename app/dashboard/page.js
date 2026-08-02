@@ -80,6 +80,7 @@ export default function DashboardPage() {
 
   const activeEnrollments = user.enrollments?.filter(e => e.status === 'ACTIVE') || [];
   const completedEnrollments = user.enrollments?.filter(e => e.status === 'COMPLETED') || [];
+  const displayEnrollments = user.enrollments?.filter(e => e.status === 'ACTIVE' || e.status === 'COMPLETED') || [];
 
   // Profile completion check
   const requiredFields = ['name', 'email', 'mobile', 'institution', 'division', 'district'];
@@ -163,7 +164,7 @@ export default function DashboardPage() {
                 <Link href="/courses" className={styles.seeAll}>সব দেখুন <ArrowRight size={14} /></Link>
               </div>
 
-              {activeEnrollments.length === 0 ? (
+              {displayEnrollments.length === 0 ? (
                 <div className={styles.emptyState}>
                   <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📚</div>
                   <p>আপনি এখনো কোনো কোর্সে ভর্তি হননি।</p>
@@ -173,11 +174,12 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className={styles.courseList}>
-                  {activeEnrollments.map(enrollment => {
+                  {displayEnrollments.map(enrollment => {
                     const course = enrollment.course;
                     const totalModules = course._count?.modules || 1;
                     const completed = enrollment.completedModules || 0;
-                    const progress = Math.min(100, Math.round((completed / totalModules) * 100));
+                    const isCompleted = enrollment.status === 'COMPLETED';
+                    const progress = isCompleted ? 100 : Math.min(100, Math.round((completed / totalModules) * 100));
 
                     return (
                       <Link key={enrollment.id} href={`/courses/${course.id}`} className={styles.courseCard}>

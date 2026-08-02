@@ -9,7 +9,7 @@ import EditCourseModal from '@/components/admin/EditCourseModal';
 
 export default function ModulesClient({ course }) {
   const router = useRouter();
-  const [modules, setModules] = useState(course.modules);
+  const [modules, setModules] = useState(course.modules || []);
   const [isAdding, setIsAdding] = useState(false);
   const [editingModuleId, setEditingModuleId] = useState(null);
   const [formData, setFormData] = useState({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', pdfFile: '', body: '', quizPassMark: 80, quizDisplayCount: 20 });
@@ -73,9 +73,15 @@ export default function ModulesClient({ course }) {
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, order: isEditing ? undefined : modules.length + 1 })
+        body: JSON.stringify({ ...formData, order: isEditing ? undefined : (modules?.length || 0) + 1 })
       });
-      const data = await res.json();
+      
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        throw new Error('Server returned an invalid response (not JSON). Status: ' + res.status);
+      }
       if (data.success) {
         if (isEditing) {
           setModules(modules.map(m => m.id === editingModuleId ? data.module : m));
@@ -88,7 +94,8 @@ export default function ModulesClient({ course }) {
         alert(data.error || 'Failed to save module');
       }
     } catch (err) {
-      alert('Network error');
+      console.error(err);
+      alert('Network error: ' + (err.message || 'Unknown error'));
     } finally {
       setLoading(false);
     }
