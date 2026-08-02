@@ -6,7 +6,8 @@ import { getAuthUser } from '@/lib/middleware/withAuth';
 export const dynamic = 'force-dynamic';
 
 export default async function CourseListPage({ searchParams }) {
-  const filter = searchParams?.filter || 'all';
+  const resolvedParams = await searchParams;
+  const filter = resolvedParams?.filter || 'all';
   const user = await getAuthUser();
 
   // Base query for PUBLISHED courses
