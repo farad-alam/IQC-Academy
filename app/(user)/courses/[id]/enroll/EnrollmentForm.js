@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, Lock, ShieldCheck, HelpCircle } from 'lucide-react';
 
-export default function EnrollmentForm({ course }) {
+export default function EnrollmentForm({ course, settings }) {
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(''); // 'BKASH' | 'NAGAD'
   const [txId, setTxId] = useState('');
@@ -119,7 +119,7 @@ export default function EnrollmentForm({ course }) {
                    অনুগ্রহ করে নিচের নম্বরে ৳{course.price?.toString()} সেন্ড মানি করুন
                  </p>
                  <p style={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '2px', fontFamily: 'var(--font-latin)' }}>
-                   017XXXXXXXX
+                   {paymentMethod === 'BKASH' ? (settings?.bkash_number || '01700000000') : (settings?.nagad_number || '01800000000')}
                  </p>
                  <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
                    (Personal Number)

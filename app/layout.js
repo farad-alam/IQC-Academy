@@ -13,6 +13,8 @@ export const metadata = {
   },
 };
 
+import { Toaster } from 'react-hot-toast';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="bn">
@@ -27,6 +29,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <NextTopLoader color="var(--color-primary)" height={4} showSpinner={true} easing="ease" speed={200} shadow="0 0 10px var(--color-primary),0 0 5px var(--color-primary)" />
+        <Toaster position="top-right" />
         {children}
       </body>
     </html>

@@ -43,5 +43,7 @@ export default async function CourseEnrollmentPage({ params }) {
     redirect(`/courses/${course.id}`);
   }
 
-  return <EnrollmentForm course={course} />;
+  const settings = await import('@/lib/siteSettings').then(m => m.getSiteSettings(['bkash_number', 'nagad_number']));
+
+  return <EnrollmentForm course={course} settings={settings} />;
 }

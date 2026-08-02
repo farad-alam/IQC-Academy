@@ -9,7 +9,7 @@ import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer'
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [courses, projects, galleryItems, latestNotice] = await Promise.all([
+  const [courses, projects, galleryItems, latestNotice, settings] = await Promise.all([
     prisma.course.findMany({
       where: { status: 'PUBLISHED' },
       include: { _count: { select: { modules: true } }, instructor: true },
@@ -28,8 +28,10 @@ export default async function HomePage() {
     prisma.notice.findFirst({
       where: { publishedAt: { lte: new Date() } },
       orderBy: { publishedAt: 'desc' }
-    })
+    }),
+    import('@/lib/siteSettings').then(m => m.getSiteSettings())
   ]);
+
   return (
     <div className={styles.home}>
       {/* Clean Hero Section (Inspired by Noorayn Academy) */}
@@ -513,10 +515,10 @@ export default async function HomePage() {
               যেকোনো প্রশ্ন, পরামর্শ বা ভর্তির বিষয়ে জানতে সরাসরি আমাদের সাথে যোগাযোগ করুন। আমাদের সাপোর্ট টিম সবসময় আপনার সেবায় প্রস্তুত।
             </p>
             <div className={styles.ctaButtons}>
-              <a href="https://wa.me/8801700000000" target="_blank" rel="noopener noreferrer" className={styles.whatsappBtn}>
+              <a href={`https://wa.me/${settings.contact_whatsapp}`} target="_blank" rel="noopener noreferrer" className={styles.whatsappBtn}>
                 <MessageCircle size={20} /> হোয়াটসঅ্যাপে মেসেজ দিন
               </a>
-              <a href="tel:+8801700000000" className={styles.callBtn}>
+              <a href={`tel:${settings.contact_phone?.replace(/\s+/g, '')}`} className={styles.callBtn}>
                 <Phone size={20} /> সরাসরি কল করুন
               </a>
             </div>

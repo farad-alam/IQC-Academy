@@ -1,5 +1,6 @@
 import prisma from '@/lib/db';
 import { Users, BookOpen, Gift, TrendingUp, Clock } from 'lucide-react';
+import GoLiveToggle from '@/components/admin/GoLiveToggle';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,6 +51,8 @@ export default async function AdminDashboardPage() {
           <p style={{ color: 'var(--color-text-muted)' }}>IQC Academy এর সকল কার্যক্রমের সারসংক্ষেপ</p>
         </div>
       </header>
+
+      <GoLiveToggle />
 
       {/* Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>

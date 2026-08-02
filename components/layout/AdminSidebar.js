@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, GraduationCap, Gift, Layers, Bell, LogOut, Target, Image as ImageIcon, Menu } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Gift, Layers, Bell, LogOut, Target, Image as ImageIcon, Menu, Settings } from 'lucide-react';
 import styles from './AdminSidebar.module.css';
 
 export default function AdminSidebar() {
@@ -33,6 +33,7 @@ export default function AdminSidebar() {
     { name: 'প্রজেক্টস', href: '/admin/projects', icon: Target },
     { name: 'গ্যালারি', href: '/admin/gallery', icon: ImageIcon },
     { name: 'নোটিশ', href: '/admin/notices', icon: Bell },
+    { name: 'সেটিংস', href: '/admin/settings', icon: Settings },
   ];
 
   const handleLogout = async (e) => {

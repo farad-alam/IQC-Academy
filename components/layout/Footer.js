@@ -1,9 +1,15 @@
-'use client';
 import { FaFacebookF, FaYoutube, FaInstagram, FaXTwitter } from 'react-icons/fa6';
 import Link from 'next/link';
 import styles from './Footer.module.css';
+import { getSiteSettings } from '@/lib/siteSettings';
 
-export default function Footer() {
+export default async function Footer() {
+  const settings = await getSiteSettings([
+    'contact_email', 'contact_phone', 'contact_address',
+    'facebook_url', 'youtube_url', 'instagram_url', 'twitter_url',
+    'google_maps_embed'
+  ]);
+
   return (
     <footer className={styles.footer}>
       {/* Left Panel */}
@@ -14,34 +20,36 @@ export default function Footer() {
             <div className={styles.contactBlock}>
               <h3 className={styles.contactTitle}>যোগাযোগ</h3>
               <ul className={styles.contactList}>
-                <li>ইমেইল: info@iqcacademy.com</li>
-                <li>মোবাইল: +880 1234 567890</li>
-                <li>ঠিকানা: ঢাকা, বাংলাদেশ</li>
+                <li>ইমেইল: {settings.contact_email}</li>
+                <li>মোবাইল: {settings.contact_phone}</li>
+                <li>ঠিকানা: {settings.contact_address}</li>
               </ul>
             </div>
 
             <div className={styles.socialsBlock}>
               <h3 className={styles.contactTitle}>সোশ্যাল মিডিয়া</h3>
               <div className={styles.socialsGrid}>
-                <a href="#" aria-label="Facebook"><FaFacebookF size={18} /></a>
-                <a href="#" aria-label="YouTube"><FaYoutube size={20} /></a>
-                <a href="#" aria-label="Instagram"><FaInstagram size={20} /></a>
-                <a href="#" aria-label="Twitter"><FaXTwitter size={18} /></a>
+                {settings.facebook_url && settings.facebook_url !== '#' && <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><FaFacebookF size={18} /></a>}
+                {settings.youtube_url && settings.youtube_url !== '#' && <a href={settings.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="YouTube"><FaYoutube size={20} /></a>}
+                {settings.instagram_url && settings.instagram_url !== '#' && <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><FaInstagram size={20} /></a>}
+                {settings.twitter_url && settings.twitter_url !== '#' && <a href={settings.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter"><FaXTwitter size={18} /></a>}
               </div>
             </div>
           </div>
 
           {/* Column 3: Google Maps */}
           <div className={`${styles.gridItem} ${styles.mapContainer}`}>
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14608.0369448503!2d90.3671072!3d23.74705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b33cffc3fb%3A0x4a826f475fd312af!2sDhanmondi%2C%20Dhaka%201205!5e0!3m2!1sen!2sbd!4v1717600000000!5m2!1sen!2sbd" 
-              width="100%" 
-              height="100%" 
-              style={{ border: 0 }} 
-              allowFullScreen="" 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+            {settings.google_maps_embed && (
+              <iframe 
+                src={settings.google_maps_embed} 
+                width="100%" 
+                height="100%" 
+                style={{ border: 0 }} 
+                allowFullScreen="" 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            )}
           </div>
         </div>
 

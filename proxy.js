@@ -96,7 +96,30 @@ export default async function proxy(request) {
     loginUrl.searchParams.set('redirect', pathname);
     response = NextResponse.redirect(loginUrl);
   } else {
-    response = NextResponse.next();
+    // ── Maintenance Mode Check ────────────────────────────────────────────────
+    // If not an admin page, not an auth page, check if site is live
+    if (!isAdminPage && pathname !== '/maintenance' && !pathname.startsWith('/api')) {
+      try {
+        const baseUrl = request.nextUrl.origin;
+        const liveRes = await fetch(`${baseUrl}/api/settings/site-live`, {
+          next: { revalidate: 60 }
+        });
+        if (liveRes.ok) {
+          const liveData = await liveRes.json();
+          if (liveData.isLive === false) {
+            response = NextResponse.redirect(new URL('/maintenance', request.url));
+          } else {
+            response = NextResponse.next();
+          }
+        } else {
+          response = NextResponse.next();
+        }
+      } catch (err) {
+        response = NextResponse.next();
+      }
+    } else {
+      response = NextResponse.next();
+    }
   }
 
   // ── 4. Security headers ───────────────────────────────────────────────────
