@@ -550,10 +550,8 @@ export default async function HomePage() {
                       gap: '1rem', 
                       alignItems: 'flex-start',
                       borderLeft: notice.important ? '4px solid var(--color-error)' : '4px solid transparent',
-                      transition: 'transform 0.2s',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateX(4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
                     >
                       <div style={{ 
                         backgroundColor: notice.important ? 'var(--color-error-light)' : 'var(--color-primary-light)',
