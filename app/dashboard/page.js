@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   BookOpen, Gift, Star, Zap, CheckCircle, Clock, ArrowRight,
-  Bell, AlertTriangle, User, LogOut, ChevronRight, Flame
+  Bell, AlertTriangle, User, LogOut, ChevronRight, Flame, Home
 } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 import styles from './dashboard.module.css';
@@ -119,6 +119,9 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className={styles.welcomeActions}>
+              <Link href="/" className="btn btn-ghost" style={{ color: 'rgba(255,255,255,0.7)', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Home size={18} style={{ marginRight: '8px' }} /> মূল পাতা
+              </Link>
               <Link href="/profile" className="btn btn-outline" style={{ borderColor: 'rgba(255,255,255,0.3)', color: 'white', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <User size={18} style={{ marginRight: '8px' }} /> প্রোফাইল
               </Link>

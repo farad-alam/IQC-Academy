@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, GraduationCap, Gift, Layers, Bell, LogOut, Target, Image as ImageIcon, Menu, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Gift, Layers, Bell, LogOut, Target, Image as ImageIcon, Menu, Settings, Home } from 'lucide-react';
 import styles from './AdminSidebar.module.css';
 
 export default function AdminSidebar() {
@@ -97,6 +97,11 @@ export default function AdminSidebar() {
             <LogOut size={20} />
             <span>লগআউট</span>
           </button>
+          
+          <Link href="/" className={styles.navItem} style={{ marginTop: '0.5rem', color: 'var(--color-primary)' }}>
+            <Home size={20} />
+            <span>মূল পেজে যান</span>
+          </Link>
         </div>
       </aside>
     </>
