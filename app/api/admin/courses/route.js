@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { uploadImage } from '@/lib/cloudinary';
 
 export async function GET(req) {
   try {
@@ -38,6 +39,15 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    let finalCoverUrl = body.coverImageUrl || null;
+    if (body.coverImageFile) {
+      try {
+        finalCoverUrl = await uploadImage(body.coverImageFile, 'iqc-academy/courses');
+      } catch (err) {
+        return NextResponse.json({ error: 'Failed to upload cover image' }, { status: 500 });
+      }
+    }
+
     const newCourse = await prisma.course.create({
       data: {
         title: body.title,
@@ -48,7 +58,7 @@ export async function POST(req) {
         level: body.level || 'Beginner',
         duration: body.duration || '0 hours',
         instructorId: body.instructorId,
-        coverImageUrl: body.coverImageUrl,
+        coverImageUrl: finalCoverUrl,
         tags: body.tags || [],
         features: body.features || [],
       }

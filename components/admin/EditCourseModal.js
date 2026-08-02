@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Edit, X } from 'lucide-react';
+import { Edit, X, Upload } from 'lucide-react';
 
 export default function EditCourseModal({ course, onCourseUpdated }) {
   const [open, setOpen] = useState(false);
@@ -19,6 +19,8 @@ export default function EditCourseModal({ course, onCourseUpdated }) {
     finalExamEnabled: false,
     finalExamPassMark: 80,
     finalExamDisplayCount: 20,
+    coverImageFile: null,
+    coverImagePreview: null,
   });
 
   useEffect(() => {
@@ -42,13 +44,24 @@ export default function EditCourseModal({ course, onCourseUpdated }) {
         finalExamEnabled: course.finalExamEnabled || false,
         finalExamPassMark: course.finalExamPassMark || 80,
         finalExamDisplayCount: course.finalExamDisplayCount || 20,
+        coverImageFile: null,
+        coverImagePreview: course.coverImageUrl || null,
       });
     }
   }, [open, course]);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm(p => ({ ...p, [name]: type === 'checkbox' ? checked : value }));
+    const { name, value, type, checked, files } = e.target;
+    if (type === 'file' && files[0]) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setForm(p => ({ ...p, coverImageFile: reader.result, coverImagePreview: URL.createObjectURL(file) }));
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setForm(p => ({ ...p, [name]: type === 'checkbox' ? checked : value }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -167,6 +180,32 @@ export default function EditCourseModal({ course, onCourseUpdated }) {
                 <div className="form-group">
                   <label className="form-label">ট্যাগসমূহ</label>
                   <input name="tags" value={form.tags} onChange={handleChange} className="form-input" placeholder="কমা দিয়ে লিখুন (যেমন: কুরআন, তাজবিদ)" />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">কোর্সের ছবি (থাম্বনেইল) - ঐচ্ছিক</label>
+                  <label style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    border: '2px dashed var(--color-earth-2)', borderRadius: '8px', padding: '1.5rem',
+                    cursor: 'pointer', backgroundColor: 'var(--color-bg)', transition: 'border-color 0.2s',
+                    position: 'relative', overflow: 'hidden'
+                  }}>
+                    {form.coverImagePreview ? (
+                      <div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
+                        <img src={form.coverImagePreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} />
+                        <div style={{ position: 'absolute', top: '0', left: '0', right: '0', bottom: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', opacity: 0, transition: 'opacity 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.opacity = 1} onMouseLeave={(e) => e.currentTarget.style.opacity = 0}>
+                          <span style={{ color: 'white', fontWeight: 500 }}><Upload size={16} style={{ display: 'inline', marginRight: '4px' }} /> পরিবর্তন করুন</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload size={24} style={{ color: 'var(--color-primary)', marginBottom: '0.5rem' }} />
+                        <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>ছবি আপলোড করুন</span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>বা এখানে ড্র্যাগ এন্ড ড্রপ করুন</span>
+                      </>
+                    )}
+                    <input type="file" name="coverImageFile" accept="image/*" onChange={handleChange} style={{ display: 'none' }} />
+                  </label>
                 </div>
 
                 <div style={{ borderTop: '1px solid var(--color-earth-1)', paddingTop: '1.25rem', marginTop: '0.5rem' }}>

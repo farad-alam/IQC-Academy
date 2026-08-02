@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 
+import { uploadImage } from '@/lib/cloudinary';
+
 export async function PATCH(req, { params }) {
   try {
     const admin = await getAuthUser();
@@ -11,6 +13,17 @@ export async function PATCH(req, { params }) {
 
     const { id } = await params;
     const body = await req.json();
+
+    let finalCoverUrl = undefined;
+    if (body.coverImageFile) {
+      try {
+        finalCoverUrl = await uploadImage(body.coverImageFile, 'iqc-academy/courses');
+      } catch (err) {
+        return NextResponse.json({ error: 'Failed to upload cover image' }, { status: 500 });
+      }
+    } else if (body.coverImageUrl !== undefined) {
+      finalCoverUrl = body.coverImageUrl;
+    }
 
     const updated = await prisma.course.update({
       where: { id },
@@ -29,6 +42,7 @@ export async function PATCH(req, { params }) {
         ...(body.finalExamEnabled !== undefined && { finalExamEnabled: body.finalExamEnabled }),
         ...(body.finalExamPassMark !== undefined && { finalExamPassMark: body.finalExamPassMark }),
         ...(body.finalExamDisplayCount !== undefined && { finalExamDisplayCount: body.finalExamDisplayCount }),
+        ...(finalCoverUrl !== undefined && { coverImageUrl: finalCoverUrl }),
       },
       include: {
         instructor: { select: { id: true, name: true } },
