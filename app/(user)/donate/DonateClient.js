@@ -68,32 +68,43 @@ export default function DonateClient({ settings }) {
         {/* Left: Payment Info */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div className="card" style={{ padding: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem', borderBottom: '1px solid var(--color-earth-1)', paddingBottom: '0.5rem' }}>বিকাশ (Personal)</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-latin)' }}>{settings?.bkash_number || '01700000000'}</span>
-              <button onClick={() => copyToClipboard(settings?.bkash_number || '01700000000', 'bkash')} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }}>
-                {copied === 'bkash' ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
-              </button>
-            </div>
-          </div>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.25rem' }}>পেমেন্ট নম্বরসমূহ</h2>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+              
+              {/* bKash */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '1px solid var(--color-earth-1)' }}>
+                <div>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '0.25rem' }}>বিকাশ (Personal)</h3>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-latin)', color: 'var(--color-primary)' }}>{settings?.bkash_number || '01700000000'}</span>
+                </div>
+                <button onClick={() => copyToClipboard(settings?.bkash_number || '01700000000', 'bkash')} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }} title="কপি করুন">
+                  {copied === 'bkash' ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
+                </button>
+              </div>
 
-          <div className="card" style={{ padding: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem', borderBottom: '1px solid var(--color-earth-1)', paddingBottom: '0.5rem' }}>নগদ (Personal)</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-latin)' }}>{settings?.nagad_number || '01800000000'}</span>
-              <button onClick={() => copyToClipboard(settings?.nagad_number || '01800000000', 'nagad')} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }}>
-                {copied === 'nagad' ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
-              </button>
-            </div>
-          </div>
+              {/* Nagad */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '1px solid var(--color-earth-1)' }}>
+                <div>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '0.25rem' }}>নগদ (Personal)</h3>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-latin)', color: 'var(--color-primary)' }}>{settings?.nagad_number || '01800000000'}</span>
+                </div>
+                <button onClick={() => copyToClipboard(settings?.nagad_number || '01800000000', 'nagad')} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }} title="কপি করুন">
+                  {copied === 'nagad' ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
+                </button>
+              </div>
 
-          <div className="card" style={{ padding: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem', borderBottom: '1px solid var(--color-earth-1)', paddingBottom: '0.5rem' }}>রকেট (Personal)</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-latin)' }}>{settings?.rocket_number || '01900000000'}</span>
-              <button onClick={() => copyToClipboard(settings?.rocket_number || '01900000000', 'rocket')} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }}>
-                {copied === 'rocket' ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
-              </button>
+              {/* Rocket */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0' }}>
+                <div>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '0.25rem' }}>রকেট (Personal)</h3>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-latin)', color: 'var(--color-primary)' }}>{settings?.rocket_number || '01900000000'}</span>
+                </div>
+                <button onClick={() => copyToClipboard(settings?.rocket_number || '01900000000', 'rocket')} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }} title="কপি করুন">
+                  {copied === 'rocket' ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
+                </button>
+              </div>
+
             </div>
           </div>
         </div>
