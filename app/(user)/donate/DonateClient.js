@@ -5,25 +5,45 @@ import Loader from '@/components/ui/Loader';
 import Link from 'next/link';
 
 export default function DonateClient({ settings }) {
-  const [form, setForm] = useState({ name: '', mobile: '', amount: '', txId: '' });
-  const [copied, setCopied] = useState('');
+  const [form, setForm] = useState({ name: '', mobile: '', amount: '', txId: '', method: 'BKASH' });
+  const [copied, setCopied] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const copyToClipboard = (text, type) => {
+  const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    setCopied(type);
-    setTimeout(() => setCopied(''), 2000);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.amount || !form.txId) return alert('পরিমাণ এবং ট্রানজেকশন আইডি আবশ্যক');
+    setErrorMsg('');
+    if (!form.amount || !form.txId || !form.mobile) return alert('পরিমাণ, ট্রানজেকশন আইডি এবং মোবাইল নম্বর আবশ্যক');
+    
     setLoading(true);
-    // Simulate API
-    await new Promise(r => setTimeout(r, 1500));
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      const res = await fetch('/api/donations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          amount: Number(form.amount)
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        setErrorMsg(data.message || data.error || 'একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      }
+    } catch (err) {
+      setErrorMsg('নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field) => (e) => {
@@ -64,77 +84,68 @@ export default function DonateClient({ settings }) {
         </p>
       </header>
 
-      <div className="grid-2 gap-6">
-        {/* Left: Payment Info */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div className="card" style={{ padding: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.25rem' }}>পেমেন্ট নম্বরসমূহ</h2>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-              
-              {/* bKash */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '1px solid var(--color-earth-1)' }}>
-                <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '0.25rem' }}>বিকাশ (Personal)</h3>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-latin)', color: 'var(--color-primary)' }}>{settings?.bkash_number || '01700000000'}</span>
-                </div>
-                <button onClick={() => copyToClipboard(settings?.bkash_number || '01700000000', 'bkash')} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }} title="কপি করুন">
-                  {copied === 'bkash' ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
-                </button>
-              </div>
-
-              {/* Nagad */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', borderBottom: '1px solid var(--color-earth-1)' }}>
-                <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '0.25rem' }}>নগদ (Personal)</h3>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-latin)', color: 'var(--color-primary)' }}>{settings?.nagad_number || '01800000000'}</span>
-                </div>
-                <button onClick={() => copyToClipboard(settings?.nagad_number || '01800000000', 'nagad')} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }} title="কপি করুন">
-                  {copied === 'nagad' ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
-                </button>
-              </div>
-
-              {/* Rocket */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0' }}>
-                <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', marginBottom: '0.25rem' }}>রকেট (Personal)</h3>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-latin)', color: 'var(--color-primary)' }}>{settings?.rocket_number || '01900000000'}</span>
-                </div>
-                <button onClick={() => copyToClipboard(settings?.rocket_number || '01900000000', 'rocket')} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }} title="কপি করুন">
-                  {copied === 'rocket' ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
-                </button>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Manual Submission Form */}
+      <div style={{ maxWidth: '600px', margin: '0 auto' }}>
         <div className="card" style={{ padding: '2rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>দান সম্পন্ন করার ফর্ম</h2>
-          <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '1.5rem' }}>
-            টাকা পাঠানোর পর নিচের ফর্মটি পূরণ করুন। আমাদের টিম দ্রুত আপনার দান ভেরিফাই করে আপডেট করবে।
-          </p>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', textAlign: 'center' }}>দান সম্পন্ন করার ফর্ম</h2>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            
+            {/* Payment Method Selector */}
+            <div className="form-group">
+              <label className="form-label">পেমেন্ট মাধ্যম নির্বাচন করুন *</label>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                {['BKASH', 'NAGAD', 'ROCKET'].map(method => (
+                  <label key={method} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', flex: 1, padding: '0.75rem', border: form.method === method ? '2px solid var(--color-primary)' : '1px solid var(--color-earth-1)', borderRadius: '8px', backgroundColor: form.method === method ? 'var(--color-primary-50)' : 'transparent', transition: 'all 0.2s' }}>
+                    <input type="radio" name="method" value={method} checked={form.method === method} onChange={(e) => setForm(p => ({...p, method: e.target.value}))} style={{ accentColor: 'var(--color-primary)' }} />
+                    <span style={{ fontWeight: form.method === method ? 600 : 400 }}>
+                      {method === 'BKASH' ? 'বিকাশ' : method === 'NAGAD' ? 'নগদ' : 'রকেট'}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Instruction Box based on selected method */}
+            <div style={{ padding: '1rem', backgroundColor: 'var(--color-bg)', borderRadius: '8px', borderLeft: '4px solid var(--color-primary)', marginBottom: '0.5rem' }}>
+              <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--color-text-muted)' }}>
+                নিচের নাম্বারে <strong>Send Money</strong> করুন এবং ট্রানজেকশন আইডি ফর্মটিতে দিন।
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px dashed var(--color-earth-1)' }}>
+                <span style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-latin)', color: 'var(--color-primary)' }}>
+                  {form.method === 'BKASH' ? (settings?.bkash_number || '01700000000') : form.method === 'NAGAD' ? (settings?.nagad_number || '01800000000') : (settings?.rocket_number || '01900000000')}
+                </span>
+                <button type="button" onClick={() => copyToClipboard(form.method === 'BKASH' ? settings?.bkash_number : form.method === 'NAGAD' ? settings?.nagad_number : settings?.rocket_number)} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }} title="কপি করুন">
+                  {copied ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {errorMsg && (
+              <div style={{ padding: '1rem', backgroundColor: 'var(--color-error-light)', color: 'var(--color-error)', borderRadius: '8px', fontSize: '0.875rem' }}>
+                {errorMsg}
+              </div>
+            )}
+
             <div className="form-group">
               <label className="form-label">নাম (ঐচ্ছিক)</label>
               <input type="text" className="form-input" value={form.name} onChange={handleChange('name')} placeholder="আপনার নাম" />
             </div>
             <div className="form-group">
-              <label className="form-label">মোবাইল নম্বর (যে নম্বর থেকে টাকা পাঠিয়েছেন)</label>
-              <input type="tel" className="form-input" value={form.mobile} onChange={handleChange('mobile')} placeholder="01XXXXXXXXX" />
+              <label className="form-label required">মোবাইল নম্বর (যে নম্বর থেকে টাকা পাঠিয়েছেন)</label>
+              <input type="tel" className="form-input" value={form.mobile} onChange={handleChange('mobile')} placeholder="01XXXXXXXXX" required />
             </div>
-            <div className="form-group">
-              <label className="form-label required">পরিমাণ (টাকা)</label>
-              <input type="number" className="form-input" value={form.amount} onChange={handleChange('amount')} placeholder="উদা: 1000" required />
-            </div>
-            <div className="form-group">
-              <label className="form-label required">ট্রানজেকশন আইডি (TxnID)</label>
-              <input type="text" className="form-input" value={form.txId} onChange={handleChange('txId')} placeholder="উদা: 8H7D..." required style={{ textTransform: 'uppercase' }} />
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label className="form-label required">পরিমাণ (টাকা)</label>
+                <input type="number" className="form-input" value={form.amount} onChange={handleChange('amount')} placeholder="উদা: 1000" required />
+              </div>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label className="form-label required">ট্রানজেকশন আইডি (TxnID)</label>
+                <input type="text" className="form-input" value={form.txId} onChange={handleChange('txId')} placeholder="উদা: 8H7D..." required style={{ textTransform: 'uppercase' }} />
+              </div>
             </div>
             
-            <button type="submit" className="btn btn-primary" disabled={loading} style={{ marginTop: '1rem' }}>
+            <button type="submit" className="btn btn-primary" disabled={loading} style={{ marginTop: '1rem', width: '100%' }}>
               {loading ? <Loader variant="button" text="সাবমিট হচ্ছে..." /> : 'তথ্য সাবমিট করুন'}
             </button>
           </form>
