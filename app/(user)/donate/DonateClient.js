@@ -92,26 +92,50 @@ export default function DonateClient({ settings }) {
             
             {/* Payment Method Selector */}
             <div className="form-group">
-              <label className="form-label">পেমেন্ট মাধ্যম নির্বাচন করুন *</label>
+              <label className="form-label" style={{ marginBottom: '1rem' }}>পেমেন্ট মাধ্যম নির্বাচন করুন *</label>
               <div style={{ display: 'flex', gap: '1rem' }}>
-                {['BKASH', 'NAGAD', 'ROCKET'].map(method => (
-                  <label key={method} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', flex: 1, padding: '0.75rem', border: form.method === method ? '2px solid var(--color-primary)' : '1px solid var(--color-earth-1)', borderRadius: '8px', backgroundColor: form.method === method ? 'var(--color-primary-50)' : 'transparent', transition: 'all 0.2s' }}>
-                    <input type="radio" name="method" value={method} checked={form.method === method} onChange={(e) => setForm(p => ({...p, method: e.target.value}))} style={{ accentColor: 'var(--color-primary)' }} />
-                    <span style={{ fontWeight: form.method === method ? 600 : 400 }}>
-                      {method === 'BKASH' ? 'বিকাশ' : method === 'NAGAD' ? 'নগদ' : 'রকেট'}
+                {[
+                  { id: 'BKASH', name: 'বিকাশ', brand: 'bKash', color: '#e2136e' },
+                  { id: 'NAGAD', name: 'নগদ', brand: 'Nagad', color: '#ed1c24' },
+                  { id: 'ROCKET', name: 'রকেট', brand: 'Rocket', color: '#8c1515' }
+                ].map(method => (
+                  <label key={method.id} style={{ 
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', cursor: 'pointer', flex: 1, padding: '1rem', 
+                    border: form.method === method.id ? `2px solid ${method.color}` : '1px solid var(--color-earth-1)', 
+                    borderRadius: '12px', 
+                    backgroundColor: form.method === method.id ? `${method.color}10` : 'transparent',
+                    transition: 'all 0.2s',
+                    position: 'relative'
+                  }}>
+                    <input type="radio" name="method" value={method.id} checked={form.method === method.id} onChange={(e) => setForm(p => ({...p, method: e.target.value}))} style={{ position: 'absolute', opacity: 0 }} />
+                    
+                    {/* Simulated Brand Logo using text */}
+                    <div style={{ fontSize: '1.25rem', fontWeight: 800, color: method.color, letterSpacing: '-0.5px' }}>
+                      {method.brand}
+                    </div>
+                    
+                    <span style={{ fontWeight: form.method === method.id ? 600 : 400, fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                      {method.name}
                     </span>
+
+                    {/* Checkmark indicator */}
+                    {form.method === method.id && (
+                      <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', color: method.color }}>
+                        <CheckCircle2 size={16} fill={method.color} color="#fff" />
+                      </div>
+                    )}
                   </label>
                 ))}
               </div>
             </div>
 
             {/* Instruction Box based on selected method */}
-            <div style={{ padding: '1rem', backgroundColor: 'var(--color-bg)', borderRadius: '8px', borderLeft: '4px solid var(--color-primary)', marginBottom: '0.5rem' }}>
-              <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--color-text-muted)' }}>
+            <div style={{ padding: '1.25rem', backgroundColor: form.method === 'BKASH' ? '#e2136e0d' : form.method === 'NAGAD' ? '#ed1c240d' : '#8c15150d', borderRadius: '8px', borderLeft: `4px solid ${form.method === 'BKASH' ? '#e2136e' : form.method === 'NAGAD' ? '#ed1c24' : '#8c1515'}`, marginBottom: '0.5rem', transition: 'all 0.3s' }}>
+              <p style={{ fontSize: '0.9rem', marginBottom: '0.75rem', color: 'var(--color-text-muted)' }}>
                 নিচের নাম্বারে <strong>Send Money</strong> করুন এবং ট্রানজেকশন আইডি ফর্মটিতে দিন।
               </p>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px dashed var(--color-earth-1)' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-latin)', color: 'var(--color-primary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: '0.75rem 1rem', borderRadius: '6px', border: '1px dashed var(--color-earth-2)', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                <span style={{ fontSize: '1.25rem', fontWeight: 700, fontFamily: 'var(--font-latin)', color: form.method === 'BKASH' ? '#e2136e' : form.method === 'NAGAD' ? '#ed1c24' : '#8c1515' }}>
                   {form.method === 'BKASH' ? (settings?.bkash_number || '01700000000') : form.method === 'NAGAD' ? (settings?.nagad_number || '01800000000') : (settings?.rocket_number || '01900000000')}
                 </span>
                 <button type="button" onClick={() => copyToClipboard(form.method === 'BKASH' ? settings?.bkash_number : form.method === 'NAGAD' ? settings?.nagad_number : settings?.rocket_number)} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem' }} title="কপি করুন">
