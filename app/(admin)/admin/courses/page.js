@@ -75,7 +75,7 @@ export default function AdminCoursesPage() {
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>কোর্সের নাম</th>
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>শিক্ষক</th>
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>মূল্য</th>
-                <th style={{ padding: '1rem 0', fontWeight: 500 }}>মডিউল সংখ্যা</th>
+                <th style={{ padding: '1rem 0', fontWeight: 500 }}>সাবজেক্ট সংখ্যা</th>
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>শিক্ষার্থী সংখ্যা</th>
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>স্ট্যাটাস</th>
                 <th style={{ padding: '1rem 0', fontWeight: 500, textAlign: 'right' }}>অ্যাকশন</th>
@@ -109,7 +109,7 @@ export default function AdminCoursesPage() {
                     <td data-label="মূল্য" style={{ padding: '1rem 0', fontWeight: 600, color: 'var(--color-primary)' }}>
                       {course.type === 'PAID' && course.price > 0 ? `৳${course.price}` : 'ফ্রি'}
                     </td>
-                    <td data-label="মডিউল সংখ্যা" style={{ padding: '1rem 0' }}>{course._count?.modules || 0} টি</td>
+                    <td data-label="সাবজেক্ট সংখ্যা" style={{ padding: '1rem 0' }}>{course._count?.subjects || 0} টি</td>
                     <td data-label="শিক্ষার্থী সংখ্যা" style={{ padding: '1rem 0' }}>{course._count?.enrollments || 0} জন</td>
                     <td data-label="স্ট্যাটাস" style={{ padding: '1rem 0' }}>
                       <span className={`badge ${course.status === 'PUBLISHED' ? 'badge-success' : 'badge-warning'}`}>
@@ -138,7 +138,7 @@ export default function AdminCoursesPage() {
                         >
                           {course.status === 'PUBLISHED' ? 'ড্রাফট' : 'প্রকাশ'}
                         </button>
-                        <Link href={`/admin/courses/${course.id}/modules`} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-primary)' }} title="মডিউল পরিচালনা">
+                        <Link href={`/admin/courses/${course.id}/subjects`} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-primary)' }} title="সাবজেক্ট পরিচালনা">
                           <Edit size={16} />
                         </Link>
                         <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-error)' }} title="মুছে ফেলুন" onClick={() => handleDelete(course.id)}>

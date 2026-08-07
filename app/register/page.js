@@ -133,6 +133,7 @@ function Req() { return <span style={{ color: 'var(--color-error)', marginLeft: 
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [regOpen, setRegOpen] = useState(null); // null=loading, true/false
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     name: '', mobile: '', email: '', facebook: '',
@@ -145,6 +146,14 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  // ── Check if individual registration is open ──────────────────────────────
+  useEffect(() => {
+    fetch('/api/auth/register-status')
+      .then(r => r.json())
+      .then(d => setRegOpen(d.open))
+      .catch(() => setRegOpen(true)); // fallback open
+  }, []);
 
   // ── Restore draft from localStorage ────────────────────────────────────────
   useEffect(() => {
@@ -232,6 +241,25 @@ export default function RegisterPage() {
   };
 
   const strength = getPasswordStrength(form.password);
+
+  if (regOpen === null) return (
+    <main className={styles.page}><div className={styles.patternBg} /><div className={styles.container} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}><div className="spinner" /></div></main>
+  );
+
+  if (!regOpen) return (
+    <main className={styles.page}>
+      <div className={styles.patternBg} aria-hidden="true" />
+      <div className={styles.container} style={{ maxWidth: '500px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', textAlign: 'center' }}>
+        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1rem' }}>রেজিস্ট্রেশন বর্তমানে বন্ধ আছে</h1>
+        <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', lineHeight: 1.7 }}>ব্যক্তিগত রেজিস্ট্রেশন সাময়িকভাবে বন্ধ আছে। ব্যাচে ভর্তি হতে অথবা আরও তথ্যের জন্য আমাদের সাথে যোগাযোগ করুন।</p>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Link href="/batches" className="btn btn-primary">ব্যাচে ভর্তি হন</Link>
+          <Link href="/contact" className="btn btn-outline">যোগাযোগ করুন</Link>
+        </div>
+      </div>
+    </main>
+  );
 
   return (
     <main className={styles.page}>

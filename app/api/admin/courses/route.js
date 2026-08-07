@@ -14,7 +14,7 @@ export async function GET(req) {
       orderBy: { createdAt: 'desc' },
       include: {
         instructor: { select: { id: true, name: true } },
-        _count: { select: { enrollments: true, modules: true } },
+        _count: { select: { enrollments: true, subjects: true } },
       },
     });
 

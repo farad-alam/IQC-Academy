@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Save, Globe, Phone, Map, Layout, CreditCard, Activity } from 'lucide-react';
+import { Save, Globe, Phone, Map, Layout, CreditCard, Activity, UserPlus, Users2 } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 import { toast } from 'react-hot-toast';
 
@@ -133,6 +133,26 @@ export default function AdminSettingsPage() {
                       backgroundColor: 'white', transition: '.4s', borderRadius: '50%',
                       transform: settings.site_is_live === 'true' ? 'translateX(26px)' : 'translateX(0)'
                     }} />
+                  </span>
+                </label>
+              </div>
+
+              {/* Individual Registration Toggle */}
+              <div style={{ padding: '1.5rem', border: '1px solid var(--color-earth-1)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: settings.individual_registration_open === 'true' ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <UserPlus size={18} />
+                    ব্যক্তিগত রেজিস্ট্রেশন
+                    <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: settings.individual_registration_open === 'true' ? 'var(--color-success)' : 'var(--color-error)' }}></span>
+                  </h3>
+                  <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+                    বন্ধ থাকলে /register পেজে গেলে "রেজিস্ট্রেশন বন্ধ আছে" বার্তা দেখাবে।
+                  </p>
+                </div>
+                <label style={{ position: 'relative', display: 'inline-block', width: '60px', height: '34px', flexShrink: 0 }}>
+                  <input type="checkbox" name="individual_registration_open" checked={settings.individual_registration_open === 'true'} onChange={handleChange} style={{ opacity: 0, width: 0, height: 0 }} />
+                  <span style={{ position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: settings.individual_registration_open === 'true' ? 'var(--color-success)' : '#ccc', transition: '.4s', borderRadius: '34px' }}>
+                    <span style={{ position: 'absolute', height: '26px', width: '26px', left: '4px', bottom: '4px', backgroundColor: 'white', transition: '.4s', borderRadius: '50%', transform: settings.individual_registration_open === 'true' ? 'translateX(26px)' : 'translateX(0)' }} />
                   </span>
                 </label>
               </div>

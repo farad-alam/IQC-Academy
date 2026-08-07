@@ -3,6 +3,7 @@ import { hash } from 'argon2';
 import prisma from '@/lib/db';
 import { registerSchema } from '@/lib/validation/auth.schema';
 import { checkRateLimit } from '@/lib/middleware/withRateLimit';
+import { getSiteSettings } from '@/lib/siteSettings';
 
 export async function POST(req) {
   try {
@@ -13,7 +14,16 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
 
-    // 2. Parse and Validate Body
+    // 2. Check if individual registration is open
+    const settings = await getSiteSettings(['individual_registration_open']);
+    if (settings.individual_registration_open !== 'true') {
+      return NextResponse.json(
+        { error: 'Registration is currently closed. Please contact us for more information.' },
+        { status: 403 }
+      );
+    }
+
+    // 3. Parse and Validate Body
     const body = await req.json();
     const result = registerSchema.safeParse(body);
     
@@ -24,7 +34,7 @@ export async function POST(req) {
 
     const data = result.data;
 
-    // 3. Check for existing users
+    // 4. Check for existing users
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -38,10 +48,10 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Email or Mobile number already exists.' }, { status: 409 });
     }
 
-    // 4. Hash password
+    // 5. Hash password
     const passwordHash = await hash(data.password);
 
-    // 5. Create user in DB (Status: PENDING)
+    // 6. Create user — auto-ACTIVE, no approval needed
     const newUser = await prisma.user.create({
       data: {
         name: data.name,
@@ -58,7 +68,7 @@ export async function POST(req) {
         sscYear: data.sscYear,
         sscBoard: data.sscBoard,
         sscGpa: data.sscGpa,
-        status: 'PENDING',
+        status: 'ACTIVE',
         role: 'STUDENT',
       },
       select: {
@@ -71,7 +81,7 @@ export async function POST(req) {
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Registration successful. Waiting for admin approval.',
+      message: 'Registration successful. You can now log in.',
       user: newUser 
     }, { status: 201 });
 

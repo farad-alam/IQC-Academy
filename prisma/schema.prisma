@@ -16,7 +16,7 @@ model User {
   facebook        String?
   passwordHash    String
   role            Role       @default(STUDENT)
-  status          UserStatus @default(PENDING)
+  status          UserStatus @default(ACTIVE)
   avatarUrl       String?
   institution     String?
   division        String?
@@ -31,13 +31,15 @@ model User {
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
-  enrollments        Enrollment[]
-  quizAttempts       QuizAttempt[]
-  moduleQuizSessions ModuleQuizSession[]
-  finalExamSessions  FinalExamSession[]
-  donations          Donation[]
-  refreshTokens      RefreshToken[]
-  otps               OtpToken[]
+  enrollments              Enrollment[]
+  quizAttempts             QuizAttempt[]
+  moduleQuizSessions       ModuleQuizSession[]
+  subjectFinalExamSessions SubjectFinalExamSession[]
+  donations                Donation[]
+  refreshTokens            RefreshToken[]
+  otps                     OtpToken[]
+  batchStudents            BatchStudent[]
+  vivaScores               VivaScore[]
 }
 
 enum Role {
@@ -55,7 +57,7 @@ model RefreshToken {
   id        String    @id @default(cuid())
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tokenHash String    @unique  // SHA-256 of the actual token
+  tokenHash String    @unique
   expiresAt DateTime
   revokedAt DateTime?
   userAgent String?
@@ -67,7 +69,7 @@ model OtpToken {
   id        String     @id @default(cuid())
   userId    String
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  code      String     // 6-digit OTP (hashed before storing)
+  code      String
   purpose   OtpPurpose
   expiresAt DateTime
   usedAt    DateTime?
@@ -79,12 +81,55 @@ enum OtpPurpose {
   PASSWORD_RESET
 }
 
-model Instructor {
+model Batch {
+  id            String      @id @default(cuid())
+  name          String      @unique
+  description   String?
+  status        BatchStatus @default(UPCOMING)
+  coursesLocked Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  students BatchStudent[]
+  courses  BatchCourse[]
+}
+
+enum BatchStatus {
+  UPCOMING
+  ENROLLING
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+model BatchStudent {
   id         String   @id @default(cuid())
-  name       String
-  title      String?
-  avatarUrl  String?
-  courses    Course[]
+  batchId    String
+  batch      Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrolledAt DateTime @default(now())
+
+  @@unique([batchId, userId])
+}
+
+model BatchCourse {
+  id         String   @id @default(cuid())
+  batchId    String
+  batch      Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+
+  @@unique([batchId, courseId])
+}
+
+model Instructor {
+  id        String   @id @default(cuid())
+  name      String
+  title     String?
+  avatarUrl String?
+  courses   Course[]
 }
 
 model Course {
@@ -105,21 +150,19 @@ model Course {
   coverImageUrl    String?
   instructorId     String
   instructor       Instructor   @relation(fields: [instructorId], references: [id])
-  modules          Module[]
+  subjects         Subject[]
   enrollments      Enrollment[]
   tags             String[]
   features         String[]
-  rating                Decimal      @default(0)
-  ratingCount           Int          @default(0)
-  enrolledCount         Int          @default(0)
-  finalExamEnabled      Boolean      @default(false)
-  finalExamPassMark     Int          @default(80)
-  finalExamDisplayCount Int          @default(20)
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
-  donations             Donation[]
-  finalExamQuizzes      FinalExamQuiz[]
-  finalExamSessions     FinalExamSession[]
+  rating           Decimal      @default(0)
+  ratingCount      Int          @default(0)
+  enrolledCount    Int          @default(0)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  donations    Donation[]
+  batchCourses BatchCourse[]
+  vivaScores   VivaScore[]
 }
 
 enum CourseType {
@@ -133,17 +176,60 @@ enum CourseStatus {
   ARCHIVED
 }
 
-model Module {
-  id          String             @id @default(cuid())
+model Subject {
+  id          String   @id @default(cuid())
   courseId    String
-  course      Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title       String
   order       Int
-  duration    String?
+  description String?
+
+  modules Module[]
+
+  finalExamEnabled      Boolean @default(false)
+  finalExamPassMark     Int     @default(40)
+  finalExamDisplayCount Int     @default(20)
+
+  finalExamQuizzes  SubjectFinalExamQuiz[]
+  finalExamSessions SubjectFinalExamSession[]
+}
+
+model SubjectFinalExamQuiz {
+  id          String  @id @default(cuid())
+  subjectId   String
+  subject     Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  question    String
+  options     String[]
+  correct     Int
+  explanation String?
+}
+
+model SubjectFinalExamSession {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  score     Int      @default(0)
+  total     Int      @default(0)
+  passed    Boolean  @default(false)
+  answers   Json
+  takenAt   DateTime @default(now())
+
+  @@unique([userId, subjectId])
+}
+
+model Module {
+  id               String             @id @default(cuid())
+  subjectId        String
+  subject          Subject            @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  title            String
+  order            Int
+  duration         String?
   contentType      ContentType?
-  body             String?            // For TEXT type
-  videoUrl         String?            // For VIDEO type
-  pdfUrl           String?            // For PDF type
+  body             String?
+  videoUrl         String?
+  pdfUrl           String?
   quizPassMark     Int                @default(80)
   quizDisplayCount Int                @default(20)
   quizzes          Quiz[]
@@ -169,6 +255,7 @@ model Enrollment {
   completedAt      DateTime?
   certificateUrl   String?
   enrolledAt       DateTime     @default(now())
+
   @@unique([userId, courseId])
 }
 
@@ -184,6 +271,7 @@ model ModuleCompletion {
   moduleId    String
   module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   completedAt DateTime @default(now())
+
   @@unique([userId, moduleId])
 }
 
@@ -208,6 +296,7 @@ model QuizAttempt {
   passed     Boolean
   attemptNum Int
   answeredAt DateTime @default(now())
+
   @@unique([userId, quizId, attemptNum])
 }
 
@@ -227,30 +316,18 @@ model ModuleQuizSession {
   @@index([userId, moduleId])
 }
 
-model FinalExamQuiz {
-  id          String   @id @default(cuid())
-  courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  question    String
-  options     String[]
-  correct     Int
-  explanation String?
-}
+model VivaScore {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  marks    Int      @default(0)
+  remarks  String?
+  gradedBy String?
+  gradedAt DateTime @default(now())
 
-model FinalExamSession {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId   String
-  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  attemptNum Int
-  score      Int      @default(0)
-  total      Int      @default(0)
-  passed     Boolean  @default(false)
-  answers    Json
-  takenAt    DateTime @default(now())
-
-  @@index([userId, courseId])
+  @@unique([userId, courseId])
 }
 
 model Project {
@@ -287,7 +364,7 @@ model Donation {
   name            String?
   mobile          String
   amount          Decimal
-  txId            String         @unique  // Prevents duplicate submissions
+  txId            String         @unique
   method          PaymentMethod
   status          DonationStatus @default(PENDING)
   verifiedBy      String?
@@ -345,7 +422,7 @@ enum ContentItemType {
 model GalleryItem {
   id        String   @id @default(cuid())
   title     String
-  type      String   // event | class | project
+  type      String
   imageUrl  String
   date      DateTime
   createdAt DateTime @default(now())
