@@ -1,5 +1,6 @@
 import prisma from '@/lib/db';
 import Link from 'next/link';
+import styles from './projects.module.css';
 
 // Configure Next.js to dynamically render this page to get fresh data
 export const dynamic = 'force-dynamic';
@@ -11,42 +12,48 @@ export default async function ProjectsPage() {
   });
 
   return (
-    <div className="container" style={{ padding: '2rem 1rem' }}>
-      <header style={{ marginBottom: '2rem', textAlign: 'center' }}>
-        <h1 className="section-title" style={{ justifyContent: 'center' }}>আমাদের প্রজেক্টসমূহ</h1>
-        <p style={{ color: 'var(--color-text-muted)', maxWidth: '600px', margin: '0 auto' }}>
-          IQC Academy-এর বিভিন্ন দ্বীনি ও সামাজিক প্রজেক্টে অংশগ্রহণ করুন।
+    <div>
+      <section className={styles.hero}>
+        <h1 className={styles.heroTitle}>চলুন একসাথে পরিবর্তন আনি</h1>
+        <p className={styles.heroSubtitle}>
+          IQC Academy-এর বিভিন্ন দ্বীনি ও সামাজিক প্রজেক্টে অংশগ্রহণ করুন এবং আখিরাতের জন্য সঞ্চয় করুন।
         </p>
-      </header>
+      </section>
 
-      <div className="grid-2 gap-6" style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <div className={styles.projectsGrid}>
         {projects.length === 0 ? (
-          <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--color-text-muted)' }}>বর্তমানে কোনো সক্রিয় প্রজেক্ট নেই।</p>
+          <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--color-text-muted)', padding: '4rem 0' }}>বর্তমানে কোনো সক্রিয় প্রজেক্ট নেই।</p>
         ) : projects.map(project => {
           const raised = Number(project.raisedAmount) || 0;
           const target = Number(project.targetAmount) || 1; // Prevent division by zero
           const progress = Math.min(100, Math.round((raised / target) * 100));
 
           return (
-            <div key={project.id} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column' }}>
-              {project.icon && <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{project.icon}</div>}
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>{project.title}</h2>
-              <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', flex: 1 }}>{project.description}</p>
+            <div key={project.id} className={styles.projectCard}>
+              <div className={styles.cardImageWrapper}>
+                {project.imageUrl ? (
+                  <img src={project.imageUrl} alt={project.title} className={styles.cardImage} />
+                ) : (
+                  <div className={styles.cardIconFallback}>{project.icon || '🎯'}</div>
+                )}
+              </div>
               
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 600 }}>
-                  <span style={{ color: 'var(--color-primary-dark)' }}>সংগ্রহ: ৳{raised.toLocaleString('bn-BD')}</span>
-                  <span style={{ color: 'var(--color-text-muted)' }}>লক্ষ্য: ৳{target.toLocaleString('bn-BD')}</span>
-                </div>
-                <div className="progress-bar-track" style={{ marginBottom: '1rem' }}>
-                  <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
-                </div>
-                <div style={{ textAlign: 'right', fontSize: '0.875rem', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '1rem', fontFamily: 'var(--font-latin)' }}>
-                  {progress}% সম্পূর্ণ
+              <div className={styles.cardContent}>
+                <h2 className={styles.projectTitle}>{project.title}</h2>
+                <p className={styles.projectDesc}>{project.description}</p>
+                
+                <div className={styles.progressSection}>
+                  <div className={styles.progressStats}>
+                    <span style={{ color: 'var(--color-text-muted)' }}>লক্ষ্য: ৳{target.toLocaleString('bn-BD')}</span>
+                    <span style={{ color: 'var(--color-primary-dark)' }}>সংগ্রহ: ৳{raised.toLocaleString('bn-BD')}</span>
+                  </div>
+                  <div className={styles.progressTrack}>
+                    <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+                  </div>
                 </div>
                 
-                <Link href={`/donate?project=${project.id}`} className="btn btn-primary w-full">
-                  ডোনেট করুন
+                <Link href={`/projects/${project.id}`} className={styles.donateBtn}>
+                  দান করুন
                 </Link>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { uploadImage } from '@/lib/cloudinary';
 
 export async function PATCH(req, { params }) {
   try {
@@ -12,6 +13,15 @@ export async function PATCH(req, { params }) {
     const { id } = await params;
     const body = await req.json();
 
+    let finalImageUrl = body.imageUrl;
+    if (body.coverImageFile) {
+      try {
+        finalImageUrl = await uploadImage(body.coverImageFile, 'iqc-academy/projects');
+      } catch (err) {
+        return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
+      }
+    }
+
     const updated = await prisma.project.update({
       where: { id },
       data: {
@@ -22,6 +32,7 @@ export async function PATCH(req, { params }) {
         ...(body.location !== undefined && { location: body.location }),
         ...(body.icon !== undefined && { icon: body.icon }),
         ...(body.status !== undefined && { status: body.status }),
+        ...(finalImageUrl !== undefined && { imageUrl: finalImageUrl }),
       },
     });
 

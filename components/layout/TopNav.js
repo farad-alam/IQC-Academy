@@ -138,6 +138,9 @@ export default function TopNav() {
           ) : (
             /* ── Logged Out: Login + Register buttons ── */
             <div className={styles.authButtons}>
+              <Link href="/projects" className={styles.donateBtnNav}>
+                <span className={styles.donateIcon}>❤️</span> দান করুন
+              </Link>
               <Link href="/login" className={styles.loginBtn}>
                 লগইন
               </Link>

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { uploadImage } from '@/lib/cloudinary';
+
 export async function GET(req) {
   try {
     const admin = await getAuthUser();
@@ -30,6 +32,15 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    let finalImageUrl = body.imageUrl || null;
+    if (body.coverImageFile) {
+      try {
+        finalImageUrl = await uploadImage(body.coverImageFile, 'iqc-academy/projects');
+      } catch (err) {
+        return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
+      }
+    }
+
     const newProject = await prisma.project.create({
       data: {
         title: body.title,
@@ -38,7 +49,7 @@ export async function POST(req) {
         category: body.category,
         location: body.location,
         icon: body.icon,
-        imageUrl: body.imageUrl,
+        imageUrl: finalImageUrl,
         deadline: body.deadline ? new Date(body.deadline) : null,
       }
     });

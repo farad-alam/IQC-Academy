@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { X, Plus, Edit } from 'lucide-react';
+import { X, Plus, Edit, Upload } from 'lucide-react';
 
 const CATEGORIES = ['মসজিদ', 'মাদ্রাসা', 'এতিমখানা', 'পানি সরবরাহ', 'ইফতার', 'অন্যান্য'];
 
@@ -11,7 +11,8 @@ export default function ProjectModal({ project, onSuccess }) {
   
   const [form, setForm] = useState({
     title: '', description: '', category: '', location: '',
-    targetAmount: '', icon: '🎯', deadline: '', status: 'ACTIVE'
+    targetAmount: '', icon: '🎯', deadline: '', status: 'ACTIVE',
+    coverImageFile: null, coverImagePreview: null
   });
 
   useEffect(() => {
@@ -24,14 +25,27 @@ export default function ProjectModal({ project, onSuccess }) {
         targetAmount: project.targetAmount ? project.targetAmount.toString() : '',
         icon: project.icon || '🎯',
         deadline: project.deadline ? new Date(project.deadline).toISOString().split('T')[0] : '',
-        status: project.status || 'ACTIVE'
+        status: project.status || 'ACTIVE',
+        coverImageFile: null,
+        coverImagePreview: project.imageUrl || null
       });
     }
   }, [project, isEdit, open]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(p => ({ ...p, [name]: value }));
+    const { name, value, files } = e.target;
+    if (files) {
+      const file = files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setForm(p => ({ ...p, coverImageFile: reader.result, coverImagePreview: URL.createObjectURL(file) }));
+        };
+        reader.readAsDataURL(file);
+      }
+    } else {
+      setForm(p => ({ ...p, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -49,6 +63,7 @@ export default function ProjectModal({ project, onSuccess }) {
           ...form,
           targetAmount: form.targetAmount ? parseFloat(form.targetAmount) : undefined,
           deadline: form.deadline ? new Date(form.deadline).toISOString() : null,
+          ...(form.coverImageFile && { coverImageFile: form.coverImageFile })
         }),
       });
       if (!res.ok) {
@@ -57,7 +72,7 @@ export default function ProjectModal({ project, onSuccess }) {
       } else {
         setOpen(false);
         if (!isEdit) {
-          setForm({ title: '', description: '', category: '', location: '', targetAmount: '', icon: '🎯', deadline: '', status: 'ACTIVE' });
+          setForm({ title: '', description: '', category: '', location: '', targetAmount: '', icon: '🎯', deadline: '', status: 'ACTIVE', coverImageFile: null, coverImagePreview: null });
         }
         if (onSuccess) onSuccess();
       }
@@ -129,8 +144,23 @@ export default function ProjectModal({ project, onSuccess }) {
                   <input name="targetAmount" type="number" min="1" value={form.targetAmount} onChange={handleChange} required className="form-input" placeholder="100000" />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">আইকন (ইমোজি)</label>
-                  <input name="icon" value={form.icon} onChange={handleChange} className="form-input" placeholder="🎯" maxLength={4} />
+                  <label className="form-label">প্রজেক্ট ছবি</label>
+                  <label style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    border: '2px dashed var(--color-earth-2)', borderRadius: '8px', padding: '1rem',
+                    cursor: 'pointer', backgroundColor: 'var(--color-surface-alt)', height: '100px',
+                    position: 'relative', overflow: 'hidden'
+                  }}>
+                    {form.coverImagePreview ? (
+                        <img src={form.coverImagePreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} />
+                    ) : (
+                      <>
+                        <Upload size={24} style={{ color: 'var(--color-text-muted)', marginBottom: '0.5rem' }} />
+                        <span style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>ছবি আপলোড করুন</span>
+                      </>
+                    )}
+                    <input type="file" name="coverImageFile" accept="image/*" onChange={handleChange} style={{ display: 'none' }} />
+                  </label>
                 </div>
               </div>
 

@@ -48,6 +48,7 @@ export async function POST(req) {
         amount: data.amount,
         txId: data.txId,
         method: data.method,
+        projectId: data.projectId || null,
       }
     });
 

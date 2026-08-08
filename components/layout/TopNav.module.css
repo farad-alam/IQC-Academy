@@ -118,6 +118,40 @@
   box-shadow: 0 4px 12px rgba(245,158,11,0.35);
 }
 
+.donateBtnNav {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.donateBtnNav:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.4);
+  background: linear-gradient(135deg, #15803d, #166534);
+}
+.donateIcon {
+  font-size: 1rem;
+  animation: heartbeat 2s infinite;
+}
+
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.15); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
+}
+
 /* ── User Menu (Logged In) ────────────────────────────────────────── */
 .userMenuWrapper { position: relative; }
 
