@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, Plus, Edit, Trash2, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Loader from '@/components/ui/Loader';
+import ProtectedDeleteModal from '@/components/admin/ProtectedDeleteModal';
+import { toast } from 'react-hot-toast';
 
 export default function SubjectModulesClient({ subject, course }) {
   const router = useRouter();
@@ -13,6 +15,7 @@ export default function SubjectModulesClient({ subject, course }) {
   const [editingModuleId, setEditingModuleId] = useState(null);
   const [formData, setFormData] = useState({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', pdfFile: '', body: '', quizPassMark: 80, quizDisplayCount: 20 });
   const [loading, setLoading] = useState(false);
+  const [deletingModuleId, setDeletingModuleId] = useState(null);
 
   const openAddForm = () => { setIsAdding(true); setEditingModuleId(null); setFormData({ title: '', contentType: 'VIDEO', videoUrl: '', pdfUrl: '', pdfFile: '', body: '', quizPassMark: 80, quizDisplayCount: 20 }); };
   const openEditForm = (module) => { setIsAdding(true); setEditingModuleId(module.id); setFormData({ title: module.title || '', contentType: module.contentType || 'VIDEO', videoUrl: module.videoUrl || '', pdfUrl: module.pdfUrl || '', pdfFile: '', body: module.body || '', quizPassMark: module.quizPassMark || 80, quizDisplayCount: module.quizDisplayCount || 20 }); window.scrollTo({ top: 0, behavior: 'smooth' }); };
@@ -45,10 +48,24 @@ export default function SubjectModulesClient({ subject, course }) {
     finally { setLoading(false); }
   };
 
-  const handleDelete = async (moduleId) => {
-    if (!confirm('এই মডিউলটি মুছে ফেলতে চান?')) return;
-    const res = await fetch(`/api/admin/modules/${moduleId}`, { method: 'DELETE' });
-    if (res.ok) { setModules(modules.filter(m => m.id !== moduleId)); router.refresh(); }
+  const confirmDelete = async (securityKey) => {
+    try {
+      const res = await fetch(`/api/admin/modules/${deletingModuleId}`, { 
+        method: 'DELETE',
+        headers: { 'x-deletion-key': securityKey }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('মডিউলটি সফলভাবে মুছে ফেলা হয়েছে');
+        setModules(modules.filter(m => m.id !== deletingModuleId));
+        setDeletingModuleId(null);
+        router.refresh();
+      } else {
+        toast.error(data.error || 'মুছে ফেলতে সমস্যা হয়েছে');
+      }
+    } catch {
+      toast.error('নেটওয়ার্ক সমস্যা');
+    }
   };
 
   return (
@@ -123,7 +140,7 @@ export default function SubjectModulesClient({ subject, course }) {
                   <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                     <Link href={`/admin/courses/${course.id}/modules/${m.id}/quizzes`} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-accent-dark)', minWidth: '44px', minHeight: '44px' }}><HelpCircle size={16} /> কুইজ</Link>
                     <button onClick={() => openEditForm(m)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-primary)', minWidth: '44px', minHeight: '44px' }}><Edit size={16} /></button>
-                    <button onClick={() => handleDelete(m.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)', minWidth: '44px', minHeight: '44px' }}><Trash2 size={16} /></button>
+                    <button onClick={() => setDeletingModuleId(m.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)', minWidth: '44px', minHeight: '44px' }}><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>
@@ -132,6 +149,14 @@ export default function SubjectModulesClient({ subject, course }) {
           </tbody>
         </table>
       </div>
+
+      <ProtectedDeleteModal 
+        isOpen={!!deletingModuleId}
+        onClose={() => setDeletingModuleId(null)}
+        onConfirm={confirmDelete}
+        title="মডিউল মুছে ফেলুন"
+        message="আপনি কি নিশ্চিত যে এই মডিউলটি মুছে ফেলতে চান? এর অন্তর্ভুক্ত সকল কুইজও মুছে যাবে।"
+      />
     </div>
   );
 }

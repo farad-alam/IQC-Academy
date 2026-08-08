@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { validateDeletionKey } from '@/lib/security';
 
 // GET - get a subject with its modules
 export async function GET(req, { params }) {
@@ -62,6 +63,9 @@ export async function DELETE(req, { params }) {
     if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { subjectId } = await params;
+
+    const securityError = await validateDeletionKey(req);
+    if (securityError) return securityError;
     await prisma.subject.delete({ where: { id: subjectId } });
     return NextResponse.json({ success: true });
   } catch (error) {

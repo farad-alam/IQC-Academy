@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, Plus, Trash2, Edit, Loader2, ClipboardList } from 'lucide-react';
+import ProtectedDeleteModal from '@/components/admin/ProtectedDeleteModal';
+import { toast } from 'react-hot-toast';
 
 export default function SubjectFinalExamClient({ courseId, subjectId, subjectTitle }) {
   const [data, setData] = useState(null);
@@ -10,6 +12,7 @@ export default function SubjectFinalExamClient({ courseId, subjectId, subjectTit
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ question: '', options: ['', '', '', ''], correct: 0, explanation: '' });
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -43,10 +46,23 @@ export default function SubjectFinalExamClient({ courseId, subjectId, subjectTit
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('এই প্রশ্নটি মুছবেন?')) return;
-    await fetch(`/api/admin/subjects/${subjectId}/final-exam/${id}`, { method: 'DELETE' });
-    fetchData();
+  const confirmDelete = async (securityKey) => {
+    try {
+      const res = await fetch(`/api/admin/subjects/${subjectId}/final-exam/${deletingId}`, { 
+        method: 'DELETE',
+        headers: { 'x-deletion-key': securityKey }
+      });
+      const resData = await res.json();
+      if (res.ok) {
+        toast.success('প্রশ্নটি মুছে ফেলা হয়েছে');
+        setDeletingId(null);
+        fetchData();
+      } else {
+        toast.error(resData.error || 'মুছে ফেলতে সমস্যা হয়েছে');
+      }
+    } catch {
+      toast.error('নেটওয়ার্ক সমস্যা');
+    }
   };
 
   // Update final exam config
@@ -152,13 +168,21 @@ export default function SubjectFinalExamClient({ courseId, subjectId, subjectTit
                 </div>
                 <div style={{ display: 'flex', gap: '0.4rem', flexShrink: 0 }}>
                   <button onClick={() => openEdit(q)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-primary)' }}><Edit size={15} /></button>
-                  <button onClick={() => handleDelete(q.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)' }}><Trash2 size={15} /></button>
+                  <button onClick={() => setDeletingId(q.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)' }}><Trash2 size={15} /></button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       }
+
+      <ProtectedDeleteModal 
+        isOpen={!!deletingId}
+        onClose={() => setDeletingId(null)}
+        onConfirm={confirmDelete}
+        title="প্রশ্ন মুছে ফেলুন"
+        message="আপনি কি নিশ্চিত যে এই প্রশ্নটি মুছে ফেলতে চান?"
+      />
     </div>
   );
 }

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, Plus, Edit, Trash2, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Loader from '@/components/ui/Loader';
+import ProtectedDeleteModal from '@/components/admin/ProtectedDeleteModal';
+import { toast } from 'react-hot-toast';
 
 export default function FinalExamClient({ course }) {
   const router = useRouter();
@@ -12,6 +14,7 @@ export default function FinalExamClient({ course }) {
   const [isAdding, setIsAdding] = useState(false);
   const [editingQuizId, setEditingQuizId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [deletingQuizId, setDeletingQuizId] = useState(null);
   
   const [formData, setFormData] = useState({
     question: '', option1: '', option2: '', option3: '', option4: '', correct: 0, explanation: ''
@@ -93,16 +96,23 @@ export default function FinalExamClient({ course }) {
     }
   };
 
-  const handleDelete = async (quizId) => {
-    if (!confirm('Are you sure you want to delete this question?')) return;
+  const confirmDelete = async (securityKey) => {
     try {
-      const res = await fetch(`/api/admin/courses/${course.id}/final-exam/${quizId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/courses/${course.id}/final-exam/${deletingQuizId}`, { 
+        method: 'DELETE',
+        headers: { 'x-deletion-key': securityKey }
+      });
+      const data = await res.json();
       if (res.ok) {
-        setQuizzes(quizzes.filter(q => q.id !== quizId));
+        toast.success('প্রশ্নটি মুছে ফেলা হয়েছে');
+        setQuizzes(quizzes.filter(q => q.id !== deletingQuizId));
+        setDeletingQuizId(null);
         router.refresh();
+      } else {
+        toast.error(data.error || 'মুছে ফেলতে সমস্যা হয়েছে');
       }
     } catch (err) {
-      console.error(err);
+      toast.error('নেটওয়ার্ক সমস্যা');
     }
   };
 
@@ -219,7 +229,7 @@ export default function FinalExamClient({ course }) {
                 {/* <button onClick={() => openEditForm(q)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-primary)', height: 'fit-content', minWidth: '44px', minHeight: '44px' }} title="এডিট করুন">
                   <Edit size={16} />
                 </button> */}
-                <button onClick={() => handleDelete(q.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)', height: 'fit-content', minWidth: '44px', minHeight: '44px' }} title="মুছে ফেলুন">
+                <button onClick={() => setDeletingQuizId(q.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)', height: 'fit-content', minWidth: '44px', minHeight: '44px' }} title="মুছে ফেলুন">
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -232,6 +242,14 @@ export default function FinalExamClient({ course }) {
           </div>
         )}
       </div>
+
+      <ProtectedDeleteModal 
+        isOpen={!!deletingQuizId}
+        onClose={() => setDeletingQuizId(null)}
+        onConfirm={confirmDelete}
+        title="প্রশ্ন মুছে ফেলুন"
+        message="আপনি কি নিশ্চিত যে এই প্রশ্নটি মুছে ফেলতে চান?"
+      />
     </div>
   );
 }

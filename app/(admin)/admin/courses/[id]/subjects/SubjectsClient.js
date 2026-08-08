@@ -2,6 +2,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, Plus, Edit, Trash2, BookOpen, ClipboardList, ChevronRight, Loader2, Trophy } from 'lucide-react';
+import ProtectedDeleteModal from '@/components/admin/ProtectedDeleteModal';
+import { toast } from 'react-hot-toast';
 
 export default function SubjectsClient({ courseId, courseTitle }) {
   const [subjects, setSubjects] = useState([]);
@@ -10,6 +12,7 @@ export default function SubjectsClient({ courseId, courseTitle }) {
   const [editingSubject, setEditingSubject] = useState(null);
   const [form, setForm] = useState({ title: '', description: '', finalExamEnabled: false, finalExamPassMark: 40, finalExamDisplayCount: 20 });
   const [saving, setSaving] = useState(false);
+  const [deletingSubjectId, setDeletingSubjectId] = useState(null);
 
   const fetchSubjects = useCallback(async () => {
     setLoading(true);
@@ -37,10 +40,23 @@ export default function SubjectsClient({ courseId, courseTitle }) {
     } finally { setSaving(false); }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('এই সাবজেক্ট ও এর সব মডিউল মুছে ফেলতে চান?')) return;
-    await fetch(`/api/admin/courses/${courseId}/subjects/${id}`, { method: 'DELETE' });
-    fetchSubjects();
+  const confirmDelete = async (securityKey) => {
+    try {
+      const res = await fetch(`/api/admin/courses/${courseId}/subjects/${deletingSubjectId}`, {
+        method: 'DELETE',
+        headers: { 'x-deletion-key': securityKey }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('সাবজেক্টটি সফলভাবে মুছে ফেলা হয়েছে');
+        setDeletingSubjectId(null);
+        fetchSubjects();
+      } else {
+        toast.error(data.error || 'মুছে ফেলতে সমস্যা হয়েছে');
+      }
+    } catch {
+      toast.error('নেটওয়ার্ক সমস্যা');
+    }
   };
 
   return (
@@ -139,13 +155,21 @@ export default function SubjectsClient({ courseId, courseTitle }) {
                     <BookOpen size={14} /> মডিউল <ChevronRight size={14} />
                   </Link>
                   <button onClick={() => openEdit(subject)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-primary)' }}><Edit size={15} /></button>
-                  <button onClick={() => handleDelete(subject.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)' }}><Trash2 size={15} /></button>
+                  <button onClick={() => setDeletingSubjectId(subject.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-error)' }}><Trash2 size={15} /></button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      <ProtectedDeleteModal 
+        isOpen={!!deletingSubjectId}
+        onClose={() => setDeletingSubjectId(null)}
+        onConfirm={confirmDelete}
+        title="সাবজেক্ট মুছে ফেলুন"
+        message="আপনি কি নিশ্চিত যে এই সাবজেক্টটি মুছে ফেলতে চান? এর অন্তর্ভুক্ত সকল মডিউল ও কুইজ মুছে যাবে।"
+      />
     </div>
   );
 }

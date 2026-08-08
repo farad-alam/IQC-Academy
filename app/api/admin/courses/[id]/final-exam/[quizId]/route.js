@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { validateDeletionKey } from '@/lib/security';
 
 export async function DELETE(req, { params }) {
   try {
@@ -11,6 +12,9 @@ export async function DELETE(req, { params }) {
 
     const resolvedParams = await params;
     const { quizId } = resolvedParams;
+
+    const securityError = await validateDeletionKey(req);
+    if (securityError) return securityError;
 
     await prisma.finalExamQuiz.delete({
       where: { id: quizId }

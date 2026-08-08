@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Save, Globe, Phone, Map, Layout, CreditCard, Activity, UserPlus, Users2 } from 'lucide-react';
+import { Save, Globe, Phone, Map, Layout, CreditCard, Activity, UserPlus, Users2, Shield } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 import { toast } from 'react-hot-toast';
 
@@ -67,8 +67,8 @@ export default function AdminSettingsPage() {
       </header>
 
       <div style={{ display: 'flex', gap: '2rem', flexDirection: 'column' }}>
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--color-earth-1)', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--color-earth-2)', marginBottom: '2rem', flexWrap: 'wrap', paddingBottom: '0.5rem' }}>
           <button 
             onClick={() => setActiveTab('general')}
             style={{ padding: '0.5rem 1rem', background: 'none', border: 'none', borderBottom: activeTab === 'general' ? '2px solid var(--color-primary)' : '2px solid transparent', color: activeTab === 'general' ? 'var(--color-primary)' : 'var(--color-text-muted)', fontWeight: activeTab === 'general' ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
@@ -98,6 +98,12 @@ export default function AdminSettingsPage() {
             style={{ padding: '0.5rem 1rem', background: 'none', border: 'none', borderBottom: activeTab === 'layout' ? '2px solid var(--color-primary)' : '2px solid transparent', color: activeTab === 'layout' ? 'var(--color-primary)' : 'var(--color-text-muted)', fontWeight: activeTab === 'layout' ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
             <Layout size={18} /> ফুটার ও ম্যাপ
+          </button>
+          <button 
+            onClick={() => setActiveTab('security')}
+            style={{ padding: '0.5rem 1rem', background: 'none', border: 'none', borderBottom: activeTab === 'security' ? '2px solid var(--color-primary)' : '2px solid transparent', color: activeTab === 'security' ? 'var(--color-primary)' : 'var(--color-text-muted)', fontWeight: activeTab === 'security' ? 600 : 400, cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <Shield size={18} /> নিরাপত্তা
           </button>
         </div>
 
@@ -232,12 +238,37 @@ export default function AdminSettingsPage() {
             </div>
           )}
 
+          {activeTab === 'security' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ padding: '1.5rem', border: '1px solid var(--color-error)', borderRadius: '12px', backgroundColor: 'rgba(239, 68, 68, 0.05)' }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--color-error)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Shield size={20} /> ডিলিট সিকিউরিটি কী (Deletion Security Key)
+                </h3>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+                  কোর্স, সাবজেক্ট, মডিউল, কুইজ ইত্যাদি মুছে ফেলার জন্য এই পাসওয়ার্ডটি প্রয়োজন হবে। এটি সেট না করলে কোনো কিছুই মুছে ফেলা যাবে না।
+                </p>
+                <div className="form-group">
+                  <label>সিকিউরিটি পাসওয়ার্ড</label>
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    name="deletion_security_key" 
+                    value={settings.deletion_security_key || ''} 
+                    onChange={handleChange} 
+                    placeholder="পাসওয়ার্ড লিখুন..." 
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
             <button type="submit" className="btn btn-primary" disabled={saving}>
               <Save size={18} /> {saving ? 'সংরক্ষণ হচ্ছে...' : 'পরিবর্তন সংরক্ষণ করুন'}
             </button>
           </div>
         </form>
+       </div>
       </div>
     </div>
   );

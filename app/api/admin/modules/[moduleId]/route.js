@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import { uploadImage } from '@/lib/cloudinary';
+import { validateDeletionKey } from '@/lib/security';
 
 // PATCH /api/admin/modules/[moduleId]
 export async function PATCH(req, { params }) {
@@ -48,6 +49,9 @@ export async function DELETE(req, { params }) {
     if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { moduleId } = await params;
+
+    const securityError = await validateDeletionKey(req);
+    if (securityError) return securityError;
     await prisma.module.delete({ where: { id: moduleId } });
     return NextResponse.json({ success: true });
   } catch (error) {

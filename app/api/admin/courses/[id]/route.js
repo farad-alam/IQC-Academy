@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
-
 import { uploadImage } from '@/lib/cloudinary';
+import { validateDeletionKey } from '@/lib/security';
 
 export async function PATCH(req, { params }) {
   try {
@@ -65,6 +65,9 @@ export async function DELETE(req, { params }) {
     }
 
     const { id } = await params;
+
+    const securityError = await validateDeletionKey(req);
+    if (securityError) return securityError;
 
     // We must manually delete/detach relations that don't have onDelete: Cascade in the schema
     await prisma.$transaction(async (tx) => {

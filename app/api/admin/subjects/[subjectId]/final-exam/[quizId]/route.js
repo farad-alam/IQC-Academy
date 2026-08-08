@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { validateDeletionKey } from '@/lib/security';
 
 // PATCH - edit a quiz question
 export async function PATCH(req, { params }) {
@@ -36,6 +37,10 @@ export async function DELETE(req, { params }) {
     if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { quizId } = await params;
+
+    const securityError = await validateDeletionKey(req);
+    if (securityError) return securityError;
+
     await prisma.subjectFinalExamQuiz.delete({ where: { id: quizId } });
     return NextResponse.json({ success: true });
   } catch (error) {

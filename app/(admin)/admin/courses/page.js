@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { BookOpen, Search, Trash2, Edit, Settings, Layers } from 'lucide-react';
 import CreateCourseModal from '@/components/admin/CreateCourseModal';
 import EditCourseModal from '@/components/admin/EditCourseModal';
+import ProtectedDeleteModal from '@/components/admin/ProtectedDeleteModal';
+import { toast } from 'react-hot-toast';
 
 export default function AdminCoursesPage() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingCourse, setEditingCourse] = useState(null);
+  const [deletingCourseId, setDeletingCourseId] = useState(null);
 
   const fetchCourses = async () => {
     setLoading(true);
@@ -30,14 +33,24 @@ export default function AdminCoursesPage() {
     fetchCourses();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!confirm('আপনি কি নিশ্চিত যে এই কোর্সটি মুছে ফেলতে চান?')) return;
+  const confirmDelete = async (securityKey) => {
     try {
-      const res = await fetch(`/api/admin/courses/${id}`, { method: 'DELETE' });
-      if (res.ok) fetchCourses();
-      else alert('ডিলিট করতে সমস্যা হয়েছে');
+      const res = await fetch(`/api/admin/courses/${deletingCourseId}`, { 
+        method: 'DELETE',
+        headers: {
+          'x-deletion-key': securityKey
+        }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('কোর্সটি সফলভাবে মুছে ফেলা হয়েছে');
+        setDeletingCourseId(null);
+        fetchCourses();
+      } else {
+        toast.error(data.error || 'ডিলিট করতে সমস্যা হয়েছে');
+      }
     } catch {
-      alert('নেটওয়ার্ক সমস্যা');
+      toast.error('নেটওয়ার্ক সমস্যা');
     }
   };
 
@@ -146,7 +159,7 @@ export default function AdminCoursesPage() {
                         <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-accent)' }} title="কোর্স এডিট করুন" onClick={() => setEditingCourse(course)}>
                           <Settings size={16} />
                         </button>
-                        <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-error)' }} title="মুছে ফেলুন" onClick={() => handleDelete(course.id)}>
+                        <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-error)' }} title="মুছে ফেলুন" onClick={() => setDeletingCourseId(course.id)}>
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -166,6 +179,14 @@ export default function AdminCoursesPage() {
           setEditingCourse(null);
           fetchCourses();
         }}
+      />
+
+      <ProtectedDeleteModal 
+        isOpen={!!deletingCourseId}
+        onClose={() => setDeletingCourseId(null)}
+        onConfirm={confirmDelete}
+        title="কোর্স মুছে ফেলুন"
+        message="আপনি কি নিশ্চিত যে এই কোর্সটি মুছে ফেলতে চান? কোর্সের সকল সাবজেক্ট, মডিউল এবং কুইজ মুছে যাবে।"
       />
     </div>
   );
