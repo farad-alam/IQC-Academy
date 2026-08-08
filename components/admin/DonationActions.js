@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, XCircle } from 'lucide-react';
 
-export default function DonationActions({ donationId, status }) {
+export default function DonationActions({ donationId, status, onAction }) {
   const [loading, setLoading] = useState(false);
   const [showReject, setShowReject] = useState(false);
   const [reason, setReason] = useState('');
@@ -23,7 +23,11 @@ export default function DonationActions({ donationId, status }) {
         const d = await res.json();
         alert(d.error || 'কোনো সমস্যা হয়েছে।');
       } else {
-        router.refresh();
+        if (onAction) {
+          await onAction();
+        } else {
+          router.refresh();
+        }
       }
     } catch {
       alert('নেটওয়ার্ক সমস্যা।');
@@ -49,7 +53,7 @@ export default function DonationActions({ donationId, status }) {
           <button
             className="btn btn-sm"
             style={{ backgroundColor: 'var(--color-error)', color: 'white', flex: 1 }}
-            onClick={() => doAction('REJECT', reason || 'No reason provided')}
+            onClick={() => doAction('REJECT', reason || 'কোনো কারণ উল্লেখ করা হয়নি')}
             disabled={loading}
           >
             নিশ্চিত করুন

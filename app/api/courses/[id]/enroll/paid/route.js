@@ -47,7 +47,24 @@ export async function POST(req, { params }) {
       return NextResponse.json({ error: 'Already enrolled' }, { status: 400 });
     }
 
-    // 3. Create a pending Donation record tied to this course
+    // 3. Check if there's already a PENDING donation for this course
+    const existingPendingDonation = await prisma.donation.findFirst({
+      where: {
+        userId: user.id,
+        courseId,
+        status: 'PENDING'
+      }
+    });
+
+    if (existingPendingDonation) {
+      return NextResponse.json({
+        error: 'PAYMENT_PENDING',
+        message: 'আপনার একটি পেমেন্ট ইতোমধ্যে যাচাইয়ের জন্য অপেক্ষায় আছে। অনুগ্রহ করে অ্যাডমিনের অনুমোদনের জন্য অপেক্ষা করুন।',
+        donation: existingPendingDonation
+      }, { status: 409 });
+    }
+
+    // 4. Create a pending Donation record tied to this course
     const donation = await prisma.donation.create({
       data: {
         userId: user.id,
@@ -70,7 +87,7 @@ export async function POST(req, { params }) {
   } catch (error) {
     console.error('[ENROLL_PAID_ERROR]', error);
     if (error.code === 'P2002') { // Unique constraint violation (likely txId)
-       return NextResponse.json({ error: 'This Transaction ID has already been used.' }, { status: 400 });
+       return NextResponse.json({ error: 'এই Transaction ID আগেই ব্যবহার করা হয়েছে। সঠিক TxID দিন।' }, { status: 400 });
     }
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

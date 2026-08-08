@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { GraduationCap, Lock, ChevronRight, BookOpen } from 'lucide-react';
+import { GraduationCap, Lock, ChevronRight, BookOpen, Clock, XCircle, CreditCard } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 import styles from '../dashboard/dashboard.module.css';
 
@@ -10,13 +10,40 @@ export default function MyBatchesPage() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Map of courseId → payment status
+  const [paymentStatuses, setPaymentStatuses] = useState({});
 
   useEffect(() => {
     fetch('/api/users/me')
       .then(res => res.json())
-      .then(data => {
+      .then(async data => {
         if (!data.success) { router.push('/login'); return; }
         setUser(data.profile);
+
+        // Collect all PAID course IDs from batches
+        const paidCourseIds = [];
+        for (const bs of data.profile.batchStudents || []) {
+          for (const bc of bs.batch.courses || []) {
+            if (bc.course.type === 'PAID') {
+              paidCourseIds.push(bc.course.id);
+            }
+          }
+        }
+
+        // Fetch payment status for each paid course
+        if (paidCourseIds.length > 0) {
+          const statuses = {};
+          await Promise.all(paidCourseIds.map(async (courseId) => {
+            try {
+              const res = await fetch(`/api/courses/${courseId}/payment-status`);
+              if (res.ok) {
+                const d = await res.json();
+                statuses[courseId] = d;
+              }
+            } catch {}
+          }));
+          setPaymentStatuses(statuses);
+        }
       })
       .catch(() => router.push('/login'))
       .finally(() => setLoading(false));
@@ -27,7 +54,6 @@ export default function MyBatchesPage() {
       <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <Loader variant="section" text="লোড হচ্ছে..." />
-          <p style={{ color: 'var(--color-text-muted)' }}>ব্যাচ লোড হচ্ছে...</p>
         </div>
       </div>
     );
@@ -45,7 +71,7 @@ export default function MyBatchesPage() {
             <GraduationCap size={24} /> আমার ব্যাচসমূহ
           </h1>
           <p style={{ color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
-            আপনি যে সকল ব্যাচে ভর্তি হয়েছেন সেগুলোর তালিকা
+            আপনি যে সকল ব্যাচে ভর্তি হয়েছেন সেগুলোর তালিকা
           </p>
         </div>
 
@@ -62,7 +88,7 @@ export default function MyBatchesPage() {
             {myBatches.map(bs => {
               const batch = bs.batch;
               const isLocked = batch.coursesLocked;
-              
+
               return (
                 <div key={bs.id} className="card" style={{ overflow: 'hidden', padding: 0 }}>
                   <div style={{ padding: '1.5rem', background: 'linear-gradient(135deg, var(--color-primary-50), var(--color-surface))', borderBottom: '1px solid var(--color-earth-1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
@@ -76,16 +102,22 @@ export default function MyBatchesPage() {
                       {batch.status === 'ACTIVE' ? 'চলমান' : batch.status === 'COMPLETED' ? 'সম্পন্ন' : batch.status === 'ENROLLING' ? 'ভর্তি চলছে' : 'আপকামিং'}
                     </span>
                   </div>
-                  
+
                   <div style={{ padding: '1.5rem' }}>
                     <h3 style={{ fontSize: '0.95rem', color: 'var(--color-text-muted)', marginBottom: '1rem', fontWeight: 600, textTransform: 'uppercase' }}>ব্যাচের কোর্সসমূহ</h3>
-                    
+
                     {batch.courses.length === 0 ? (
                       <p style={{ fontSize: '0.9rem', color: 'var(--color-text-light)' }}>এই ব্যাচে এখনো কোনো কোর্স যোগ করা হয়নি।</p>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {batch.courses.map(bc => {
                           const course = bc.course;
+                          const ps = paymentStatuses[course.id];
+                          const isPaid = course.type === 'PAID';
+                          const isEnrolled = ps?.status === 'ENROLLED';
+                          const isPending = ps?.status === 'PENDING';
+                          const isRejected = ps?.status === 'REJECTED';
+
                           return (
                             <div key={bc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', borderRadius: '10px', background: 'var(--color-surface-alt)', border: '1px solid var(--color-earth-1)', gap: '1rem', flexWrap: 'wrap' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -96,18 +128,35 @@ export default function MyBatchesPage() {
                                 )}
                                 <div>
                                   <div style={{ fontWeight: 600, fontSize: '1rem' }}>{course.title}</div>
-                                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'flex', gap: '0.5rem', marginTop: '2px' }}>
+                                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'flex', gap: '0.5rem', marginTop: '2px', flexWrap: 'wrap' }}>
                                     <span>{course.level}</span>
                                     <span>•</span>
                                     <span>{course.duration}</span>
+                                    {isPaid && !isEnrolled && (
+                                      <span style={{ color: '#d97706', fontWeight: 600 }}>• পেইড কোর্স</span>
+                                    )}
                                   </div>
                                 </div>
                               </div>
+
+                              {/* Action button based on state */}
                               <div>
                                 {isLocked ? (
                                   <span style={{ fontSize: '0.85rem', color: 'var(--color-error)', display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--color-error-bg, #fef2f2)', padding: '6px 12px', borderRadius: '6px' }}>
                                     <Lock size={16} /> কোর্স লক করা
                                   </span>
+                                ) : isPaid && !isEnrolled && isPending ? (
+                                  <span style={{ fontSize: '0.85rem', color: '#92400e', display: 'flex', alignItems: 'center', gap: '6px', background: '#fef3c7', padding: '6px 12px', borderRadius: '6px', border: '1px solid #fcd34d', fontWeight: 600 }}>
+                                    <Clock size={16} /> যাচাইয়ের অপেক্ষায়
+                                  </span>
+                                ) : isPaid && !isEnrolled && isRejected ? (
+                                  <Link href={`/learn/${course.id}/enroll`} style={{ fontSize: '0.85rem', color: 'white', display: 'flex', alignItems: 'center', gap: '6px', background: '#dc2626', padding: '6px 14px', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>
+                                    <XCircle size={16} /> প্রত্যাখ্যাত — পুনরায় করুন
+                                  </Link>
+                                ) : isPaid && !isEnrolled ? (
+                                  <Link href={`/learn/${course.id}/enroll`} style={{ fontSize: '0.85rem', color: 'white', display: 'flex', alignItems: 'center', gap: '6px', background: '#d97706', padding: '6px 14px', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>
+                                    <CreditCard size={16} /> পেমেন্ট করুন
+                                  </Link>
                                 ) : (
                                   <Link href={`/learn/${course.id}`} className="btn btn-outline btn-sm" style={{ padding: '0.4rem 1rem' }}>
                                     কোর্স দেখুন <ChevronRight size={16} />

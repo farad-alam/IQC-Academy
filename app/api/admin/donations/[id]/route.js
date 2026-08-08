@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { sendPaymentApprovedEmail, sendPaymentRejectedEmail } from '@/lib/email';
 
 export async function PATCH(req, { params }) {
   try {
@@ -18,7 +19,13 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
 
-    const donation = await prisma.donation.findUnique({ where: { id: donationId } });
+    const donation = await prisma.donation.findUnique({
+      where: { id: donationId },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        course: { select: { id: true, title: true } }
+      }
+    });
     if (!donation) {
       return NextResponse.json({ error: 'Donation not found' }, { status: 404 });
     }
@@ -69,6 +76,15 @@ export async function PATCH(req, { params }) {
           where: { id: targetCourseId },
           data: { enrolledCount: { increment: 1 } }
         });
+
+        // Send approval email
+        if (donation.user?.email) {
+          await sendPaymentApprovedEmail(
+            donation.user.email,
+            donation.user.name,
+            donation.course?.title || 'কোর্স'
+          );
+        }
       }
 
       return NextResponse.json({ success: true, message: 'Donation verified successfully', donation: updatedDonation });
@@ -84,6 +100,16 @@ export async function PATCH(req, { params }) {
         }
       });
 
+      // Send rejection email
+      if (donation.user?.email && donation.courseId) {
+        await sendPaymentRejectedEmail(
+          donation.user.email,
+          donation.user.name,
+          donation.course?.title || 'কোর্স',
+          rejectionReason || 'পেমেন্ট তথ্য যাচাই করা যায়নি।'
+        );
+      }
+
       return NextResponse.json({ success: true, message: 'Donation rejected', donation: updatedDonation });
     }
 
@@ -92,3 +118,4 @@ export async function PATCH(req, { params }) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+

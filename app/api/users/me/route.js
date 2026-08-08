@@ -71,7 +71,7 @@ export async function GET(req) {
                 courses: {
                   include: {
                     course: {
-                      select: { id: true, title: true, coverImageUrl: true, duration: true, level: true }
+                      select: { id: true, title: true, coverImageUrl: true, duration: true, level: true, type: true }
                     }
                   }
                 }
