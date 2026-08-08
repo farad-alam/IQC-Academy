@@ -120,16 +120,21 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-            <div className={styles.welcomeActions}>
-              <Link href="/" className={styles.welcomeActionBtn}>
-                <Home size={18} style={{ marginRight: '8px' }} /> হোম পেজে যান
+            <div className={styles.welcomeRight}>
+              <Link href="/donate" className={styles.donateHeroBtn}>
+                <Gift size={24} style={{ marginRight: '8px' }} /> অনুদান করুন
               </Link>
-              <Link href="/profile" className={styles.welcomeActionBtn}>
-                <User size={18} style={{ marginRight: '8px' }} /> প্রোফাইল
-              </Link>
-              <button onClick={handleLogout} className={styles.welcomeActionBtn}>
-                <LogOut size={18} style={{ marginRight: '8px' }} /> লগআউট
-              </button>
+              <div className={styles.welcomeActions}>
+                <Link href="/" className={styles.welcomeActionBtn}>
+                  <Home size={18} style={{ marginRight: '8px' }} /> হোম পেজে যান
+                </Link>
+                <Link href="/profile" className={styles.welcomeActionBtn}>
+                  <User size={18} style={{ marginRight: '8px' }} /> প্রোফাইল
+                </Link>
+                <button onClick={handleLogout} className={styles.welcomeActionBtn}>
+                  <LogOut size={18} style={{ marginRight: '8px' }} /> লগআউট
+                </button>
+              </div>
             </div>
           </div>
         </div>
