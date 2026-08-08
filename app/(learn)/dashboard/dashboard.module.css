@@ -76,8 +76,8 @@
 }
 .welcomeActions {
   display: flex;
+  flex-direction: column;
   gap: 0.625rem;
-  flex-wrap: wrap;
 }
 
 /* ── Alert Banner ─────────────────────────────────────────────────── */
