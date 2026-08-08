@@ -1,0 +1,70 @@
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-earth-1);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.menuButton {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  transition: all 0.2s;
+}
+
+.menuButton:hover {
+  background-color: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconButton:hover {
+  background-color: var(--color-surface-alt);
+  color: var(--color-primary);
+}
+
+@media (max-width: 768px) {
+  .menuButton {
+    display: flex;
+  }
+}

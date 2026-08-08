@@ -163,7 +163,6 @@ export default function DashboardPage() {
               <div className={styles.section}>
                 <div className={styles.sectionHeader}>
                   <h2 className={styles.sectionTitle}><GraduationCap size={18} /> আমার ব্যাচসমূহ</h2>
-                  <Link href="/batches" className={styles.seeAll}>সব ব্যাচ <ArrowRight size={14} /></Link>
                 </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -217,7 +216,7 @@ export default function DashboardPage() {
                                           <Lock size={14} /> কোর্স লক করা
                                         </span>
                                       ) : (
-                                        <Link href={`/courses/${course.id}`} className="btn btn-outline btn-sm" style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem' }}>
+                                        <Link href={`/learn/${course.id}`} className="btn btn-outline btn-sm" style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem' }}>
                                           কোর্স দেখুন <ChevronRight size={14} />
                                         </Link>
                                       )}
@@ -260,7 +259,7 @@ export default function DashboardPage() {
                     const progress = isCompleted ? 100 : Math.min(100, Math.round((completed / totalModules) * 100));
 
                     return (
-                      <Link key={enrollment.id} href={`/courses/${course.id}`} className={styles.courseCard}>
+                      <Link key={enrollment.id} href={`/learn/${course.id}`} className={styles.courseCard}>
                         <div className={styles.courseCardLeft}>
                           <div className={styles.courseIcon}>
                             <BookOpen size={22} />

@@ -30,47 +30,7 @@ export default async function CourseDetailPage({ params }) {
 
   const user = await getAuthUser();
 
-  let enrollment = null;
-  let completedModuleIds = [];
-  let finalExamSessions = {};
-  let batchLocked = false;
-
-  if (user) {
-    enrollment = await prisma.enrollment.findUnique({
-      where: { userId_courseId: { userId: user.id, courseId: course.id } }
-    });
-
-    // Check if this course is batch-locked for this user
-    const batchCourse = await prisma.batchCourse.findFirst({
-      where: { courseId: course.id },
-      include: { batch: { select: { coursesLocked: true } } }
-    });
-    // Check if user is in that batch
-    if (batchCourse) {
-      const userInBatch = await prisma.batchStudent.findFirst({
-        where: { batchId: batchCourse.batchId, userId: user.id }
-      });
-      if (userInBatch) batchLocked = batchCourse.batch.coursesLocked;
-    }
-
-    if (enrollment) {
-      const allModuleIds = course.subjects.flatMap(s => s.modules.map(m => m.id));
-      const completions = await prisma.moduleCompletion.findMany({
-        where: { userId: user.id, moduleId: { in: allModuleIds } }
-      });
-      completedModuleIds = completions.map(c => c.moduleId);
-
-      // Get subject final exam sessions
-      const subjectIds = course.subjects.map(s => s.id);
-      const sessions = await prisma.subjectFinalExamSession.findMany({
-        where: { userId: user.id, subjectId: { in: subjectIds } }
-      });
-      sessions.forEach(s => { finalExamSessions[s.subjectId] = s; });
-    }
-  }
-
   const isEnrolled = !!enrollment;
-  const progress = enrollment?.progress || 0;
 
   return (
     <div className="container" style={{ padding: '2rem 1rem', maxWidth: '860px' }}>
@@ -99,18 +59,7 @@ export default async function CourseDetailPage({ params }) {
             <strong>ইন্সট্রাক্টর:</strong> {course.instructor?.name || 'IQC Academy'}
           </div>
 
-          {/* Batch locked notice */}
-          {batchLocked && isEnrolled && (
-            <div style={{ padding: '1rem 1.25rem', backgroundColor: '#fef9c3', border: '1px solid #fde047', borderRadius: '10px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Lock size={20} color="#ca8a04" />
-              <div>
-                <strong style={{ color: '#92400e' }}>কোর্সটি এখনো লক করা আছে</strong>
-                <p style={{ fontSize: '0.85rem', color: '#78350f', marginTop: '2px' }}>ব্যাচ শুরু হলে অ্যাডমিন কোর্সটি আনলক করবেন।</p>
-              </div>
-            </div>
-          )}
-
-          {/* Enroll / Progress block */}
+          {/* Enroll / Go to Course block */}
           {!isEnrolled ? (
             <div style={{ padding: '1.5rem', backgroundColor: 'var(--color-surface-alt)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
@@ -125,21 +74,20 @@ export default async function CourseDetailPage({ params }) {
                   </Link>}
             </div>
           ) : (
-            <div style={{ padding: '1.5rem', backgroundColor: 'var(--color-primary-50)', border: '1px solid var(--color-primary-100)', borderRadius: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontWeight: 600 }}>
-                <span style={{ color: 'var(--color-primary-dark)' }}>আপনার অগ্রগতি</span>
-                <span style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-latin)' }}>{progress}%</span>
+            <div style={{ padding: '1.5rem', backgroundColor: 'var(--color-primary-50)', border: '1px solid var(--color-primary-100)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>আপনি এই কোর্সে যুক্ত আছেন</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>লার্নিং ড্যাশবোর্ড থেকে কোর্স চালিয়ে যান।</p>
               </div>
-              <div className="progress-bar-track">
-                <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
-              </div>
-
+              <Link href={`/learn/${course.id}`} className="btn btn-primary">
+                লার্নিং স্পেসে যান <ChevronRight size={16} style={{ marginLeft: '4px' }} />
+              </Link>
             </div>
           )}
         </div>
       </div>
 
-      {/* Subjects → Modules */}
+      {/* Subjects → Modules Preview */}
       <h2 className="section-title">কোর্সের বিষয়সমূহ</h2>
 
       {course.subjects.length === 0 ? (
@@ -147,56 +95,27 @@ export default async function CourseDetailPage({ params }) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {course.subjects.map((subject, sIdx) => {
-            const subjectModuleIds = subject.modules.map(m => m.id);
-            const subjectCompletedCount = subjectModuleIds.filter(id => completedModuleIds.includes(id)).length;
-            const subjectAllDone = subjectModuleIds.length > 0 && subjectCompletedCount === subjectModuleIds.length;
-            const examSession = finalExamSessions[subject.id];
-            const isLocked = !isEnrolled || batchLocked;
-
             return (
               <div key={subject.id} className="card" style={{ overflow: 'hidden' }}>
-                {/* Subject header */}
-                <div style={{ padding: '1.25rem 1.5rem', background: subjectAllDone ? 'linear-gradient(135deg, var(--color-success-bg), #f0fdf4)' : 'linear-gradient(135deg, var(--color-primary-50), var(--color-surface))', borderBottom: '1px solid var(--color-earth-1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div style={{ padding: '1.25rem 1.5rem', background: 'linear-gradient(135deg, var(--color-primary-50), var(--color-surface))', borderBottom: '1px solid var(--color-earth-1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: subjectAllDone ? 'var(--color-success)' : 'var(--color-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontFamily: 'var(--font-latin)', flexShrink: 0 }}>
-                      {subjectAllDone ? <CheckCircle2 size={20} /> : sIdx + 1}
+                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--color-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontFamily: 'var(--font-latin)', flexShrink: 0 }}>
+                      {sIdx + 1}
                     </div>
                     <div>
                       <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>{subject.title}</h3>
                       {subject.description && <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>{subject.description}</p>}
-                      <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '3px' }}>
-                        {subjectCompletedCount}/{subject.modules.length} মডিউল সম্পন্ন
-                      </div>
                     </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    {subject.finalExamEnabled && isEnrolled && !batchLocked && (
-                      examSession ? (
-                        <span style={{ padding: '0.35rem 0.85rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700, background: examSession.passed ? '#dcfce7' : '#fee2e2', color: examSession.passed ? '#16a34a' : '#dc2626' }}>
-                          {examSession.passed ? '✅ পাস' : '❌ ফেইল'} ({examSession.score}/{examSession.total})
-                        </span>
-                      ) : subjectAllDone ? (
-                        <Link href={`/courses/${course.id}/subjects/${subject.id}/final-exam`} className="btn btn-accent btn-sm">
-                          <ClipboardList size={14} /> ফাইনাল পরীক্ষা
-                        </Link>
-                      ) : (
-                        <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Lock size={14} /> সব মডিউল শেষ করুন
-                        </span>
-                      )
-                    )}
                   </div>
                 </div>
 
-                {/* Modules */}
                 <div style={{ padding: '0.75rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {subject.modules.map((module, mIdx) => {
-                    const isDone = completedModuleIds.includes(module.id);
                     return (
-                      <div key={module.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: '8px', background: isDone ? '#f0fdf4' : 'var(--color-surface-alt)', border: `1px solid ${isDone ? '#bbf7d0' : 'var(--color-earth-1)'}`, flexWrap: 'wrap', gap: '0.5rem', opacity: isLocked ? 0.6 : 1 }}>
+                      <div key={module.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: '8px', background: 'var(--color-surface-alt)', border: '1px solid var(--color-earth-1)', flexWrap: 'wrap', gap: '0.5rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: '200px' }}>
-                          <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: isDone ? 'var(--color-success)' : 'var(--color-surface)', border: `2px solid ${isDone ? 'var(--color-success)' : 'var(--color-earth-1)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-latin)', fontSize: '0.8rem', fontWeight: 700, color: isDone ? 'white' : 'var(--color-text-muted)', flexShrink: 0 }}>
-                            {isDone ? <CheckCircle2 size={16} /> : `${sIdx + 1}.${mIdx + 1}`}
+                          <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'var(--color-surface)', border: '2px solid var(--color-earth-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-latin)', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-muted)', flexShrink: 0 }}>
+                            {sIdx + 1}.{mIdx + 1}
                           </div>
                           <div>
                             <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{module.title}</div>
@@ -206,16 +125,7 @@ export default async function CourseDetailPage({ params }) {
                           </div>
                         </div>
                         <div style={{ display: 'flex', gap: '0.4rem' }}>
-                          {isLocked ? <Lock size={18} color="var(--color-text-light)" /> : (
-                            <>
-                              <Link href={`/content/${module.id}`} className="btn btn-outline btn-sm" style={{ fontSize: '0.8rem' }}>
-                                {isDone ? 'রিভিউ' : 'শুরু'} <PlayCircle size={14} />
-                              </Link>
-                              {module._count?.quizzes > 0 && (
-                                <Link href={`/quiz/${module.id}`} className="btn btn-accent btn-sm" style={{ fontSize: '0.8rem' }}>কুইজ</Link>
-                              )}
-                            </>
-                          )}
+                          <Lock size={18} color="var(--color-text-light)" />
                         </div>
                       </div>
                     );
