@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { hash } from 'argon2';
 import prisma from '@/lib/db';
-import { registerSchema } from '@/lib/validation/auth.schema';
+import { batchRegisterSchema } from '@/lib/validation/auth.schema';
 import { checkRateLimit } from '@/lib/middleware/withRateLimit';
 
 export async function POST(req, { params }) {
@@ -34,7 +34,7 @@ export async function POST(req, { params }) {
 
     // 3. Parse and Validate Body
     const body = await req.json();
-    const result = registerSchema.safeParse(body);
+    const result = batchRegisterSchema.safeParse(body);
     
     if (!result.success) {
       const formattedErrors = result.error.format();
