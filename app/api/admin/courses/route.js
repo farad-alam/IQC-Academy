@@ -35,7 +35,7 @@ export async function POST(req) {
     const body = await req.json();
     
     // In a real app, use Zod here. Basic validation for demo:
-    if (!body.title || !body.description || !body.instructorId) {
+    if (!body.title || !body.description) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 

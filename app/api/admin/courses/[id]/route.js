@@ -46,7 +46,7 @@ export async function PATCH(req, { params }) {
       },
       include: {
         instructor: { select: { id: true, name: true } },
-        _count: { select: { enrollments: true, modules: true } },
+        _count: { select: { enrollments: true, subjects: true } },
       },
     });
 
