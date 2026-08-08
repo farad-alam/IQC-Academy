@@ -64,6 +64,21 @@ export async function GET(req) {
             project: { select: { title: true } }
           }
         },
+        batchStudents: {
+          include: {
+            batch: {
+              include: {
+                courses: {
+                  include: {
+                    course: {
+                      select: { id: true, title: true, coverImageUrl: true, duration: true, level: true }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
       }
     });
 
@@ -97,6 +112,7 @@ export async function GET(req) {
         ...d,
         amount: Number(d.amount),
       })),
+      batchStudents: profile.batchStudents,
     };
 
     return NextResponse.json({ success: true, profile: formattedProfile });

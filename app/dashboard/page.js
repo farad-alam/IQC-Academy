@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   BookOpen, Gift, Star, Zap, CheckCircle, Clock, ArrowRight,
-  Bell, AlertTriangle, User, LogOut, ChevronRight, Flame, Home
+  Bell, AlertTriangle, User, LogOut, ChevronRight, Flame, Home, Lock, GraduationCap
 } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 import styles from './dashboard.module.css';
@@ -81,6 +81,7 @@ export default function DashboardPage() {
   const activeEnrollments = user.enrollments?.filter(e => e.status === 'ACTIVE') || [];
   const completedEnrollments = user.enrollments?.filter(e => e.status === 'COMPLETED') || [];
   const displayEnrollments = user.enrollments?.filter(e => e.status === 'ACTIVE' || e.status === 'COMPLETED') || [];
+  const myBatches = user.batchStudents || [];
 
   // Profile completion check
   const requiredFields = ['name', 'email', 'mobile', 'institution', 'division', 'district'];
@@ -156,6 +157,83 @@ export default function DashboardPage() {
 
           {/* ── Left Column ─────────────────────────────────────────────── */}
           <div className={styles.leftCol}>
+
+            {/* My Batches */}
+            {myBatches.length > 0 && (
+              <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                  <h2 className={styles.sectionTitle}><GraduationCap size={18} /> আমার ব্যাচসমূহ</h2>
+                  <Link href="/batches" className={styles.seeAll}>সব ব্যাচ <ArrowRight size={14} /></Link>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {myBatches.map(bs => {
+                    const batch = bs.batch;
+                    const isLocked = batch.coursesLocked;
+                    
+                    return (
+                      <div key={bs.id} className="card" style={{ overflow: 'hidden', padding: 0 }}>
+                        <div style={{ padding: '1rem 1.25rem', background: 'linear-gradient(135deg, var(--color-primary-50), var(--color-surface))', borderBottom: '1px solid var(--color-earth-1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          <div>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{batch.name}</h3>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                              ভর্তির তারিখ: {new Date(bs.enrolledAt).toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            </div>
+                          </div>
+                          <span className={`badge ${batch.status === 'ACTIVE' ? 'badge-success' : 'badge-warning'}`}>
+                            {batch.status === 'ACTIVE' ? 'চলমান' : batch.status === 'COMPLETED' ? 'সম্পন্ন' : batch.status === 'ENROLLING' ? 'ভর্তি চলছে' : 'আপকামিং'}
+                          </span>
+                        </div>
+                        
+                        <div style={{ padding: '1rem 1.25rem' }}>
+                          <h4 style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem', fontWeight: 600, textTransform: 'uppercase' }}>ব্যাচের কোর্সসমূহ</h4>
+                          
+                          {batch.courses.length === 0 ? (
+                            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)' }}>এই ব্যাচে এখনো কোনো কোর্স যোগ করা হয়নি।</p>
+                          ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                              {batch.courses.map(bc => {
+                                const course = bc.course;
+                                return (
+                                  <div key={bc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', borderRadius: '8px', background: 'var(--color-surface-alt)', border: '1px solid var(--color-earth-1)', gap: '1rem', flexWrap: 'wrap' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                      {course.coverImageUrl ? (
+                                        <img src={course.coverImageUrl} alt={course.title} style={{ width: '40px', height: '40px', borderRadius: '6px', objectFit: 'cover' }} />
+                                      ) : (
+                                        <div style={{ width: '40px', height: '40px', borderRadius: '6px', background: 'var(--color-primary-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>📚</div>
+                                      )}
+                                      <div>
+                                        <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{course.title}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', display: 'flex', gap: '0.5rem' }}>
+                                          <span>{course.level}</span>
+                                          <span>•</span>
+                                          <span>{course.duration}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div>
+                                      {isLocked ? (
+                                        <span style={{ fontSize: '0.8rem', color: 'var(--color-error)', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--color-error-bg, #fef2f2)', padding: '4px 8px', borderRadius: '4px' }}>
+                                          <Lock size={14} /> কোর্স লক করা
+                                        </span>
+                                      ) : (
+                                        <Link href={`/courses/${course.id}`} className="btn btn-outline btn-sm" style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem' }}>
+                                          কোর্স দেখুন <ChevronRight size={14} />
+                                        </Link>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Enrolled Courses */}
             <div className={styles.section}>
