@@ -83,8 +83,14 @@ export async function DELETE(req, { params }) {
       });
 
       // 3. Delete quiz attempts for quizzes in this course's modules
-      const modules = await tx.module.findMany({
+      const subjects = await tx.subject.findMany({
         where: { courseId: id },
+        select: { id: true }
+      });
+      const subjectIds = subjects.map(s => s.id);
+
+      const modules = await tx.module.findMany({
+        where: { subjectId: { in: subjectIds } },
         select: { id: true, quizzes: { select: { id: true } } }
       });
       
