@@ -41,9 +41,12 @@ export default function LearnSidebar({ isOpen, setIsOpen }) {
 
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
         <div className={styles.logoArea}>
-          <Link href="/" onClick={closeSidebar} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-            <img src="/images/logo.png" alt="IQC Academy" style={{ height: '32px' }} />
-            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-primary-dark)' }}>IQC Academy</span>
+          <Link href="/dashboard" onClick={closeSidebar} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+            <div style={{ fontSize: '1.75rem', lineHeight: 1 }}>🕌</div>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+              <span style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--color-primary-dark)', letterSpacing: '1px' }}>IQC</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#F59E0B', letterSpacing: '1px' }}>ACADEMY</span>
+            </div>
           </Link>
         </div>
 
@@ -82,21 +85,6 @@ export default function LearnSidebar({ isOpen, setIsOpen }) {
           </div>
         </nav>
 
-        {user && (
-          <div className={styles.userArea}>
-            {user.avatarUrl ? (
-              <img src={user.avatarUrl} alt={user.name} className={styles.avatar} style={{ objectFit: 'cover' }} />
-            ) : (
-              <div className={styles.avatar}>
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-            )}
-            <div className={styles.userInfo}>
-              <div className={styles.userName}>{user.name}</div>
-              <div className={styles.userPoints}>{user.totalPoints || 0} পয়েন্ট</div>
-            </div>
-          </div>
-        )}
       </aside>
     </>
   );
