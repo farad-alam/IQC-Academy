@@ -1,13 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { BookOpen, Search, Trash2, Edit } from 'lucide-react';
+import { BookOpen, Search, Trash2, Edit, Settings, Layers } from 'lucide-react';
 import CreateCourseModal from '@/components/admin/CreateCourseModal';
+import EditCourseModal from '@/components/admin/EditCourseModal';
 
 export default function AdminCoursesPage() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingCourse, setEditingCourse] = useState(null);
 
   const fetchCourses = async () => {
     setLoading(true);
@@ -139,8 +141,11 @@ export default function AdminCoursesPage() {
                           {course.status === 'PUBLISHED' ? 'ড্রাফট' : 'প্রকাশ'}
                         </button>
                         <Link href={`/admin/courses/${course.id}/subjects`} className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-primary)' }} title="সাবজেক্ট পরিচালনা">
-                          <Edit size={16} />
+                          <Layers size={16} />
                         </Link>
+                        <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-accent)' }} title="কোর্স এডিট করুন" onClick={() => setEditingCourse(course)}>
+                          <Settings size={16} />
+                        </button>
                         <button className="btn btn-ghost btn-sm" style={{ padding: '0.5rem', minWidth: '44px', minHeight: '44px', color: 'var(--color-error)' }} title="মুছে ফেলুন" onClick={() => handleDelete(course.id)}>
                           <Trash2 size={16} />
                         </button>
@@ -153,6 +158,15 @@ export default function AdminCoursesPage() {
           </table>
         </div>
       </div>
+      <EditCourseModal 
+        course={editingCourse} 
+        isOpen={!!editingCourse} 
+        onClose={() => setEditingCourse(null)} 
+        onCourseUpdated={() => {
+          setEditingCourse(null);
+          fetchCourses();
+        }}
+      />
     </div>
   );
 }

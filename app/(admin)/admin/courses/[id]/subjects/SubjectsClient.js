@@ -52,9 +52,6 @@ export default function SubjectsClient({ courseId, courseTitle }) {
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>সাবজেক্ট ব্যবস্থাপনা</h1>
-            <Link href={`/admin/courses/${courseId}/leaderboard`} className="btn btn-outline btn-sm" style={{ color: 'var(--color-accent-dark)' }}>
-              <Trophy size={15} /> লিডারবোর্ড
-            </Link>
           </div>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>{courseTitle}</p>
         </div>
