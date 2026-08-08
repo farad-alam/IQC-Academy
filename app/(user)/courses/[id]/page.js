@@ -68,8 +68,8 @@ export default async function CourseDetailPage({ params }) {
                   : <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-success)' }}>সম্পূর্ণ ফ্রি</div>}
               </div>
               {!user
-                ? <Link href={`/login?next=/courses/${course.id}`} className="btn btn-outline">লগইন করুন</Link>
-                : <Link href={`/courses/${course.id}/enroll`} className={course.type === 'PAID' ? 'btn btn-accent' : 'btn btn-primary'}>
+                ? <Link href={`/login?next=/learn/${course.id}/enroll`} className="btn btn-outline">লগইন করুন</Link>
+                : <Link href={`/learn/${course.id}/enroll`} className={course.type === 'PAID' ? 'btn btn-accent' : 'btn btn-primary'}>
                     {course.type === 'PAID' ? 'ভর্তি হোন' : 'কোর্স শুরু করুন'}
                   </Link>}
             </div>

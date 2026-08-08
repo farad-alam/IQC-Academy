@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   BookOpen, Gift, Star, Zap, CheckCircle, Clock, ArrowRight,
-  Bell, AlertTriangle, User, LogOut, ChevronRight, Flame, Home, Lock, GraduationCap
+  Bell, AlertTriangle, User, LogOut, ChevronRight, Flame, Home, Lock, GraduationCap, XCircle, CreditCard
 } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 import styles from './dashboard.module.css';
@@ -44,16 +44,42 @@ export default function DashboardPage() {
   const [user, setUser] = useState(null);
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [paymentStatuses, setPaymentStatuses] = useState({});
 
   useEffect(() => {
     Promise.all([
       fetch('/api/users/me').then(r => r.json()),
       fetch('/api/notices').then(r => r.json()),
     ])
-      .then(([userData, noticeData]) => {
+      .then(async ([userData, noticeData]) => {
         if (!userData.success) { router.push('/login'); return; }
         setUser(userData.profile);
         setNotices(noticeData.notices || noticeData || []);
+
+        // Collect all PAID course IDs from batches
+        const paidCourseIds = [];
+        for (const bs of userData.profile.batchStudents || []) {
+          for (const bc of bs.batch.courses || []) {
+            if (bc.course.type === 'PAID') {
+              paidCourseIds.push(bc.course.id);
+            }
+          }
+        }
+
+        // Fetch payment status for each paid course
+        if (paidCourseIds.length > 0) {
+          const statuses = {};
+          await Promise.all(paidCourseIds.map(async (courseId) => {
+            try {
+              const res = await fetch(`/api/courses/${courseId}/payment-status`);
+              if (res.ok) {
+                const d = await res.json();
+                statuses[courseId] = d;
+              }
+            } catch {}
+          }));
+          setPaymentStatuses(statuses);
+        }
       })
       .catch(() => router.push('/login'))
       .finally(() => setLoading(false));
@@ -145,7 +171,7 @@ export default function DashboardPage() {
             <AlertTriangle size={20} style={{ flexShrink: 0 }} />
             <div>
               <strong>আপনার অ্যাকাউন্ট অনুমোদনের অপেক্ষায় আছে।</strong>
-              <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.9 }}>অ্যাডমিন অনুমোদন দিলে আপনি কোর্সে ভর্তি হতে পারবেন।</p>
+              <p style={{ margin: 0, fontSize: '0.875rem', opacity: 0.9 }}>অ্যাডমিন অনুমোদন দিলে আপনি কোর্সে ভর্তি হতে পারবেন。</p>
             </div>
           </div>
         )}
@@ -199,6 +225,12 @@ export default function DashboardPage() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                               {batch.courses.map(bc => {
                                 const course = bc.course;
+                                const ps = paymentStatuses[course.id];
+                                const isPaid = course.type === 'PAID';
+                                const isEnrolled = ps?.status === 'ENROLLED';
+                                const isPending = ps?.status === 'PENDING';
+                                const isRejected = ps?.status === 'REJECTED';
+
                                 return (
                                   <div key={bc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', borderRadius: '8px', background: 'var(--color-surface-alt)', border: '1px solid var(--color-earth-1)', gap: '1rem', flexWrap: 'wrap' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -209,10 +241,13 @@ export default function DashboardPage() {
                                       )}
                                       <div>
                                         <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{course.title}</div>
-                                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', display: 'flex', gap: '0.5rem' }}>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                                           <span>{course.level}</span>
                                           <span>•</span>
                                           <span>{course.duration}</span>
+                                          {isPaid && !isEnrolled && (
+                                            <span style={{ color: '#d97706', fontWeight: 600 }}>• পেইড কোর্স</span>
+                                          )}
                                         </div>
                                       </div>
                                     </div>
@@ -221,6 +256,18 @@ export default function DashboardPage() {
                                         <span style={{ fontSize: '0.8rem', color: 'var(--color-error)', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--color-error-bg, #fef2f2)', padding: '4px 8px', borderRadius: '4px' }}>
                                           <Lock size={14} /> কোর্স লক করা
                                         </span>
+                                      ) : isPaid && !isEnrolled && isPending ? (
+                                        <span style={{ fontSize: '0.8rem', color: '#92400e', display: 'flex', alignItems: 'center', gap: '6px', background: '#fef3c7', padding: '4px 10px', borderRadius: '6px', border: '1px solid #fcd34d', fontWeight: 600 }}>
+                                          <Clock size={14} /> যাচাইয়ের অপেক্ষায়
+                                        </span>
+                                      ) : isPaid && !isEnrolled && isRejected ? (
+                                        <Link href={`/learn/${course.id}/enroll`} style={{ fontSize: '0.8rem', color: 'white', display: 'flex', alignItems: 'center', gap: '6px', background: '#dc2626', padding: '4px 10px', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>
+                                          <XCircle size={14} /> প্রত্যাখ্যাত — পুনরায় করুন
+                                        </Link>
+                                      ) : isPaid && !isEnrolled ? (
+                                        <Link href={`/learn/${course.id}/enroll`} style={{ fontSize: '0.8rem', color: 'white', display: 'flex', alignItems: 'center', gap: '6px', background: '#d97706', padding: '4px 10px', borderRadius: '6px', textDecoration: 'none', fontWeight: 600 }}>
+                                          <CreditCard size={14} /> পেমেন্ট করুন
+                                        </Link>
                                       ) : (
                                         <Link href={`/learn/${course.id}`} className="btn btn-outline btn-sm" style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem' }}>
                                           কোর্স দেখুন <ChevronRight size={14} />
