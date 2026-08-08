@@ -133,11 +133,7 @@ export default async function CourseDetailPage({ params }) {
               <div className="progress-bar-track">
                 <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
               </div>
-              <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem' }}>
-                <Link href={`/courses/${course.id}/leaderboard`} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-accent-dark)', gap: '0.4rem' }}>
-                  <Trophy size={15} /> লিডারবোর্ড
-                </Link>
-              </div>
+
             </div>
           )}
         </div>

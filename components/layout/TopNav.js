@@ -17,6 +17,7 @@ export default function TopNav() {
   const navItems = [
     { name: 'হোম', href: '/' },
     { name: 'কোর্সসমূহ', href: '/courses' },
+    { name: 'ব্যাচে ভর্তি', href: '/batches' },
     { name: 'প্রজেক্ট', href: '/projects' },
     { name: 'আমাদের সম্পর্কে', href: '/about' },
     { name: 'যোগাযোগ', href: '/contact' },
@@ -123,6 +124,9 @@ export default function TopNav() {
                   </Link>
                   <Link href="/courses" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
                     <BookOpen size={16} /> আমার কোর্স
+                  </Link>
+                  <Link href="/batches" className={styles.dropdownItem} onClick={() => setDropdownOpen(false)}>
+                    🏫 ব্যাচে ভর্তি
                   </Link>
                   <div className={styles.dropdownDivider} />
                   <button className={`${styles.dropdownItem} ${styles.dropdownLogout}`} onClick={handleLogout}>

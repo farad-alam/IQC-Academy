@@ -45,7 +45,7 @@ export async function GET(req) {
                 level: true,
                 duration: true,
                 type: true,
-                _count: { select: { modules: true } },
+                _count: { select: { subjects: true } },
                 instructor: { select: { name: true } }
               }
             }

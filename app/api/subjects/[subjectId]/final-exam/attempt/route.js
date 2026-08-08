@@ -32,14 +32,14 @@ export async function POST(req, { params }) {
       where: { id: { in: quizIds }, subjectId }
     });
 
-    // Calculate score
+    // Calculate score — 1 mark per correct answer, total is always 50
     let score = 0;
     for (const quiz of quizzes) {
       if (parseInt(answers[quiz.id]) === quiz.correct) score++;
     }
 
-    const total = quizzes.length;
-    const passed = score >= (subject.finalExamPassMark || 40);
+    const total = 50; // Always out of 50 marks
+    const passed = score >= (subject.finalExamPassMark || 30);
 
     // Save session
     const session = await prisma.subjectFinalExamSession.create({

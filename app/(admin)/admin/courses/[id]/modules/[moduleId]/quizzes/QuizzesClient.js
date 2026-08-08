@@ -111,7 +111,7 @@ export default function QuizzesClient({ module, courseId }) {
             <ChevronLeft size={16} /> মডিউলে ফিরে যান
           </Link>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.25rem' }}>কুইজ পরিচালনা</h1>
-          <p style={{ color: 'var(--color-text-muted)' }}>{module.title} (কোর্স: {module.course.title})</p>
+          <p style={{ color: 'var(--color-text-muted)' }}>{module.title} (কোর্স: {module.subject?.course?.title || 'N/A'})</p>
         </div>
         {!isAdding && (
           <button onClick={openAddForm} className="btn btn-primary">

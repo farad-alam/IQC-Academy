@@ -176,7 +176,7 @@ export default function DashboardPage() {
                 <div className={styles.courseList}>
                   {displayEnrollments.map(enrollment => {
                     const course = enrollment.course;
-                    const totalModules = course._count?.modules || 1;
+    const totalModules = course._count?.subjects || 1;
                     const completed = enrollment.completedModules || 0;
                     const isCompleted = enrollment.status === 'COMPLETED';
                     const progress = isCompleted ? 100 : Math.min(100, Math.round((completed / totalModules) * 100));
@@ -200,7 +200,7 @@ export default function DashboardPage() {
                               </div>
                               <span className={styles.progressLabel}>{progress}%</span>
                             </div>
-                            <span className={styles.moduleMeta}>{completed} / {totalModules} মডিউল সম্পন্ন</span>
+                            <span className={styles.moduleMeta}>{completed}/{totalModules} মডিউল সম্পন্ন | বিষয়: {course._count?.subjects || 0}টি</span>
                           </div>
                         </div>
                         <ChevronRight size={18} className={styles.courseArrow} />
@@ -306,6 +306,7 @@ export default function DashboardPage() {
               <h2 className={styles.sectionTitle} style={{ marginBottom: '1rem' }}>দ্রুত লিংক</h2>
               <div className={styles.quickLinks}>
                 {[
+                  { href: '/batches', label: '🏫 উন্মুক্ত ব্যাচ' },
                   { href: '/courses', label: '📚 সব কোর্স', },
                   { href: '/projects', label: '🌟 প্রজেক্টসমূহ' },
                   { href: '/donate', label: '💝 অনুদান করুন' },

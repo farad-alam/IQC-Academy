@@ -12,7 +12,7 @@ export default async function AdminQuizzesPage({ params }) {
     where: { id: moduleId },
     include: {
       quizzes: true,
-      course: { select: { title: true } }
+      subject: { include: { course: { select: { title: true } } } }
     }
   });
 
