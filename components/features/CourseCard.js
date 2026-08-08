@@ -70,7 +70,7 @@ export default function CourseCard({ course }) {
           ) : isLocked ? (
             <div className={styles.priceRow}>
               <span className={styles.price}>৳{course.price}</span>
-              <Link href={`/courses/${course.id}/enroll`} className="btn btn-accent btn-sm">
+              <Link href={`/learn/${course.id}/enroll`} className="btn btn-accent btn-sm">
                 ভর্তি হোন <Lock size={14} />
               </Link>
             </div>
