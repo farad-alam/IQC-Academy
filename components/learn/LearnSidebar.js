@@ -28,8 +28,8 @@ export default function LearnSidebar({ isOpen, setIsOpen }) {
 
   const navItems = [
     { name: 'ড্যাশবোর্ড', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'আমার ব্যাচসমূহ', href: '/batches', icon: GraduationCap },
-    { name: 'আমার কোর্সসমূহ', href: '/courses', icon: BookOpen },
+    { name: 'আমার ব্যাচসমূহ', href: '/my-batches', icon: GraduationCap },
+    { name: 'আমার কোর্সসমূহ', href: '/my-courses', icon: BookOpen },
     { name: 'প্রোফাইল', href: '/profile', icon: User },
   ];
 

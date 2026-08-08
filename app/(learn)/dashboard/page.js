@@ -163,6 +163,7 @@ export default function DashboardPage() {
               <div className={styles.section}>
                 <div className={styles.sectionHeader}>
                   <h2 className={styles.sectionTitle}><GraduationCap size={18} /> আমার ব্যাচসমূহ</h2>
+                  <Link href="/my-batches" className={styles.seeAll}>সব ব্যাচ <ArrowRight size={14} /></Link>
                 </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -238,7 +239,7 @@ export default function DashboardPage() {
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}><BookOpen size={18} /> আমার কোর্সসমূহ</h2>
-                <Link href="/courses" className={styles.seeAll}>সব দেখুন <ArrowRight size={14} /></Link>
+                <Link href="/my-courses" className={styles.seeAll}>সব দেখুন <ArrowRight size={14} /></Link>
               </div>
 
               {displayEnrollments.length === 0 ? (
