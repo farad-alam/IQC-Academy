@@ -328,14 +328,20 @@ export default function RegisterPage() {
                   <div className="form-group">
                     <label className="form-label">মোবাইল নম্বর<Req /></label>
                     <input
+                      id="mobile"
+                      name="mobile"
                       type="tel"
                       className={`form-input ${errors.mobile ? 'error' : form.mobile ? 'success' : ''}`}
                       value={form.mobile}
-                      onChange={handleChange('mobile')}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+                        handleChange('mobile')(e);
+                      }}
                       placeholder="01XXXXXXXXX"
                       autoComplete="tel"
                       maxLength={11}
                       inputMode="numeric"
+                      pattern="\d*"
                     />
                     <FieldError msg={errors.mobile} />
                   </div>
@@ -447,13 +453,19 @@ export default function RegisterPage() {
                   <div className="form-group">
                     <label className="form-label">পাশের সাল<Req /></label>
                     <input
+                      id="sscYear"
+                      name="sscYear"
                       type="text"
                       className={`form-input ${errors.sscYear ? 'error' : form.sscYear ? 'success' : ''}`}
                       value={form.sscYear}
-                      onChange={handleChange('sscYear')}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                        handleChange('sscYear')(e);
+                      }}
                       placeholder="যেমন: 2020"
                       maxLength={4}
                       inputMode="numeric"
+                      pattern="\d*"
                     />
                     <FieldError msg={errors.sscYear} />
                   </div>
@@ -476,15 +488,18 @@ export default function RegisterPage() {
                   <div className="form-group">
                     <label className="form-label">জিপিএ</label>
                     <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="5"
+                      id="sscGpa"
+                      name="sscGpa"
+                      type="text"
                       className={`form-input ${errors.sscGpa ? 'error' : ''}`}
                       value={form.sscGpa}
-                      onChange={handleChange('sscGpa')}
+                      onChange={(e) => {
+                        e.target.value = e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 4);
+                        handleChange('sscGpa')(e);
+                      }}
                       placeholder="যেমন: 4.50"
                       inputMode="decimal"
+                      maxLength={4}
                     />
                     <FieldError msg={errors.sscGpa} />
                   </div>
@@ -498,14 +513,20 @@ export default function RegisterPage() {
                 <div className="form-group">
                   <label className="form-label">WhatsApp নম্বর<Req /></label>
                   <input
+                    id="whatsapp"
+                    name="whatsapp"
                     type="tel"
                     className={`form-input ${errors.whatsapp ? 'error' : form.whatsapp ? 'success' : ''}`}
                     value={form.whatsapp}
-                    onChange={handleChange('whatsapp')}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+                      handleChange('whatsapp')(e);
+                    }}
                     placeholder="01XXXXXXXXX"
                     autoComplete="tel"
                     maxLength={11}
                     inputMode="numeric"
+                    pattern="\d*"
                   />
                   <span className="form-hint">ক্লাসের লিংক ও গুরুত্বপূর্ণ নোটিফিকেশন এই নম্বরে পাঠানো হবে।</span>
                   <FieldError msg={errors.whatsapp} />
