@@ -23,7 +23,7 @@ export default async function CourseListPage({ searchParams }) {
     where,
     include: { 
       instructor: true,
-      _count: { select: { modules: true } }
+      _count: { select: { subjects: true } }
     },
     orderBy: { createdAt: 'desc' }
   });
@@ -86,7 +86,7 @@ export default async function CourseListPage({ searchParams }) {
               status,
               progress: enrollment ? enrollment.progress : 0,
               completedModules: enrollment ? enrollment.completedModules : 0,
-              totalModules: course._count.modules
+              totalSubjects: course._count.subjects
             };
 
             return <CourseCard key={course.id} course={uiCourse} />;

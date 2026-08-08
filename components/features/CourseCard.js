@@ -52,7 +52,7 @@ export default function CourseCard({ course }) {
           <div className={styles.progressSection}>
             <div className={styles.progressHeader}>
               <span className={styles.progressText}>
-                অগ্রগতি: {course.completedModules}/{course.totalModules} মডিউল
+                কোর্স বিষয়: {course.totalSubjects}
               </span>
               <span className={styles.progressPercent}>{course.progress}%</span>
             </div>

@@ -12,7 +12,7 @@ export default async function HomePage() {
   const [courses, projects, galleryItems, latestNotice, settings] = await Promise.all([
     prisma.course.findMany({
       where: { status: 'PUBLISHED' },
-      include: { _count: { select: { modules: true } }, instructor: true },
+      include: { _count: { select: { subjects: true } }, instructor: true },
       orderBy: { createdAt: 'desc' },
       take: 6
     }),
@@ -236,7 +236,7 @@ export default async function HomePage() {
                     <p className={styles.courseCardDesc}>{course.description}</p>
                     <div className={styles.courseCardMeta}>
                       <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
-                      <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.modules || 0} মডিউল</span>
+                      <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.subjects || 0} বিষয়</span>
                     </div>
                     <div className={styles.courseCardFooter}>
                       <span className={styles.instructorName}>👤 {course.instructor?.name || 'IQC Academy'}</span>
@@ -281,7 +281,7 @@ export default async function HomePage() {
                     <p className={styles.premiumCardDesc}>{course.description}</p>
                     <div className={styles.premiumCardMeta}>
                       <span className={styles.metaItem}><Clock size={13} /> {course.duration}</span>
-                      <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.modules || 0} মডিউল</span>
+                      <span className={styles.metaItem}><BookOpen size={13} /> {course._count?.subjects || 0} বিষয়</span>
                     </div>
                     <div className={styles.premiumCardFooter}>
                       <span className={styles.premiumInstructor}>👤 {course.instructor?.name || 'IQC Academy'}</span>
