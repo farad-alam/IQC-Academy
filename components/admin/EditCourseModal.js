@@ -59,8 +59,8 @@ export default function EditCourseModal({ course, isOpen, onClose, onCourseUpdat
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.title || !form.description || !form.instructorId) {
-      alert('শিরোনাম, বর্ণনা এবং শিক্ষক আবশ্যক');
+    if (!form.title || !form.description) {
+      alert('শিরোনাম এবং বর্ণনা আবশ্যক');
       return;
     }
 
@@ -73,7 +73,7 @@ export default function EditCourseModal({ course, isOpen, onClose, onCourseUpdat
         type: form.type,
         price: form.type === 'FREE' ? null : form.price,
         duration: form.duration,
-        instructorId: form.instructorId,
+        instructorId: form.instructorId || null,
         tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
         ...(form.coverImageFile && { coverImageFile: form.coverImageFile })
       };
@@ -157,8 +157,8 @@ export default function EditCourseModal({ course, isOpen, onClose, onCourseUpdat
             </div>
 
             <div className="form-group">
-              <label className="form-label">শিক্ষক *</label>
-              <select name="instructorId" value={form.instructorId} onChange={handleChange} className="form-input" required>
+              <label className="form-label">শিক্ষক (ঐচ্ছিক)</label>
+              <select name="instructorId" value={form.instructorId} onChange={handleChange} className="form-input">
                 <option value="">নির্বাচন করুন</option>
                 {instructors.map(inst => (
                   <option key={inst.id} value={inst.id}>{inst.name}</option>

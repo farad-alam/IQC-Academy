@@ -148,8 +148,8 @@ model Course {
   liveSessionCount Int          @default(0)
   coverGradient    String?
   coverImageUrl    String?
-  instructorId     String
-  instructor       Instructor   @relation(fields: [instructorId], references: [id])
+  instructorId     String?
+  instructor       Instructor?  @relation(fields: [instructorId], references: [id])
   subjects         Subject[]
   enrollments      Enrollment[]
   tags             String[]

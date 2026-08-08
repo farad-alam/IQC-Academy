@@ -30,6 +30,7 @@ export default function AdminSidebar() {
     { name: 'ব্যবহারকারী', href: '/admin/users', icon: Users },
     { name: 'ব্যাচ', href: '/admin/batches', icon: Users2 },
     { name: 'কোর্সসমূহ', href: '/admin/courses', icon: GraduationCap },
+    { name: 'শিক্ষকসমূহ', href: '/admin/instructors', icon: Users },
     { name: 'ডোনেশন', href: '/admin/donations', icon: Gift },
     { name: 'প্রজেক্টস', href: '/admin/projects', icon: Target },
     { name: 'গ্যালারি', href: '/admin/gallery', icon: ImageIcon },
