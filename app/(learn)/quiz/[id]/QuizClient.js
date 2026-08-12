@@ -85,7 +85,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
   if (quizState === 'start') {
     return (
       <div className="container" style={{ padding: '2rem 1rem', maxWidth: '600px' }}>
-        <Link href={`/courses/${module.courseId}`} className="btn btn-ghost" style={{ padding: 0, marginBottom: '2rem' }}>
+        <Link href={`/courses/${module.subject.course.id}`} className="btn btn-ghost" style={{ padding: 0, marginBottom: '2rem' }}>
           <ChevronLeft size={20} /> কোর্সে ফিরে যান
         </Link>
         
@@ -266,7 +266,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
               </Link>
             )}
             
-            <Link href={`/courses/${module.courseId}`} className={passed && !resultData?.nextModuleId ? "btn btn-primary" : (passed ? "btn btn-outline" : "btn btn-primary")}>
+            <Link href={`/courses/${module.subject.course.id}`} className={passed && !resultData?.nextModuleId ? "btn btn-primary" : (passed ? "btn btn-outline" : "btn btn-primary")}>
               কোর্সে ফিরে যান
             </Link>
           </div>
