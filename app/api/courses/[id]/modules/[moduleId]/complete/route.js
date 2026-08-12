@@ -19,13 +19,23 @@ export async function POST(req, { params }) {
       }
     });
 
-    if (!enrollment || enrollment.status !== 'ACTIVE') {
+    const batchAccess = await prisma.batchCourse.findFirst({
+      where: {
+        courseId,
+        batch: {
+          students: { some: { userId: user.id } },
+          status: { in: ['ACTIVE', 'ENROLLING'] }
+        }
+      }
+    });
+
+    if ((!enrollment || enrollment.status !== 'ACTIVE') && !batchAccess) {
       return NextResponse.json({ error: 'Not actively enrolled in this course' }, { status: 403 });
     }
 
     // 2. Verify module belongs to course
     const module = await prisma.module.findFirst({
-      where: { id: moduleId, courseId }
+      where: { id: moduleId, subject: { courseId } }
     });
 
     if (!module) {
@@ -45,11 +55,11 @@ export async function POST(req, { params }) {
     });
 
     // 4. Recalculate course progress
-    const totalModules = await prisma.module.count({ where: { courseId } });
+    const totalModules = await prisma.module.count({ where: { subject: { courseId } } });
     const completedModules = await prisma.moduleCompletion.count({
       where: { 
         userId: user.id,
-        module: { courseId }
+        module: { subject: { courseId } }
       }
     });
 
@@ -63,15 +73,17 @@ export async function POST(req, { params }) {
       completedAt = new Date();
     }
 
-    await prisma.enrollment.update({
-      where: { id: enrollment.id },
-      data: { 
-        progress, 
-        completedModules,
-        status: enrollStatus,
-        completedAt
-      }
-    });
+    if (enrollment) {
+      await prisma.enrollment.update({
+        where: { id: enrollment.id },
+        data: { 
+          progress, 
+          completedModules,
+          status: enrollStatus,
+          completedAt
+        }
+      });
+    }
 
     return NextResponse.json({ 
       success: true, 

@@ -112,7 +112,7 @@ export default async function ContentPage({ params }) {
       isCompleted={isCompleted} 
       hasQuiz={hasQuiz} 
       quizPassed={quizPassed}
-      nextModuleId={nextModule?.id} 
+      nextModuleId={nextModule?.id || null} 
     />
   );
 }

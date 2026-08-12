@@ -12,7 +12,7 @@ export default function ContentClient({ module, isCompleted, hasQuiz, quizPassed
   const handleComplete = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/courses/${module.courseId}/modules/${module.id}/complete`, {
+      const res = await fetch(`/api/courses/${module.subject.course.id}/modules/${module.id}/complete`, {
         method: 'POST'
       });
       const data = await res.json();
@@ -44,11 +44,11 @@ export default function ContentClient({ module, isCompleted, hasQuiz, quizPassed
     <div className="container" style={{ padding: '2rem 1rem', maxWidth: '800px' }}>
       {/* Breadcrumb / Back button */}
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', fontSize: '0.875rem' }}>
-        <Link href={`/courses/${module.courseId}`} className="btn btn-ghost" style={{ padding: 0 }}>
+        <Link href={`/courses/${module.subject.course.id}`} className="btn btn-ghost" style={{ padding: 0 }}>
           <ChevronLeft size={16} /> কোর্সে ফিরে যান
         </Link>
         <span style={{ color: 'var(--color-text-muted)' }}>•</span>
-        <span style={{ color: 'var(--color-text-muted)' }}>{module.course.title}</span>
+        <span style={{ color: 'var(--color-text-muted)' }}>{module.subject.course.title}</span>
       </div>
 
       <div className="card" style={{ padding: '2rem' }}>
@@ -134,7 +134,7 @@ export default function ContentClient({ module, isCompleted, hasQuiz, quizPassed
                 )}
                 
                 {!nextModuleId && (!hasQuiz || quizPassed) && (
-                  <Link href={`/courses/${module.courseId}`} className="btn btn-outline btn-lg" style={{ width: '100%', maxWidth: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Link href={`/courses/${module.subject.course.id}`} className="btn btn-outline btn-lg" style={{ width: '100%', maxWidth: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     কোর্সে ফিরে যান
                   </Link>
                 )}
