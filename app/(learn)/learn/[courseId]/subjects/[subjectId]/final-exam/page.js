@@ -47,14 +47,14 @@ export default function SubjectFinalExamPage() {
       <div style={{ fontSize: '3rem' }}>🔒</div>
       <h2 style={{ fontWeight: 700, textAlign: 'center' }}>পরীক্ষা এখনো পাওয়া যাচ্ছে না</h2>
       <p style={{ color: 'var(--color-text-muted)', textAlign: 'center' }}>সব মডিউল সম্পন্ন করুন তারপর ফাইনাল পরীক্ষা দিন।</p>
-      <Link href={`/courses/${courseId}`} className="btn btn-primary">কোর্সে ফিরে যান</Link>
+      <Link href={`/learn/${courseId}`} className="btn btn-primary">কোর্সে ফিরে যান</Link>
     </main>
   );
 
   // Already taken — show previous result
   if (status === 'done') return (
     <main style={{ padding: '2rem 1.5rem', maxWidth: '700px', margin: '0 auto' }}>
-      <Link href={`/courses/${courseId}`} className="btn btn-ghost btn-sm" style={{ padding: 0, marginBottom: '1.5rem' }}>
+      <Link href={`/learn/${courseId}`} className="btn btn-ghost btn-sm" style={{ padding: 0, marginBottom: '1.5rem' }}>
         <ChevronLeft size={16} /> কোর্সে ফিরে যান
       </Link>
       <div className="card" style={{ padding: '2.5rem', textAlign: 'center' }}>
@@ -63,7 +63,7 @@ export default function SubjectFinalExamPage() {
         <div style={{ fontSize: '2.5rem', fontWeight: 900, color: result?.passed ? 'var(--color-success)' : 'var(--color-error)', margin: '1rem 0', fontFamily: 'var(--font-latin)' }}>{result?.score}/{result?.total}</div>
         <span style={{ padding: '0.5rem 1.5rem', borderRadius: '20px', fontWeight: 700, background: result?.passed ? '#dcfce7' : '#fee2e2', color: result?.passed ? '#16a34a' : '#dc2626' }}>{result?.passed ? '✅ পাস' : '❌ ফেইল'}</span>
         <div style={{ marginTop: '2rem' }}>
-          <Link href={`/courses/${courseId}`} className="btn btn-primary">কোর্সে ফিরে যান</Link>
+          <Link href={`/learn/${courseId}`} className="btn btn-primary">কোর্সে ফিরে যান</Link>
         </div>
       </div>
     </main>
@@ -78,7 +78,7 @@ export default function SubjectFinalExamPage() {
         <div style={{ fontSize: '3rem', fontWeight: 900, color: result.passed ? '#16a34a' : '#dc2626', margin: '1rem 0', fontFamily: 'var(--font-latin)' }}>{result.score}/{result.total}</div>
         <p style={{ color: 'var(--color-text-muted)' }}>পাস মার্ক ছিল {result.passMarkRequired} নম্বর</p>
         <div style={{ marginTop: '1.5rem' }}>
-          <Link href={`/courses/${courseId}`} className="btn btn-primary">কোর্সে ফিরে যান</Link>
+          <Link href={`/learn/${courseId}`} className="btn btn-primary">কোর্সে ফিরে যান</Link>
         </div>
       </div>
 
