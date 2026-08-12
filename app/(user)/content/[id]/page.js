@@ -48,35 +48,37 @@ export default async function ContentPage({ params }) {
     redirect(`/courses/${courseId}`);
   }
 
-  // --- MODULE LOCK LOGIC ---
-  // If this module has order > 1, check if the previous module's quiz is passed
-  if (module.order > 1) {
-    const prevModule = await prisma.module.findFirst({
-      where: { 
-        subject: { courseId: courseId },
-        order: { lt: module.order } 
-      },
-      orderBy: { order: 'desc' },
-      include: { _count: { select: { quizzes: true } } }
-    });
+  // Fetch all modules for this course in sequential order
+  const allModules = await prisma.module.findMany({
+    where: { subject: { courseId: courseId } },
+    include: { subject: true, _count: { select: { quizzes: true } } },
+  });
+  
+  // Sort them manually: first by subject order, then by module order
+  allModules.sort((a, b) => {
+    if (a.subject.order !== b.subject.order) return a.subject.order - b.subject.order;
+    return a.order - b.order;
+  });
 
-    if (prevModule) {
-      if (prevModule._count.quizzes > 0) {
-        // Must have passed the previous module's quiz
-        const passedQuiz = await prisma.moduleQuizSession.findFirst({
-          where: { userId: user.id, moduleId: prevModule.id, passed: true }
-        });
-        if (!passedQuiz) {
-          redirect(`/quiz/${prevModule.id}?locked=true`);
-        }
-      } else {
-        // If no quizzes, must have completed the previous module
-        const prevCompletion = await prisma.moduleCompletion.findUnique({
-          where: { userId_moduleId: { userId: user.id, moduleId: prevModule.id } }
-        });
-        if (!prevCompletion) {
-          redirect(`/content/${prevModule.id}`);
-        }
+  const currentIndex = allModules.findIndex(m => m.id === id);
+
+  // --- MODULE LOCK LOGIC ---
+  if (currentIndex > 0) {
+    const prevModule = allModules[currentIndex - 1];
+    
+    if (prevModule._count.quizzes > 0) {
+      const passedQuiz = await prisma.moduleQuizSession.findFirst({
+        where: { userId: user.id, moduleId: prevModule.id, passed: true }
+      });
+      if (!passedQuiz) {
+        redirect(`/quiz/${prevModule.id}?locked=true`);
+      }
+    } else {
+      const prevCompletion = await prisma.moduleCompletion.findUnique({
+        where: { userId_moduleId: { userId: user.id, moduleId: prevModule.id } }
+      });
+      if (!prevCompletion) {
+        redirect(`/content/${prevModule.id}`);
       }
     }
   }
@@ -98,13 +100,7 @@ export default async function ContentPage({ params }) {
   }
 
   // Find the next module in the sequence for navigation
-  const nextModule = await prisma.module.findFirst({
-    where: { 
-      subject: { courseId: courseId }, 
-      order: { gt: module.order }
-    },
-    orderBy: { order: 'asc' }
-  });
+  const nextModule = currentIndex < allModules.length - 1 ? allModules[currentIndex + 1] : null;
 
   return (
     <ContentClient 

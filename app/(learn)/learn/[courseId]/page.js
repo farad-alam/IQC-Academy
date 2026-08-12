@@ -80,9 +80,10 @@ export default async function CourseDetailPage({ params }) {
 
   const lockedModuleIds = new Set();
   if (isEnrolled && !batchLocked) {
-    const flatModules = course.subjects.flatMap(s => s.modules).sort((a, b) => a.order - b.order);
-    let firstLockedOrder = Infinity;
-    for (const m of flatModules) {
+    const flatModules = course.subjects.flatMap(s => s.modules);
+    let lockedFromIndex = flatModules.length;
+    for (let i = 0; i < flatModules.length; i++) {
+      const m = flatModules[i];
       const isDone = completedModuleIds.includes(m.id);
       const hasQuiz = m._count.quizzes > 0;
       const quizPassed = passedQuizModuleIds.includes(m.id);
@@ -90,14 +91,12 @@ export default async function CourseDetailPage({ params }) {
       const isFullyCompleted = isDone && (!hasQuiz || quizPassed);
       
       if (!isFullyCompleted) {
-        firstLockedOrder = m.order;
+        lockedFromIndex = i + 1;
         break;
       }
     }
-    for (const m of flatModules) {
-      if (m.order > firstLockedOrder) {
-        lockedModuleIds.add(m.id);
-      }
+    for (let i = lockedFromIndex; i < flatModules.length; i++) {
+      lockedModuleIds.add(flatModules[i].id);
     }
   }
 

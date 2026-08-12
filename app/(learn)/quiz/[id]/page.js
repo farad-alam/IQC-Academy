@@ -24,6 +24,41 @@ export default async function QuizPage({ params, searchParams }) {
 
   if (!module || !module.subject || !module.subject.course) redirect('/courses');
 
+  const courseId = module.subject.course.id;
+
+  // --- MODULE LOCK LOGIC ---
+  const allModules = await prisma.module.findMany({
+    where: { subject: { courseId: courseId } },
+    include: { subject: true, _count: { select: { quizzes: true } } },
+  });
+  
+  allModules.sort((a, b) => {
+    if (a.subject.order !== b.subject.order) return a.subject.order - b.subject.order;
+    return a.order - b.order;
+  });
+
+  const currentIndex = allModules.findIndex(m => m.id === id);
+
+  if (currentIndex > 0) {
+    const prevModule = allModules[currentIndex - 1];
+    
+    if (prevModule._count.quizzes > 0) {
+      const passedQuiz = await prisma.moduleQuizSession.findFirst({
+        where: { userId: user.id, moduleId: prevModule.id, passed: true }
+      });
+      if (!passedQuiz) {
+        redirect(`/quiz/${prevModule.id}?locked=true`);
+      }
+    } else {
+      const prevCompletion = await prisma.moduleCompletion.findUnique({
+        where: { userId_moduleId: { userId: user.id, moduleId: prevModule.id } }
+      });
+      if (!prevCompletion) {
+        redirect(`/content/${prevModule.id}`);
+      }
+    }
+  }
+
   // Get previous history for this module
   const history = await prisma.moduleQuizSession.findMany({
     where: { userId: user.id, moduleId: id },
