@@ -80,16 +80,18 @@ export default function ContentClient({ module, isCompleted, hasQuiz, quizPassed
               />
             </div>
           ) : module.contentType === 'PDF' ? (
-            <div style={{ position: 'relative', paddingBottom: '120%', height: 0, overflow: 'hidden', borderRadius: '8px', border: '1px solid var(--color-earth-1)' }}>
-              <iframe 
-                src={module.pdfUrl} 
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }} 
-                title={module.title}
-              />
+            <>
+              <div style={{ position: 'relative', paddingBottom: '120%', height: 0, overflow: 'hidden', borderRadius: '8px', border: '1px solid var(--color-earth-1)' }}>
+                <iframe 
+                  src={module.pdfUrl} 
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }} 
+                  title={module.title}
+                />
+              </div>
               <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                 <a href={module.pdfUrl} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">নতুন ট্যাবে পিডিএফ খুলুন</a>
               </div>
-            </div>
+            </>
           ) : (
             <div dangerouslySetInnerHTML={{ __html: module.body?.replace(/\n/g, '<br/>') || '' }} />
           )}
