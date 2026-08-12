@@ -53,15 +53,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
         setResultData(data);
         setQuizState('result');
         
-        // The backend `results` array contains { quizId, passed, correctAnswer, explanation }
-        // We'll attach the correct answers to our local `quizzes` state so we can display them
-        data.results.forEach(res => {
-          const quizObj = quizzes.find(q => q.id === res.quizId);
-          if (quizObj) {
-            quizObj.correct = res.correctAnswer;
-            quizObj.explanation = res.explanation;
-          }
-        });
+        // We don't mutate quizzes anymore since we draw directly from resultData
 
         // 3. If passed, backend will mark module complete
         if (data.passedModule) {
@@ -234,17 +226,25 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
             <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>উত্তর পর্যালোচনা:</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {quizzes.map((q, i) => {
-                const isCorrect = answers[q.id] === q.correct;
+                const resultObj = resultData?.results?.find(r => r.quizId === q.id);
+                const correctOptionIndex = resultObj ? resultObj.correctAnswer : q.correct;
+                const isCorrect = answers[q.id] === correctOptionIndex;
+                
                 return (
                   <div key={i} style={{ padding: '1rem', backgroundColor: 'var(--color-surface-alt)', borderRadius: '8px' }}>
                     <p style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.95rem' }}>{i+1}. {q.question}</p>
                     <p style={{ fontSize: '0.85rem', color: isCorrect ? 'var(--color-success)' : 'var(--color-error)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       {isCorrect ? <CheckCircle size={14} /> : <XCircle size={14} />} 
-                      আপনার উত্তর: {q.options[answers[q.id]]}
+                      আপনার উত্তর: {answers[q.id] !== undefined && answers[q.id] !== -1 ? q.options[answers[q.id]] : 'উত্তর দেননি'}
                     </p>
-                    {!isCorrect && (
+                    {!isCorrect && correctOptionIndex !== undefined && (
                       <p style={{ fontSize: '0.85rem', color: 'var(--color-success)', marginTop: '4px' }}>
-                        সঠিক উত্তর: {q.options[q.correct]}
+                        সঠিক উত্তর: {q.options[correctOptionIndex]}
+                      </p>
+                    )}
+                    {resultObj?.explanation && !isCorrect && (
+                      <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '8px', padding: '0.5rem', backgroundColor: 'var(--color-surface)', borderRadius: '4px' }}>
+                        <strong>ব্যাখ্যা:</strong> {resultObj.explanation}
                       </p>
                     )}
                   </div>
