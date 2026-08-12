@@ -32,6 +32,7 @@ export default async function CourseDetailPage({ params }) {
 
   let enrollment = null;
   let completedModuleIds = [];
+  let passedQuizModuleIds = [];
   let finalExamSessions = {};
   let batchLocked = false;
 
@@ -60,6 +61,11 @@ export default async function CourseDetailPage({ params }) {
       });
       completedModuleIds = completions.map(c => c.moduleId);
 
+      const quizPasses = await prisma.moduleQuizSession.findMany({
+        where: { userId: user.id, moduleId: { in: allModuleIds }, passed: true }
+      });
+      passedQuizModuleIds = quizPasses.map(q => q.moduleId);
+
       // Get subject final exam sessions
       const subjectIds = course.subjects.map(s => s.id);
       const sessions = await prisma.subjectFinalExamSession.findMany({
@@ -71,6 +77,29 @@ export default async function CourseDetailPage({ params }) {
 
   const isEnrolled = !!enrollment;
   const progress = enrollment?.progress || 0;
+
+  const lockedModuleIds = new Set();
+  if (isEnrolled && !batchLocked) {
+    const flatModules = course.subjects.flatMap(s => s.modules).sort((a, b) => a.order - b.order);
+    let firstLockedOrder = Infinity;
+    for (const m of flatModules) {
+      const isDone = completedModuleIds.includes(m.id);
+      const hasQuiz = m._count.quizzes > 0;
+      const quizPassed = passedQuizModuleIds.includes(m.id);
+      
+      const isFullyCompleted = isDone && (!hasQuiz || quizPassed);
+      
+      if (!isFullyCompleted) {
+        firstLockedOrder = m.order;
+        break;
+      }
+    }
+    for (const m of flatModules) {
+      if (m.order > firstLockedOrder) {
+        lockedModuleIds.add(m.id);
+      }
+    }
+  }
 
   return (
     <div className="container" style={{ padding: '2rem 1rem', maxWidth: '860px' }}>
@@ -192,8 +221,9 @@ export default async function CourseDetailPage({ params }) {
                 <div style={{ padding: '0.75rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                   {subject.modules.map((module, mIdx) => {
                     const isDone = completedModuleIds.includes(module.id);
+                    const isModuleLocked = isLocked || lockedModuleIds.has(module.id);
                     return (
-                      <div key={module.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: '8px', background: isDone ? '#f0fdf4' : 'var(--color-surface-alt)', border: `1px solid ${isDone ? '#bbf7d0' : 'var(--color-earth-1)'}`, flexWrap: 'wrap', gap: '0.5rem', opacity: isLocked ? 0.6 : 1 }}>
+                      <div key={module.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: '8px', background: isDone ? '#f0fdf4' : 'var(--color-surface-alt)', border: `1px solid ${isDone ? '#bbf7d0' : 'var(--color-earth-1)'}`, flexWrap: 'wrap', gap: '0.5rem', opacity: isModuleLocked ? 0.6 : 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: '200px' }}>
                           <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: isDone ? 'var(--color-success)' : 'var(--color-surface)', border: `2px solid ${isDone ? 'var(--color-success)' : 'var(--color-earth-1)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-latin)', fontSize: '0.8rem', fontWeight: 700, color: isDone ? 'white' : 'var(--color-text-muted)', flexShrink: 0 }}>
                             {isDone ? <CheckCircle2 size={16} /> : `${sIdx + 1}.${mIdx + 1}`}
@@ -206,7 +236,7 @@ export default async function CourseDetailPage({ params }) {
                           </div>
                         </div>
                         <div style={{ display: 'flex', gap: '0.4rem' }}>
-                          {isLocked ? <Lock size={18} color="var(--color-text-light)" /> : (
+                          {isModuleLocked ? <Lock size={18} color="var(--color-text-light)" /> : (
                             <>
                               <Link href={`/content/${module.id}`} className="btn btn-outline btn-sm" style={{ fontSize: '0.8rem' }}>
                                 {isDone ? 'রিভিউ' : 'শুরু'} <PlayCircle size={14} />
