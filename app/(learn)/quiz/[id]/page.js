@@ -79,7 +79,7 @@ export default async function QuizPage({ params, searchParams }) {
         <div className="card" style={{ padding: '3rem 2rem' }}>
           <h2 style={{ marginBottom: '1rem' }}>সব কুইজ সম্পন্ন</h2>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>আপনি ইতিমধ্যে এই মডিউলের সমস্ত কুইজ সম্পন্ন করেছেন। নতুন কোনো কুইজ নেই।</p>
-          <a href={`/courses/${module.subject.course.id}`} className="btn btn-primary">কোর্সে ফিরে যান</a>
+          <a href={`/learn/${module.subject.course.id}`} className="btn btn-primary">কোর্সে ফিরে যান</a>
         </div>
       </div>
     );

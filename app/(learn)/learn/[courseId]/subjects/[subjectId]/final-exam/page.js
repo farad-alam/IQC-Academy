@@ -111,7 +111,19 @@ export default function SubjectFinalExamPage() {
   );
 
   // Exam taking UI
-  const q = exam.quizzes[current];
+  if (status === 'ready' && (!exam.quizzes || exam.quizzes.length === 0)) {
+    return (
+      <main style={{ padding: '2rem 1.5rem', maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+        <div className="card" style={{ padding: '3rem 2rem' }}>
+          <h2 style={{ color: 'var(--color-error)', marginBottom: '1rem', fontSize: '1.5rem', fontWeight: 700 }}>পরীক্ষা পাওয়া যায়নি</h2>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>এই সাবজেক্টের ফাইনাল পরীক্ষার জন্য এখনও কোনো প্রশ্ন যোগ করা হয়নি।</p>
+          <Link href={`/learn/${courseId}`} className="btn btn-primary">কোর্সে ফিরে যান</Link>
+        </div>
+      </main>
+    );
+  }
+
+  const q = exam.quizzes ? exam.quizzes[current] : null;
   const answered = Object.keys(answers).length;
   const progress = Math.round((answered / exam.quizzes.length) * 100);
 

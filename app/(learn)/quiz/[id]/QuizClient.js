@@ -75,6 +75,26 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
   };
 
   if (quizState === 'start') {
+    if (!quizzes || quizzes.length === 0) {
+      return (
+        <div className="container" style={{ padding: '2rem 1rem', maxWidth: '600px' }}>
+          <Link href={`/learn/${module.subject.course.id}`} className="btn btn-ghost" style={{ padding: 0, marginBottom: '2rem' }}>
+            <ChevronLeft size={20} /> কোর্সে ফিরে যান
+          </Link>
+          <div className="card" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
+            <div style={{ display: 'inline-flex', padding: '1rem', backgroundColor: 'var(--color-error-bg)', borderRadius: '50%', color: 'var(--color-error)', marginBottom: '1.5rem' }}>
+              <AlertCircle size={48} />
+            </div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>কুইজ: {module.title}</h1>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>এই কুইজে এখনও কোনো প্রশ্ন যোগ করা হয়নি।</p>
+            <Link href={`/learn/${module.subject.course.id}`} className="btn btn-primary btn-lg" style={{ width: '100%' }}>
+              ড্যাশবোর্ডে ফিরে যান
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="container" style={{ padding: '2rem 1rem', maxWidth: '600px' }}>
         <Link href={`/learn/${module.subject.course.id}`} className="btn btn-ghost" style={{ padding: 0, marginBottom: '2rem' }}>
