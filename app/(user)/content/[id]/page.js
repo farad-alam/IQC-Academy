@@ -16,27 +16,46 @@ export default async function ContentPage({ params }) {
   const module = await prisma.module.findUnique({
     where: { id },
     include: {
-      course: { select: { id: true, title: true } },
+      subject: { 
+        include: { 
+          course: { select: { id: true, title: true } }
+        } 
+      },
       quizzes: { select: { id: true } }
     }
   });
 
-  if (!module) redirect('/courses');
+  if (!module || !module.subject || !module.subject.course) redirect('/courses');
 
-  // Verify user is enrolled and active
+  const courseId = module.subject.course.id;
+
+  // Verify user is enrolled (directly or via batch) and active
   const enrollment = await prisma.enrollment.findUnique({
-    where: { userId_courseId: { userId: user.id, courseId: module.courseId } }
+    where: { userId_courseId: { userId: user.id, courseId: courseId } }
   });
 
-  if (!enrollment || enrollment.status !== 'ACTIVE') {
-    redirect(`/courses/${module.courseId}`);
+  const batchAccess = await prisma.batchCourse.findFirst({
+    where: {
+      courseId,
+      batch: {
+        students: { some: { userId: user.id } },
+        status: { in: ['ACTIVE', 'ENROLLING'] }
+      }
+    }
+  });
+
+  if ((!enrollment || enrollment.status !== 'ACTIVE') && !batchAccess) {
+    redirect(`/courses/${courseId}`);
   }
 
   // --- MODULE LOCK LOGIC ---
   // If this module has order > 1, check if the previous module's quiz is passed
   if (module.order > 1) {
     const prevModule = await prisma.module.findFirst({
-      where: { courseId: module.courseId, order: { lt: module.order } },
+      where: { 
+        subject: { courseId: courseId },
+        order: { lt: module.order } 
+      },
       orderBy: { order: 'desc' },
       include: { _count: { select: { quizzes: true } } }
     });
@@ -81,7 +100,7 @@ export default async function ContentPage({ params }) {
   // Find the next module in the sequence for navigation
   const nextModule = await prisma.module.findFirst({
     where: { 
-      courseId: module.courseId, 
+      subject: { courseId: courseId }, 
       order: { gt: module.order }
     },
     orderBy: { order: 'asc' }

@@ -22,16 +22,33 @@ export async function POST(req, { params }) {
     // Verify enrollment
     const module = await prisma.module.findUnique({
       where: { id: moduleId },
-      include: { quizzes: true }
+      include: { 
+        quizzes: true,
+        subject: { include: { course: true } }
+      }
     });
 
-    if (!module) return NextResponse.json({ error: 'Module not found' }, { status: 404 });
+    if (!module || !module.subject || !module.subject.course) {
+      return NextResponse.json({ error: 'Module not found' }, { status: 404 });
+    }
+
+    const courseId = module.subject.course.id;
 
     const enrollment = await prisma.enrollment.findUnique({
-      where: { userId_courseId: { userId: user.id, courseId: module.courseId } }
+      where: { userId_courseId: { userId: user.id, courseId } }
     });
 
-    if (!enrollment || enrollment.status !== 'ACTIVE') {
+    const batchAccess = await prisma.batchCourse.findFirst({
+      where: {
+        courseId,
+        batch: {
+          students: { some: { userId: user.id } },
+          status: { in: ['ACTIVE', 'ENROLLING'] }
+        }
+      }
+    });
+
+    if ((!enrollment || enrollment.status !== 'ACTIVE') && !batchAccess) {
       return NextResponse.json({ error: 'Not actively enrolled' }, { status: 403 });
     }
 
@@ -114,7 +131,7 @@ export async function POST(req, { params }) {
     // Find next module ID for navigation
     const nextModule = await prisma.module.findFirst({
       where: { 
-        courseId: module.courseId, 
+        subject: { courseId: courseId }, 
         order: { gt: module.order }
       },
       orderBy: { order: 'asc' }
