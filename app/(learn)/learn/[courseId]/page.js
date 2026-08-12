@@ -176,8 +176,13 @@ export default async function CourseDetailPage({ params }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {course.subjects.map((subject, sIdx) => {
             const subjectModuleIds = subject.modules.map(m => m.id);
-            const subjectCompletedCount = subjectModuleIds.filter(id => completedModuleIds.includes(id)).length;
-            const subjectAllDone = subjectModuleIds.length > 0 && subjectCompletedCount === subjectModuleIds.length;
+            const subjectFullyCompletedCount = subject.modules.filter(m => {
+              const isDone = completedModuleIds.includes(m.id);
+              const hasQuiz = m._count.quizzes > 0;
+              const quizPassed = passedQuizModuleIds.includes(m.id);
+              return isDone && (!hasQuiz || quizPassed);
+            }).length;
+            const subjectAllDone = subject.modules.length > 0 && subjectFullyCompletedCount === subject.modules.length;
             const examSession = finalExamSessions[subject.id];
             const isLocked = !isEnrolled || batchLocked;
 
@@ -193,7 +198,7 @@ export default async function CourseDetailPage({ params }) {
                       <h3 style={{ fontSize: '1.05rem', fontWeight: 700 }}>{subject.title}</h3>
                       {subject.description && <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>{subject.description}</p>}
                       <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '3px' }}>
-                        {subjectCompletedCount}/{subject.modules.length} মডিউল সম্পন্ন
+                        {subjectFullyCompletedCount}/{subject.modules.length} মডিউল সম্পন্ন
                       </div>
                     </div>
                   </div>
@@ -204,7 +209,7 @@ export default async function CourseDetailPage({ params }) {
                           {examSession.passed ? '✅ পাস' : '❌ ফেইল'} ({examSession.score}/{examSession.total})
                         </span>
                       ) : subjectAllDone ? (
-                        <Link href={`/courses/${course.id}/subjects/${subject.id}/final-exam`} className="btn btn-accent btn-sm">
+                        <Link href={`/learn/${course.id}/subjects/${subject.id}/final-exam`} className="btn btn-accent btn-sm">
                           <ClipboardList size={14} /> ফাইনাল পরীক্ষা
                         </Link>
                       ) : (

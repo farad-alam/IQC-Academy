@@ -20,6 +20,36 @@ export async function GET(req, { params }) {
     if (!subject) return NextResponse.json({ error: 'Subject not found' }, { status: 404 });
     if (!subject.finalExamEnabled) return NextResponse.json({ error: 'Final exam not enabled for this subject.' }, { status: 403 });
 
+    // Enforce all modules completed + quizzes passed
+    const modules = await prisma.module.findMany({
+      where: { subjectId },
+      include: { _count: { select: { quizzes: true } } }
+    });
+    
+    if (modules.length > 0) {
+      const moduleIds = modules.map(m => m.id);
+      const completions = await prisma.moduleCompletion.findMany({
+        where: { userId: user.id, moduleId: { in: moduleIds } }
+      });
+      const completedModuleIds = completions.map(c => c.moduleId);
+
+      const quizPasses = await prisma.moduleQuizSession.findMany({
+        where: { userId: user.id, moduleId: { in: moduleIds }, passed: true }
+      });
+      const passedQuizModuleIds = quizPasses.map(q => q.moduleId);
+
+      const isFullyCompletedCount = modules.filter(m => {
+        const isDone = completedModuleIds.includes(m.id);
+        const hasQuiz = m._count.quizzes > 0;
+        const quizPassed = passedQuizModuleIds.includes(m.id);
+        return isDone && (!hasQuiz || quizPassed);
+      }).length;
+
+      if (isFullyCompletedCount < modules.length) {
+        return NextResponse.json({ error: 'Please complete all modules and pass all quizzes before taking the final exam.' }, { status: 403 });
+      }
+    }
+
     // Check if student has already attempted
     const existing = await prisma.subjectFinalExamSession.findUnique({
       where: { userId_subjectId: { userId: user.id, subjectId } }
