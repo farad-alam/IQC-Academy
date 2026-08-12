@@ -269,9 +269,14 @@ export default function DashboardPage() {
                                           <CreditCard size={14} /> পেমেন্ট করুন
                                         </Link>
                                       ) : (
-                                        <Link href={`/learn/${course.id}`} className="btn btn-outline btn-sm" style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem' }}>
-                                          কোর্স দেখুন <ChevronRight size={14} />
-                                        </Link>
+                                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                          <Link href={`/learn/${course.id}/leaderboard`} className="btn btn-ghost btn-sm" style={{ fontSize: '0.8rem', padding: '0.25rem 0.5rem', color: 'var(--color-primary)' }}>
+                                            🏆 লিডারবোর্ড
+                                          </Link>
+                                          <Link href={`/learn/${course.id}`} className="btn btn-outline btn-sm" style={{ fontSize: '0.8rem', padding: '0.25rem 0.75rem' }}>
+                                            কোর্স দেখুন <ChevronRight size={14} />
+                                          </Link>
+                                        </div>
                                       )}
                                     </div>
                                   </div>
