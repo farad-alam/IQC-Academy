@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
+import { validateDeletionKey } from '@/lib/security';
 
 // GET /api/admin/batches/[id]
 export async function GET(req, { params }) {
@@ -62,6 +63,9 @@ export async function DELETE(req, { params }) {
   try {
     const admin = await getAuthUser();
     if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+    const securityError = await validateDeletionKey(req);
+    if (securityError) return securityError;
 
     const { id } = await params;
     await prisma.batch.delete({ where: { id } });

@@ -1,7 +1,10 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ChevronLeft, Users, BookOpen, Lock, Unlock, UserPlus, Trash2, Plus, CheckCircle2, XCircle, Loader2, Trophy } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import ProtectedDeleteModal from '@/components/admin/ProtectedDeleteModal';
 
 const STATUS_OPTIONS = [
   { value: 'UPCOMING', label: 'আসন্ন' },
@@ -16,6 +19,7 @@ const STATUS_COLORS = {
 };
 
 export default function BatchDetailClient({ batch: initialBatch }) {
+  const router = useRouter();
   const [batch, setBatch] = useState(initialBatch);
   const [tab, setTab] = useState('students');
   const [students, setStudents] = useState([]);
@@ -27,6 +31,7 @@ export default function BatchDetailClient({ batch: initialBatch }) {
   const [addingStudent, setAddingStudent] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const [addingCourse, setAddingCourse] = useState(false);
+  const [isDeletingBatch, setIsDeletingBatch] = useState(false);
 
   const fetchStudents = useCallback(async () => {
     const res = await fetch(`/api/admin/batches/${batch.id}/students`);
@@ -108,6 +113,26 @@ export default function BatchDetailClient({ batch: initialBatch }) {
     fetchCourses();
   };
 
+  const confirmDeleteBatch = async (securityKey) => {
+    try {
+      const res = await fetch(`/api/admin/batches/${batch.id}`, { 
+        method: 'DELETE',
+        headers: { 'x-deletion-key': securityKey }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('ব্যাচটি সফলভাবে মুছে ফেলা হয়েছে');
+        setIsDeletingBatch(false);
+        router.push('/admin/batches');
+        router.refresh();
+      } else {
+        toast.error(data.error || 'মুছে ফেলতে সমস্যা হয়েছে');
+      }
+    } catch (err) {
+      toast.error('নেটওয়ার্ক সমস্যা');
+    }
+  };
+
   const assignedCourseIds = new Set(courses.map(bc => bc.courseId));
   const availableCourses = allCourses.filter(c => !assignedCourseIds.has(c.id));
   const stColor = STATUS_COLORS[batch.status] || '#6b7280';
@@ -135,6 +160,9 @@ export default function BatchDetailClient({ batch: initialBatch }) {
               onClick={() => updateBatch({ coursesLocked: !batch.coursesLocked })} disabled={saving}
               style={{ gap: '0.5rem' }}>
               {batch.coursesLocked ? <><Lock size={16} /> কোর্স লক</> : <><Unlock size={16} /> কোর্স আনলক</>}
+            </button>
+            <button className="btn btn-outline" style={{ borderColor: 'var(--color-error)', color: 'var(--color-error)' }} onClick={() => setIsDeletingBatch(true)} title="ব্যাচ মুছুন">
+              <Trash2 size={16} /> ব্যাচ মুছুন
             </button>
           </div>
         </div>
@@ -270,6 +298,14 @@ export default function BatchDetailClient({ batch: initialBatch }) {
           </div>
         </div>
       )}
+
+      <ProtectedDeleteModal 
+        isOpen={isDeletingBatch}
+        onClose={() => setIsDeletingBatch(false)}
+        onConfirm={confirmDeleteBatch}
+        title="ব্যাচ মুছে ফেলুন"
+        message="আপনি কি নিশ্চিত যে এই ব্যাচটি মুছে ফেলতে চান? এর সাথে যুক্ত সকল কোর্সের অ্যাসাইনমেন্ট ও শিক্ষার্থীদের এনরোলমেন্ট মুছে যাবে (তবে মূল কোর্স ও শিক্ষার্থীদের প্রোফাইল ঠিক থাকবে)।"
+      />
     </div>
   );
 }
