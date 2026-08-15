@@ -117,7 +117,7 @@ export default function QuizzesClient({ module, courseId }) {
     <div>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
-          <Link href={`/admin/courses/${courseId}/modules`} className="btn btn-ghost btn-sm" style={{ padding: 0, marginBottom: '0.5rem' }}>
+          <Link href={`/admin/courses/${courseId}/subjects/${module.subjectId}/modules`} className="btn btn-ghost btn-sm" style={{ padding: 0, marginBottom: '0.5rem' }}>
             <ChevronLeft size={16} /> মডিউলে ফিরে যান
           </Link>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.25rem' }}>কুইজ পরিচালনা</h1>
@@ -145,7 +145,7 @@ export default function QuizzesClient({ module, courseId }) {
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label">প্রশ্ন</label>
-                  <input type="text" className="form-input" required value={formData.question} onChange={e => setFormData({ ...formData, question: e.target.value })} placeholder="প্রশ্ন লিখুন" />
+                  <textarea className="form-input" required value={formData.question} onChange={e => setFormData({ ...formData, question: e.target.value })} placeholder="প্রশ্ন লিখুন" rows="3" />
                 </div>
                 
                 <div className="grid-2 gap-4">
