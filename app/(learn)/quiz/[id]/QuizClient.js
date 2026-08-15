@@ -127,7 +127,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
             </h3>
             <ul style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', paddingLeft: '1.5rem', listStyleType: 'disc', lineHeight: 1.6 }}>
               <li>সর্বমোট {quizzes.length}টি বহুনির্বাচনী প্রশ্ন থাকবে।</li>
-              <li>পাস করতে হলে অন্তত {module.quizPassMark || 80}% নম্বর পেতে হবে।</li>
+              <li>পাস করতে হলে অন্তত {module.quizPassMark || 8}টি সঠিক উত্তর দিতে হবে।</li>
               <li>আপনি যতবার খুশি অংশগ্রহণ করতে পারবেন, প্রতিবার নতুন প্রশ্ন আসবে।</li>
             </ul>
           </div>
@@ -145,7 +145,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
                 <div key={h.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', backgroundColor: 'var(--color-surface-alt)', borderRadius: '8px' }}>
                   <div>
                     <div style={{ fontWeight: 600, color: h.passed ? 'var(--color-success)' : 'var(--color-error)' }}>
-                      {h.passed ? 'পাস করেছেন' : 'ফেল করেছেন'} ({Math.round((h.score / h.total) * 100)}%)
+                      {h.passed ? 'পাস করেছেন' : 'ফেল করেছেন'}
                     </div>
                     <div style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
                       স্কোর: {h.score} / {h.total}
@@ -237,8 +237,8 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
             {passed ? 'মাশাআল্লাহ! আপনি সফলভাবে পাস করেছেন।' : 'ইনশাআল্লাহ! পরবর্তীতে আরো ভালো হবে।'}
           </h2>
           <p style={{ fontSize: '1.1rem', color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
-            আপনার প্রাপ্ত নম্বর: <strong style={{ color: 'var(--color-text)', fontSize: '1.5rem' }}>{score}</strong> / {quizzes.length} ({Math.round(resultData?.percentage)}%)<br/>
-            <span style={{ fontSize: '0.875rem' }}>পাস মার্ক: {resultData?.passMark}%</span>
+            আপনার প্রাপ্ত নম্বর: <strong style={{ color: 'var(--color-text)', fontSize: '1.5rem' }}>{score}</strong> / {quizzes.length}<br/>
+            <span style={{ fontSize: '0.875rem' }}>পাস মার্ক: {resultData?.passMark}</span>
           </p>
 
           {/* Review Section */}

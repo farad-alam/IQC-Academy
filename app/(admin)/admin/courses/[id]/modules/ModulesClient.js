@@ -196,7 +196,7 @@ export default function ModulesClient({ course }) {
 
                 <div className="grid-2 gap-4">
                   <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">কুইজ পাস মার্ক (%)</label>
+                    <label className="form-label">কুইজ পাস মার্ক (নম্বর)</label>
                     <input type="number" className="form-input" min="0" max="100" value={formData.quizPassMark} onChange={e => setFormData({ ...formData, quizPassMark: parseInt(e.target.value) || 0 })} placeholder="e.g. 80" />
                   </div>
                   

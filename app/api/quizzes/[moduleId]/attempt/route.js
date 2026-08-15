@@ -93,9 +93,8 @@ export async function POST(req, { params }) {
     }
 
     const totalQuestions = body.length; // Evaluate against the questions answered (which is displayCount)
-    const percentage = totalQuestions > 0 ? (score / totalQuestions) * 100 : 0;
-    const passMark = module.quizPassMark || 80;
-    const passedModule = percentage >= passMark;
+    const passMark = module.quizPassMark || 8;
+    const passedModule = score >= passMark;
 
     // Record session
     await prisma.moduleQuizSession.create({
@@ -141,7 +140,6 @@ export async function POST(req, { params }) {
       success: true, 
       score,
       totalQuestions,
-      percentage,
       passMark,
       passedModule,
       results,
