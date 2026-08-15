@@ -169,16 +169,6 @@ export default function ProjectDonateClient({ project, settings }) {
                   />
                 </div>
 
-                {/* Donor Details */}
-                <div className="form-group">
-                  <label className="form-label">আপনার নাম (বা যার পক্ষে দান করছেন)</label>
-                  <input type="text" className="form-input" value={form.name} onChange={handleChange('name')} placeholder="নাম লিখুন" />
-                </div>
-                <div className="form-group">
-                  <label className="form-label required">মোবাইল নম্বর (যে নম্বর থেকে টাকা পাঠিয়েছেন)</label>
-                  <input type="tel" className="form-input" value={form.mobile} onChange={handleChange('mobile')} placeholder="01XXXXXXXXX" required />
-                </div>
-
                 {/* Payment Method */}
                 <div className="form-group">
                   <label className="form-label" style={{ marginBottom: '1rem' }}>পেমেন্ট মাধ্যম *</label>
@@ -221,6 +211,16 @@ export default function ProjectDonateClient({ project, settings }) {
                       {copied ? <CheckCircle2 size={18} color="var(--color-success)" /> : <Copy size={18} />}
                     </button>
                   </div>
+                </div>
+
+                {/* Donor Details */}
+                <div className="form-group">
+                  <label className="form-label">আপনার নাম (বা যার পক্ষে দান করছেন)</label>
+                  <input type="text" className="form-input" value={form.name} onChange={handleChange('name')} placeholder="নাম লিখুন" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label required">মোবাইল নম্বর (যে নম্বর থেকে টাকা পাঠিয়েছেন)</label>
+                  <input type="tel" className="form-input" value={form.mobile} onChange={handleChange('mobile')} placeholder="01XXXXXXXXX" required />
                 </div>
 
                 <div className="form-group">
