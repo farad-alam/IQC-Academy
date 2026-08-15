@@ -5,7 +5,7 @@ import { ChevronLeft, ClipboardList, CheckCircle, XCircle, Trophy, Loader2 } fro
 import { useParams } from 'next/navigation';
 
 export default function SubjectFinalExamPage() {
-  const { id: courseId, subjectId } = useParams();
+  const { courseId, subjectId } = useParams();
   const [status, setStatus] = useState('loading'); // loading | ready | taking | result | done
   const [exam, setExam] = useState(null);
   const [answers, setAnswers] = useState({});
