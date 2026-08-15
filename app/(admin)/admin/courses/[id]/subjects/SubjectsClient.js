@@ -98,14 +98,18 @@ export default function SubjectsClient({ courseId, courseTitle }) {
                 <label htmlFor="finalExamEnabled" style={{ fontWeight: 600, cursor: 'pointer' }}>ফাইনাল পরীক্ষা সক্রিয় করুন</label>
               </div>
               {form.finalExamEnabled && (
-                <div className="grid-2 gap-4" style={{ marginTop: '0.75rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '0.75rem' }}>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label">ফাইনাল পরীক্ষার মোট নম্বর</label>
+                    <input type="number" className="form-input" min="1" value={form.finalExamDisplayCount} onChange={e => setForm(p => ({ ...p, finalExamDisplayCount: parseInt(e.target.value) || 20 }))} />
+                  </div>
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">পাস মার্ক (নম্বর)</label>
                     <input type="number" className="form-input" min="1" value={form.finalExamPassMark} onChange={e => setForm(p => ({ ...p, finalExamPassMark: parseInt(e.target.value) || 40 }))} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">প্রশ্ন সংখ্যা</label>
-                    <input type="number" className="form-input" min="1" value={form.finalExamDisplayCount} onChange={e => setForm(p => ({ ...p, finalExamDisplayCount: parseInt(e.target.value) || 20 }))} />
+                    <label className="form-label">প্রদর্শিত প্রশ্নের সংখ্যা</label>
+                    <input type="number" className="form-input" value={form.finalExamDisplayCount} disabled style={{ backgroundColor: 'var(--color-surface-alt)', cursor: 'not-allowed', color: 'var(--color-text-muted)' }} />
                   </div>
                 </div>
               )}

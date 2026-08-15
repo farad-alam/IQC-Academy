@@ -194,15 +194,18 @@ export default function ModulesClient({ course }) {
                   </div>
                 )}
 
-                <div className="grid-2 gap-4">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                   <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">কুইজ পাস মার্ক (নম্বর)</label>
-                    <input type="number" className="form-input" min="0" max="100" value={formData.quizPassMark} onChange={e => setFormData({ ...formData, quizPassMark: parseInt(e.target.value) || 0 })} placeholder="e.g. 80" />
+                    <label className="form-label">পরীক্ষার মোট নম্বর</label>
+                    <input type="number" className="form-input" min="1" value={formData.quizDisplayCount} onChange={e => setFormData({ ...formData, quizDisplayCount: parseInt(e.target.value) || 1 })} placeholder="e.g. 20" />
                   </div>
-                  
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label">পাস মার্ক (নম্বর)</label>
+                    <input type="number" className="form-input" min="0" value={formData.quizPassMark} onChange={e => setFormData({ ...formData, quizPassMark: parseInt(e.target.value) || 0 })} placeholder="e.g. 8" />
+                  </div>
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">প্রদর্শিত প্রশ্নের সংখ্যা</label>
-                    <input type="number" className="form-input" min="1" value={formData.quizDisplayCount} onChange={e => setFormData({ ...formData, quizDisplayCount: parseInt(e.target.value) || 1 })} placeholder="e.g. 20" />
+                    <input type="number" className="form-input" value={formData.quizDisplayCount} disabled style={{ backgroundColor: 'var(--color-surface-alt)', cursor: 'not-allowed', color: 'var(--color-text-muted)' }} />
                   </div>
                 </div>
 
