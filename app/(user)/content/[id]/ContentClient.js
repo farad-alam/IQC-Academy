@@ -73,7 +73,20 @@ export default function ContentClient({ module, isCompleted, hasQuiz, quizPassed
           {module.contentType === 'VIDEO' ? (
             <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '8px' }}>
               <iframe 
-                src={module.videoUrl} 
+                src={(() => {
+                  const url = module.videoUrl;
+                  if (!url) return '';
+                  try {
+                    if (url.includes('youtube.com/watch')) {
+                      const v = new URL(url).searchParams.get('v');
+                      return v ? `https://www.youtube.com/embed/${v}` : url;
+                    } else if (url.includes('youtu.be/')) {
+                      const v = url.split('youtu.be/')[1]?.split('?')[0];
+                      return v ? `https://www.youtube.com/embed/${v}` : url;
+                    }
+                  } catch (e) {}
+                  return url;
+                })()}
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }} 
                 allowFullScreen
                 title={module.title}
