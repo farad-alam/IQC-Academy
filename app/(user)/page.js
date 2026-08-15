@@ -98,7 +98,7 @@ export default async function HomePage() {
               <div className={styles.rcColRight}>
                 {/* Main Tutor Image Card */}
                 <div className={styles.mainImageCard}>
-                  <img src="/images/hero_tutor.png" alt="IQC Academy Teacher" />
+                  <img src="/images/hero_tutor_male.png" alt="IQC Academy Teacher" />
                   {/* Floating Action Icons on Image */}
                   <div className={styles.imageActionRow}>
                      <div className={styles.actionIconDark}>🎤</div>
