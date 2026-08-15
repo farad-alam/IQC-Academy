@@ -62,6 +62,10 @@ export default function ModulesClient({ course }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.quizPassMark > formData.quizDisplayCount) {
+      alert(`পাস মার্ক মোট নম্বর (${formData.quizDisplayCount}) এর বেশি হতে পারে না!`);
+      return;
+    }
     setLoading(true);
     try {
       const isEditing = !!editingModuleId;
@@ -201,7 +205,7 @@ export default function ModulesClient({ course }) {
                   </div>
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">পাস মার্ক (নম্বর)</label>
-                    <input type="number" className="form-input" min="0" value={formData.quizPassMark} onChange={e => setFormData({ ...formData, quizPassMark: parseInt(e.target.value) || 0 })} placeholder="e.g. 8" />
+                    <input type="number" className="form-input" min="0" max={formData.quizDisplayCount} value={formData.quizPassMark} onChange={e => setFormData({ ...formData, quizPassMark: parseInt(e.target.value) || 0 })} placeholder="e.g. 8" />
                   </div>
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">প্রদর্শিত প্রশ্নের সংখ্যা</label>

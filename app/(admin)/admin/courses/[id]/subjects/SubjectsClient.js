@@ -29,6 +29,10 @@ export default function SubjectsClient({ courseId, courseTitle }) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (form.finalExamEnabled && form.finalExamPassMark > form.finalExamDisplayCount) {
+      alert(`ফাইনাল পরীক্ষার পাস মার্ক মোট নম্বর (${form.finalExamDisplayCount}) এর বেশি হতে পারে না!`);
+      return;
+    }
     setSaving(true);
     try {
       const isEdit = !!editingSubject;
@@ -105,7 +109,7 @@ export default function SubjectsClient({ courseId, courseTitle }) {
                   </div>
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">পাস মার্ক (নম্বর)</label>
-                    <input type="number" className="form-input" min="1" value={form.finalExamPassMark} onChange={e => setForm(p => ({ ...p, finalExamPassMark: parseInt(e.target.value) || 40 }))} />
+                    <input type="number" className="form-input" min="1" max={form.finalExamDisplayCount} value={form.finalExamPassMark} onChange={e => setForm(p => ({ ...p, finalExamPassMark: parseInt(e.target.value) || 40 }))} />
                   </div>
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">প্রদর্শিত প্রশ্নের সংখ্যা</label>

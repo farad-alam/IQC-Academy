@@ -91,21 +91,40 @@ export default function SubjectFinalExamClient({ courseId, subjectId, subjectTit
 
       {/* Config card */}
       {data?.subject && (
-        <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-          <div style={{ fontWeight: 600, color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>পরীক্ষার কনফিগারেশন:</div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>পাস মার্ক:</span>
-            <input type="number" min="1" defaultValue={data.subject.finalExamPassMark}
-              onBlur={e => updateConfig('finalExamPassMark', parseInt(e.target.value))}
-              style={{ width: '70px', padding: '0.3rem 0.5rem', border: '1px solid var(--color-earth-1)', borderRadius: '6px', textAlign: 'center' }} />
+        <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
+          <div style={{ fontWeight: 600, color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>পরীক্ষার কনফিগারেশন:</div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label" style={{ fontSize: '0.85rem' }}>ফাইনাল পরীক্ষার মোট নম্বর</label>
+              <input type="number" className="form-input" min="1" defaultValue={data.subject.finalExamDisplayCount}
+                onBlur={e => updateConfig('finalExamDisplayCount', parseInt(e.target.value) || 20)}
+              />
+            </div>
+            
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label" style={{ fontSize: '0.85rem' }}>পাস মার্ক (নম্বর)</label>
+              <input type="number" className="form-input" min="1" max={data.subject.finalExamDisplayCount} defaultValue={data.subject.finalExamPassMark}
+                onBlur={e => {
+                  const val = parseInt(e.target.value) || 40;
+                  if (val > data.subject.finalExamDisplayCount) {
+                     alert(`পাস মার্ক মোট নম্বর (${data.subject.finalExamDisplayCount}) এর বেশি হতে পারে না!`);
+                     e.target.value = data.subject.finalExamDisplayCount;
+                     updateConfig('finalExamPassMark', data.subject.finalExamDisplayCount);
+                  } else {
+                     updateConfig('finalExamPassMark', val);
+                  }
+                }}
+              />
+            </div>
+            
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label" style={{ fontSize: '0.85rem' }}>প্রদর্শিত প্রশ্নের সংখ্যা</label>
+              <input type="number" className="form-input" value={data.subject.finalExamDisplayCount} disabled style={{ backgroundColor: 'var(--color-surface-alt)', cursor: 'not-allowed', color: 'var(--color-text-muted)' }} />
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>প্রশ্ন সংখ্যা:</span>
-            <input type="number" min="1" defaultValue={data.subject.finalExamDisplayCount}
-              onBlur={e => updateConfig('finalExamDisplayCount', parseInt(e.target.value))}
-              style={{ width: '70px', padding: '0.3rem 0.5rem', border: '1px solid var(--color-earth-1)', borderRadius: '6px', textAlign: 'center' }} />
-          </div>
-          <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>মোট প্রশ্ন ব্যাংক: <strong>{data.quizzes.length} টি</strong></span>
+          
+          <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '1rem' }}>মোট প্রশ্ন ব্যাংক: <strong>{data.quizzes.length} টি</strong></div>
         </div>
       )}
 

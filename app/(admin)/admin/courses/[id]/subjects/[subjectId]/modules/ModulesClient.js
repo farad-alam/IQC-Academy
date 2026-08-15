@@ -32,6 +32,10 @@ export default function SubjectModulesClient({ subject, course }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.quizPassMark > formData.quizDisplayCount) {
+      alert(`পাস মার্ক মোট নম্বর (${formData.quizDisplayCount}) এর বেশি হতে পারে না!`);
+      return;
+    }
     setLoading(true);
     try {
       const isEditing = !!editingModuleId;
@@ -106,7 +110,7 @@ export default function SubjectModulesClient({ subject, course }) {
                 {formData.contentType === 'TEXT' && <div className="form-group" style={{ marginBottom: 0 }}><label className="form-label">কন্টেন্ট (HTML/Text)</label><textarea className="form-input" rows="6" value={formData.body} onChange={e => setFormData({ ...formData, body: e.target.value })} placeholder="এখানে কন্টেন্ট লিখুন..." /></div>}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                   <div className="form-group" style={{ marginBottom: 0 }}><label className="form-label">পরীক্ষার মোট নম্বর</label><input type="number" className="form-input" min="1" value={formData.quizDisplayCount} onChange={e => setFormData({ ...formData, quizDisplayCount: parseInt(e.target.value) || 1 })} /></div>
-                  <div className="form-group" style={{ marginBottom: 0 }}><label className="form-label">পাস মার্ক (নম্বর)</label><input type="number" className="form-input" min="0" value={formData.quizPassMark} onChange={e => setFormData({ ...formData, quizPassMark: parseInt(e.target.value) || 0 })} /></div>
+                  <div className="form-group" style={{ marginBottom: 0 }}><label className="form-label">পাস মার্ক (নম্বর)</label><input type="number" className="form-input" min="0" max={formData.quizDisplayCount} value={formData.quizPassMark} onChange={e => setFormData({ ...formData, quizPassMark: parseInt(e.target.value) || 0 })} /></div>
                   <div className="form-group" style={{ marginBottom: 0 }}><label className="form-label">প্রদর্শিত প্রশ্নের সংখ্যা</label><input type="number" className="form-input" value={formData.quizDisplayCount} disabled style={{ backgroundColor: 'var(--color-surface-alt)', cursor: 'not-allowed', color: 'var(--color-text-muted)' }} /></div>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem' }}>
