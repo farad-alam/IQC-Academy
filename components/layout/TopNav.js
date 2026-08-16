@@ -10,6 +10,7 @@ export default function TopNav() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [registrationOpen, setRegistrationOpen] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -23,7 +24,7 @@ export default function TopNav() {
     { name: 'যোগাযোগ', href: '/contact' },
   ];
 
-  // ── Fetch current auth state ────────────────────────────────────────────────
+  // ── Fetch current auth state & settings ────────────────────────────────────────────────
   useEffect(() => {
     fetch('/api/users/me', { cache: 'no-store' })
       .then(res => res.ok ? res.json() : null)
@@ -32,6 +33,13 @@ export default function TopNav() {
       })
       .catch(() => {})
       .finally(() => setAuthLoading(false));
+
+    fetch('/api/auth/register-status', { cache: 'no-store' })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) setRegistrationOpen(data.open);
+      })
+      .catch(() => {});
   }, [pathname]); // re-check on route change
 
   // ── Close dropdown on outside click ────────────────────────────────────────
@@ -144,8 +152,8 @@ export default function TopNav() {
               <Link href="/login" className={styles.loginBtn}>
                 লগইন
               </Link>
-              <Link href="/register" className={styles.registerBtn}>
-                রেজিস্ট্রেশন
+              <Link href={registrationOpen ? "/register" : "/batches"} className={styles.registerBtn}>
+                {registrationOpen ? "রেজিস্ট্রেশন" : "ব্যাচে ভর্তি"}
               </Link>
             </div>
           )}
