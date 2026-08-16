@@ -15,6 +15,7 @@ export default function EditCourseModal({ course, isOpen, onClose, onCourseUpdat
     duration: '',
     instructorId: '',
     tags: '',
+    isBatchCourse: false,
     coverImageFile: null,
     coverImagePreview: null
   });
@@ -36,6 +37,7 @@ export default function EditCourseModal({ course, isOpen, onClose, onCourseUpdat
           duration: course.duration || '',
           instructorId: course.instructorId || '',
           tags: Array.isArray(course.tags) ? course.tags.join(', ') : (course.tags || ''),
+          isBatchCourse: course.isBatchCourse || false,
           coverImageFile: null,
           coverImagePreview: course.coverImageUrl || null
         });
@@ -75,6 +77,7 @@ export default function EditCourseModal({ course, isOpen, onClose, onCourseUpdat
         duration: form.duration,
         instructorId: form.instructorId || null,
         tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        isBatchCourse: Boolean(form.isBatchCourse),
         ...(form.coverImageFile && { coverImageFile: form.coverImageFile })
       };
 
@@ -120,6 +123,11 @@ export default function EditCourseModal({ course, isOpen, onClose, onCourseUpdat
             <div className="form-group">
               <label className="form-label">কোর্সের নাম *</label>
               <input name="title" value={form.title} onChange={handleChange} className="form-input" placeholder="যেমন: আল-কুরআন শিক্ষা" required />
+            </div>
+            
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', background: 'var(--color-surface-alt)', borderRadius: '8px', border: '1px solid var(--color-earth-2)' }}>
+              <input type="checkbox" id="isBatchCourse-edit" name="isBatchCourse" checked={form.isBatchCourse} onChange={e => setForm(p => ({ ...p, isBatchCourse: e.target.checked }))} style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary)', cursor: 'pointer' }} />
+              <label htmlFor="isBatchCourse-edit" style={{ fontWeight: 600, cursor: 'pointer', margin: 0, fontSize: '0.95rem' }}>এটি একটি ব্যাচ কোর্স (পাবলিকলি দেখা যাবে না)</label>
             </div>
             
             <div className="form-group">

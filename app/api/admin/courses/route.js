@@ -61,6 +61,7 @@ export async function POST(req) {
         coverImageUrl: finalCoverUrl,
         tags: body.tags || [],
         features: body.features || [],
+        isBatchCourse: Boolean(body.isBatchCourse),
       }
     });
 

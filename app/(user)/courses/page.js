@@ -10,8 +10,8 @@ export default async function CourseListPage({ searchParams }) {
   const filter = resolvedParams?.filter || 'all';
   const user = await getAuthUser();
 
-  // Base query for PUBLISHED courses
-  const where = { status: 'PUBLISHED' };
+  // Base query for PUBLISHED courses, excluding batch-only courses
+  const where = { status: 'PUBLISHED', isBatchCourse: false };
   if (filter === 'paid') {
     where.type = 'PAID';
   } else if (filter === 'free') {

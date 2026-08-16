@@ -135,6 +135,7 @@ model Instructor {
 model Course {
   id               String       @id @default(cuid())
   title            String
+  isBatchCourse    Boolean      @default(false)
   description      String
   type             CourseType
   price            Decimal?

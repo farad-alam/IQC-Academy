@@ -6,7 +6,7 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const type = searchParams.get('type'); // 'FREE' or 'PAID'
     
-    const whereClause = { status: 'PUBLISHED' };
+    const whereClause = { status: 'PUBLISHED', isBatchCourse: false };
     if (type === 'FREE' || type === 'PAID') {
       whereClause.type = type;
     }

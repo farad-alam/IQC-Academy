@@ -16,6 +16,7 @@ export default function CreateCourseModal({ onCourseCreated }) {
     duration: '',
     instructorId: '',
     tags: '',
+    isBatchCourse: false,
     coverImageFile: null,
     coverImagePreview: null
   });
@@ -67,6 +68,7 @@ export default function CreateCourseModal({ onCourseCreated }) {
         setForm({
           title: '', description: '', level: 'Beginner', type: 'FREE',
           price: '', duration: '', instructorId: '', tags: '',
+          isBatchCourse: false,
           coverImageFile: null, coverImagePreview: null
         });
         if (onCourseCreated) onCourseCreated();
@@ -108,6 +110,11 @@ export default function CreateCourseModal({ onCourseCreated }) {
                 <div className="form-group">
                   <label className="form-label">কোর্সের নাম *</label>
                   <input name="title" value={form.title} onChange={handleChange} className="form-input" placeholder="যেমন: আল-কুরআন শিক্ষা" required />
+                </div>
+                
+                <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', background: 'var(--color-surface-alt)', borderRadius: '8px', border: '1px solid var(--color-earth-2)' }}>
+                  <input type="checkbox" id="isBatchCourse-create" name="isBatchCourse" checked={form.isBatchCourse} onChange={e => setForm(p => ({ ...p, isBatchCourse: e.target.checked }))} style={{ width: '18px', height: '18px', accentColor: 'var(--color-primary)', cursor: 'pointer' }} />
+                  <label htmlFor="isBatchCourse-create" style={{ fontWeight: 600, cursor: 'pointer', margin: 0, fontSize: '0.95rem' }}>এটি একটি ব্যাচ কোর্স (পাবলিকলি দেখা যাবে না)</label>
                 </div>
                 
                 <div className="form-group">

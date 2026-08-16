@@ -115,7 +115,10 @@ export default function AdminCoursesPage() {
                           <BookOpen size={20} />
                         </div>
                         <div>
-                          <div style={{ fontWeight: 600 }}>{course.title}</div>
+                          <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            {course.title}
+                            {course.isBatchCourse && <span className="badge badge-warning" style={{ fontSize: '0.65rem', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>ব্যাচ কোর্স</span>}
+                          </div>
                           <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{course.level}</div>
                         </div>
                       </div>

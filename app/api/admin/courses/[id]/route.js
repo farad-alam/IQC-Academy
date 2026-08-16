@@ -42,6 +42,7 @@ export async function PATCH(req, { params }) {
         ...(body.finalExamEnabled !== undefined && { finalExamEnabled: body.finalExamEnabled }),
         ...(body.finalExamPassMark !== undefined && { finalExamPassMark: body.finalExamPassMark }),
         ...(body.finalExamDisplayCount !== undefined && { finalExamDisplayCount: body.finalExamDisplayCount }),
+        ...(body.isBatchCourse !== undefined && { isBatchCourse: body.isBatchCourse }),
         ...(finalCoverUrl !== undefined && { coverImageUrl: finalCoverUrl }),
       },
       include: {
