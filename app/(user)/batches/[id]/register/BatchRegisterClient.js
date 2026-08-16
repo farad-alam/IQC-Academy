@@ -11,6 +11,7 @@ const SSC_BOARDS = ['ঢাকা', 'চট্টগ্রাম', 'রাজশ
 export default function BatchRegisterClient({ batchId }) {
   const router = useRouter();
   const [batch, setBatch] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -24,10 +25,15 @@ export default function BatchRegisterClient({ batchId }) {
   });
 
   useEffect(() => {
-    fetch(`/api/batches/${batchId}`).then(r => r.json()).then(data => {
-      if (data.error) setError(data.error === 'Batch not found' ? 'ব্যাচটি পাওয়া যায়নি।' : 'এই ব্যাচে বর্তমানে ভর্তি চলছে না।');
-      else if (data.status !== 'ENROLLING') setError('এই ব্যাচে বর্তমানে ভর্তি চলছে না।');
-      else setBatch(data);
+    Promise.all([
+      fetch(`/api/batches/${batchId}`).then(r => r.json()),
+      fetch('/api/users/me', { cache: 'no-store' }).then(r => r.ok ? r.json() : null)
+    ]).then(([batchData, userData]) => {
+      if (batchData.error) setError(batchData.error === 'Batch not found' ? 'ব্যাচটি পাওয়া যায়নি।' : 'এই ব্যাচে বর্তমানে ভর্তি চলছে না।');
+      else if (batchData.status !== 'ENROLLING') setError('এই ব্যাচে বর্তমানে ভর্তি চলছে না।');
+      else setBatch(batchData);
+      
+      if (userData?.success) setCurrentUser(userData.profile);
       setLoading(false);
     });
   }, [batchId]);
@@ -69,7 +75,22 @@ export default function BatchRegisterClient({ batchId }) {
     } finally { setSubmitting(false); }
   };
 
+  const handleDirectJoin = async () => {
+    setSubmitting(true);
+    setError('');
+    try {
+      const res = await fetch(`/api/batches/${batchId}/join`, { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) setSuccess(true);
+      else setError(data.error || 'ভর্তি হতে সমস্যা হয়েছে।');
+    } catch {
+      setError('নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।');
+    } finally { setSubmitting(false); }
+  };
+
   if (loading) return <main style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></main>;
+
+  const isEnrolled = currentUser?.batchStudents?.some(bs => bs.batchId === batchId);
 
   if (error && !batch) return (
     <main style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '1rem', padding: '2rem' }}>
@@ -85,12 +106,14 @@ export default function BatchRegisterClient({ batchId }) {
         <CheckCircle size={44} color="#16a34a" />
       </div>
       <div>
-        <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.75rem' }}>নিবন্ধন সফল!</h2>
+        <h2 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.75rem' }}>ভর্তি সফল!</h2>
         <p style={{ color: 'var(--color-text-muted)', fontSize: '1.05rem', maxWidth: '500px' }}>
-          আপনি সফলভাবে <strong>{batch?.name}</strong> ব্যাচে নিবন্ধিত হয়েছেন। এখন লগইন করুন।
+          আপনি সফলভাবে <strong>{batch?.name}</strong> ব্যাচে ভর্তি হয়েছেন।
         </p>
       </div>
-      <Link href="/login" className="btn btn-primary" style={{ padding: '0.85rem 2rem', fontSize: '1.05rem' }}>লগইন করুন</Link>
+      <Link href={currentUser ? "/dashboard" : "/login"} className="btn btn-primary" style={{ padding: '0.85rem 2rem', fontSize: '1.05rem' }}>
+        {currentUser ? 'ড্যাশবোর্ডে যান' : 'লগইন করুন'}
+      </Link>
     </main>
   );
 
@@ -120,109 +143,146 @@ export default function BatchRegisterClient({ batchId }) {
         </div>
       )}
 
-      <div className="card" style={{ padding: '2rem' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem' }}>নিবন্ধন ফর্ম</h2>
-        {error && <div style={{ background: '#fee2e2', color: '#dc2626', padding: '0.875rem 1rem', borderRadius: '8px', marginBottom: '1.25rem', fontSize: '0.9rem' }}>{error}</div>}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div className="grid-2 gap-4">
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="name" className="form-label">পূর্ণ নাম *</label>
-              <input id="name" name="name" autoComplete="name" maxLength={60} className="form-input" required value={form.name} onChange={e => set('name', e.target.value)} placeholder="আপনার পূর্ণ নাম" style={{ borderColor: fieldErrors.name ? 'var(--color-error)' : '' }} />
-              {fieldErrors.name && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.name[0]}</div>}
-            </div>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="email" className="form-label">ইমেইল *</label>
-              <input id="email" name="email" autoComplete="email" maxLength={100} className="form-input" type="email" required value={form.email} onChange={e => set('email', e.target.value)} placeholder="email@example.com" style={{ borderColor: fieldErrors.email ? 'var(--color-error)' : '' }} />
-              {fieldErrors.email && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.email[0]}</div>}
+      {isEnrolled ? (
+        <div className="card" style={{ padding: '3rem 2rem', textAlign: 'center', borderRadius: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--color-primary-50)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <BookOpen size={32} color="var(--color-primary)" />
             </div>
           </div>
-          <div className="grid-2 gap-4">
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="mobile" className="form-label">মোবাইল নম্বর *</label>
-              <input id="mobile" name="mobile" autoComplete="tel" type="tel" inputMode="numeric" pattern="\d*" maxLength={11} className="form-input" required value={form.mobile} onChange={e => set('mobile', e.target.value.replace(/\D/g, '').slice(0, 11))} placeholder="01XXXXXXXXX" style={{ borderColor: fieldErrors.mobile ? 'var(--color-error)' : '' }} />
-              {fieldErrors.mobile && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.mobile[0]}</div>}
-            </div>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="whatsapp" className="form-label">হোয়াটসঅ্যাপ *</label>
-              <input id="whatsapp" name="whatsapp" autoComplete="tel" type="tel" inputMode="numeric" pattern="\d*" maxLength={11} className="form-input" required value={form.whatsapp} onChange={e => set('whatsapp', e.target.value.replace(/\D/g, '').slice(0, 11))} placeholder="01XXXXXXXXX" style={{ borderColor: fieldErrors.whatsapp ? 'var(--color-error)' : '' }} />
-              {fieldErrors.whatsapp && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.whatsapp[0]}</div>}
-            </div>
-          </div>
-          <div className="grid-2 gap-4">
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="password" className="form-label">পাসওয়ার্ড *</label>
-              <input id="password" name="password" autoComplete="new-password" minLength={6} maxLength={64} className="form-input" type="password" required value={form.password} onChange={e => set('password', e.target.value)} placeholder="কমপক্ষে ৬ অক্ষর" style={{ borderColor: fieldErrors.password ? 'var(--color-error)' : '' }} />
-              {fieldErrors.password && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.password[0]}</div>}
-            </div>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="confirmPassword" className="form-label">পাসওয়ার্ড নিশ্চিত *</label>
-              <input id="confirmPassword" name="confirmPassword" autoComplete="new-password" minLength={6} maxLength={64} className="form-input" type="password" required value={form.confirmPassword} onChange={e => set('confirmPassword', e.target.value)} placeholder="পাসওয়ার্ড পুনরায় লিখুন" style={{ borderColor: fieldErrors.confirmPassword ? 'var(--color-error)' : '' }} />
-              {fieldErrors.confirmPassword && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.confirmPassword[0]}</div>}
-            </div>
-          </div>
-          <div className="grid-2 gap-4">
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="institution" className="form-label">শিক্ষাপ্রতিষ্ঠান *</label>
-              <input id="institution" name="institution" autoComplete="organization" maxLength={100} className="form-input" required value={form.institution} onChange={e => set('institution', e.target.value)} placeholder="স্কুল/কলেজ/মাদ্রাসার নাম" style={{ borderColor: fieldErrors.institution ? 'var(--color-error)' : '' }} />
-              {fieldErrors.institution && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.institution[0]}</div>}
-            </div>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="division" className="form-label">বিভাগ *</label>
-              <select id="division" name="division" autoComplete="address-level1" className="form-input form-select" required value={form.division} onChange={e => set('division', e.target.value)} style={{ borderColor: fieldErrors.division ? 'var(--color-error)' : '' }}>
-                <option value="">বিভাগ নির্বাচন</option>
-                {DIVISIONS.map(d => <option key={d}>{d}</option>)}
-              </select>
-              {fieldErrors.division && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.division[0]}</div>}
-            </div>
-          </div>
-          <div className="grid-2 gap-4">
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="district" className="form-label">জেলা *</label>
-              <input id="district" name="district" autoComplete="address-level2" maxLength={50} className="form-input" required value={form.district} onChange={e => set('district', e.target.value)} placeholder="জেলার নাম" style={{ borderColor: fieldErrors.district ? 'var(--color-error)' : '' }} />
-              {fieldErrors.district && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.district[0]}</div>}
-            </div>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="upazila" className="form-label">উপজেলা</label>
-              <input id="upazila" name="upazila" autoComplete="address-level3" maxLength={50} className="form-input" value={form.upazila} onChange={e => set('upazila', e.target.value)} placeholder="উপজেলার নাম" style={{ borderColor: fieldErrors.upazila ? 'var(--color-error)' : '' }} />
-              {fieldErrors.upazila && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.upazila[0]}</div>}
-            </div>
-          </div>
-          <div className="grid-2 gap-4">
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="dob" className="form-label">জন্ম তারিখ *</label>
-              <input id="dob" name="dob" autoComplete="bday" className="form-input" type="date" required value={form.dob} onChange={e => set('dob', e.target.value)} style={{ borderColor: fieldErrors.dob ? 'var(--color-error)' : '' }} />
-              {fieldErrors.dob && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.dob[0]}</div>}
-            </div>
-          </div>
-          <div className="grid-3 gap-4">
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="sscYear" className="form-label">SSC সাল *</label>
-              <input id="sscYear" name="sscYear" type="text" inputMode="numeric" pattern="\d*" maxLength={4} className="form-input" required value={form.sscYear} onChange={e => set('sscYear', e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="যেমন: ২০২৩" style={{ borderColor: fieldErrors.sscYear ? 'var(--color-error)' : '' }} />
-              {fieldErrors.sscYear && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.sscYear[0]}</div>}
-            </div>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="sscBoard" className="form-label">SSC বোর্ড</label>
-              <select id="sscBoard" name="sscBoard" className="form-input form-select" value={form.sscBoard} onChange={e => set('sscBoard', e.target.value)} style={{ borderColor: fieldErrors.sscBoard ? 'var(--color-error)' : '' }}>
-                <option value="">বোর্ড নির্বাচন</option>
-                {SSC_BOARDS.map(b => <option key={b}>{b}</option>)}
-              </select>
-              {fieldErrors.sscBoard && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.sscBoard[0]}</div>}
-            </div>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label htmlFor="sscGpa" className="form-label">SSC GPA</label>
-              <input id="sscGpa" name="sscGpa" type="text" inputMode="decimal" maxLength={4} className="form-input" value={form.sscGpa} onChange={e => set('sscGpa', e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 4))} placeholder="যেমন: ৫.০০" style={{ borderColor: fieldErrors.sscGpa ? 'var(--color-error)' : '' }} />
-              {fieldErrors.sscGpa && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.sscGpa[0]}</div>}
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>আপনি ইতিমধ্যে এই ব্যাচে ভর্তি আছেন!</h2>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>আপনার ড্যাশবোর্ড থেকে কোর্সের কার্যক্রম চালিয়ে যান।</p>
+          <Link href="/dashboard" className="btn btn-primary">ড্যাশবোর্ডে যান</Link>
+        </div>
+      ) : currentUser ? (
+        <div className="card" style={{ padding: '2rem', borderRadius: '16px' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <CheckCircle size={20} color="var(--color-primary)" /> আপনার তথ্য নিশ্চিত করুন
+          </h2>
+          {error && <div style={{ background: '#fee2e2', color: '#dc2626', padding: '0.875rem 1rem', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.9rem' }}>{error}</div>}
+          
+          <div style={{ background: 'var(--color-surface-alt)', padding: '1.5rem', borderRadius: '12px', marginBottom: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr', gap: '0.75rem', fontSize: '0.95rem' }}>
+              <div style={{ color: 'var(--color-text-muted)', fontWeight: 500 }}>নাম:</div>
+              <div style={{ fontWeight: 600 }}>{currentUser.name}</div>
+              
+              <div style={{ color: 'var(--color-text-muted)', fontWeight: 500 }}>ইমেইল:</div>
+              <div style={{ fontWeight: 500 }}>{currentUser.email}</div>
+              
+              <div style={{ color: 'var(--color-text-muted)', fontWeight: 500 }}>মোবাইল:</div>
+              <div style={{ fontWeight: 500 }}>{currentUser.mobile}</div>
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary" disabled={submitting} style={{ padding: '0.875rem', fontSize: '1.05rem', fontWeight: 700, marginTop: '0.5rem' }}>
-            {submitting ? <><Loader2 size={20} className="spin" /> নিবন্ধন হচ্ছে...</> : 'নিবন্ধন সম্পন্ন করুন'}
+          <button onClick={handleDirectJoin} disabled={submitting} className="btn btn-primary" style={{ width: '100%', padding: '0.875rem', fontSize: '1.05rem', fontWeight: 700 }}>
+            {submitting ? <><Loader2 size={20} className="spin" /> ভর্তি হচ্ছে...</> : `ভর্তি হন: ${currentUser.name}`}
           </button>
-          <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-            ইতিমধ্যে একাউন্ট আছে? <Link href="/login" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>লগইন করুন</Link>
-          </p>
-        </form>
-      </div>
+        </div>
+      ) : (
+        <div className="card" style={{ padding: '2rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem' }}>নিবন্ধন ফর্ম</h2>
+          {error && <div style={{ background: '#fee2e2', color: '#dc2626', padding: '0.875rem 1rem', borderRadius: '8px', marginBottom: '1.25rem', fontSize: '0.9rem' }}>{error}</div>}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div className="grid-2 gap-4">
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="name" className="form-label">পূর্ণ নাম *</label>
+                <input id="name" name="name" autoComplete="name" maxLength={60} className="form-input" required value={form.name} onChange={e => set('name', e.target.value)} placeholder="আপনার পূর্ণ নাম" style={{ borderColor: fieldErrors.name ? 'var(--color-error)' : '' }} />
+                {fieldErrors.name && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.name[0]}</div>}
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="email" className="form-label">ইমেইল *</label>
+                <input id="email" name="email" autoComplete="email" maxLength={100} className="form-input" type="email" required value={form.email} onChange={e => set('email', e.target.value)} placeholder="email@example.com" style={{ borderColor: fieldErrors.email ? 'var(--color-error)' : '' }} />
+                {fieldErrors.email && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.email[0]}</div>}
+              </div>
+            </div>
+            <div className="grid-2 gap-4">
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="mobile" className="form-label">মোবাইল নম্বর *</label>
+                <input id="mobile" name="mobile" autoComplete="tel" type="tel" inputMode="numeric" pattern="\d*" maxLength={11} className="form-input" required value={form.mobile} onChange={e => set('mobile', e.target.value.replace(/\D/g, '').slice(0, 11))} placeholder="01XXXXXXXXX" style={{ borderColor: fieldErrors.mobile ? 'var(--color-error)' : '' }} />
+                {fieldErrors.mobile && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.mobile[0]}</div>}
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="whatsapp" className="form-label">হোয়াটসঅ্যাপ *</label>
+                <input id="whatsapp" name="whatsapp" autoComplete="tel" type="tel" inputMode="numeric" pattern="\d*" maxLength={11} className="form-input" required value={form.whatsapp} onChange={e => set('whatsapp', e.target.value.replace(/\D/g, '').slice(0, 11))} placeholder="01XXXXXXXXX" style={{ borderColor: fieldErrors.whatsapp ? 'var(--color-error)' : '' }} />
+                {fieldErrors.whatsapp && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.whatsapp[0]}</div>}
+              </div>
+            </div>
+            <div className="grid-2 gap-4">
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="password" className="form-label">পাসওয়ার্ড *</label>
+                <input id="password" name="password" autoComplete="new-password" minLength={6} maxLength={64} className="form-input" type="password" required value={form.password} onChange={e => set('password', e.target.value)} placeholder="কমপক্ষে ৬ অক্ষর" style={{ borderColor: fieldErrors.password ? 'var(--color-error)' : '' }} />
+                {fieldErrors.password && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.password[0]}</div>}
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="confirmPassword" className="form-label">পাসওয়ার্ড নিশ্চিত *</label>
+                <input id="confirmPassword" name="confirmPassword" autoComplete="new-password" minLength={6} maxLength={64} className="form-input" type="password" required value={form.confirmPassword} onChange={e => set('confirmPassword', e.target.value)} placeholder="পাসওয়ার্ড পুনরায় লিখুন" style={{ borderColor: fieldErrors.confirmPassword ? 'var(--color-error)' : '' }} />
+                {fieldErrors.confirmPassword && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.confirmPassword[0]}</div>}
+              </div>
+            </div>
+            <div className="grid-2 gap-4">
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="institution" className="form-label">শিক্ষাপ্রতিষ্ঠান *</label>
+                <input id="institution" name="institution" autoComplete="organization" maxLength={100} className="form-input" required value={form.institution} onChange={e => set('institution', e.target.value)} placeholder="স্কুল/কলেজ/মাদ্রাসার নাম" style={{ borderColor: fieldErrors.institution ? 'var(--color-error)' : '' }} />
+                {fieldErrors.institution && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.institution[0]}</div>}
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="division" className="form-label">বিভাগ *</label>
+                <select id="division" name="division" autoComplete="address-level1" className="form-input form-select" required value={form.division} onChange={e => set('division', e.target.value)} style={{ borderColor: fieldErrors.division ? 'var(--color-error)' : '' }}>
+                  <option value="">বিভাগ নির্বাচন</option>
+                  {DIVISIONS.map(d => <option key={d}>{d}</option>)}
+                </select>
+                {fieldErrors.division && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.division[0]}</div>}
+              </div>
+            </div>
+            <div className="grid-2 gap-4">
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="district" className="form-label">জেলা *</label>
+                <input id="district" name="district" autoComplete="address-level2" maxLength={50} className="form-input" required value={form.district} onChange={e => set('district', e.target.value)} placeholder="জেলার নাম" style={{ borderColor: fieldErrors.district ? 'var(--color-error)' : '' }} />
+                {fieldErrors.district && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.district[0]}</div>}
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="upazila" className="form-label">উপজেলা</label>
+                <input id="upazila" name="upazila" autoComplete="address-level3" maxLength={50} className="form-input" value={form.upazila} onChange={e => set('upazila', e.target.value)} placeholder="উপজেলার নাম" style={{ borderColor: fieldErrors.upazila ? 'var(--color-error)' : '' }} />
+                {fieldErrors.upazila && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.upazila[0]}</div>}
+              </div>
+            </div>
+            <div className="grid-2 gap-4">
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="dob" className="form-label">জন্ম তারিখ *</label>
+                <input id="dob" name="dob" autoComplete="bday" className="form-input" type="date" required value={form.dob} onChange={e => set('dob', e.target.value)} style={{ borderColor: fieldErrors.dob ? 'var(--color-error)' : '' }} />
+                {fieldErrors.dob && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.dob[0]}</div>}
+              </div>
+            </div>
+            <div className="grid-3 gap-4">
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="sscYear" className="form-label">SSC সাল *</label>
+                <input id="sscYear" name="sscYear" type="text" inputMode="numeric" pattern="\d*" maxLength={4} className="form-input" required value={form.sscYear} onChange={e => set('sscYear', e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="যেমন: ২০২৩" style={{ borderColor: fieldErrors.sscYear ? 'var(--color-error)' : '' }} />
+                {fieldErrors.sscYear && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.sscYear[0]}</div>}
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="sscBoard" className="form-label">SSC বোর্ড</label>
+                <select id="sscBoard" name="sscBoard" className="form-input form-select" value={form.sscBoard} onChange={e => set('sscBoard', e.target.value)} style={{ borderColor: fieldErrors.sscBoard ? 'var(--color-error)' : '' }}>
+                  <option value="">বোর্ড নির্বাচন</option>
+                  {SSC_BOARDS.map(b => <option key={b}>{b}</option>)}
+                </select>
+                {fieldErrors.sscBoard && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.sscBoard[0]}</div>}
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="sscGpa" className="form-label">SSC GPA</label>
+                <input id="sscGpa" name="sscGpa" type="text" inputMode="decimal" maxLength={4} className="form-input" value={form.sscGpa} onChange={e => set('sscGpa', e.target.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1').slice(0, 4))} placeholder="যেমন: ৫.০০" style={{ borderColor: fieldErrors.sscGpa ? 'var(--color-error)' : '' }} />
+                {fieldErrors.sscGpa && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.sscGpa[0]}</div>}
+              </div>
+            </div>
+
+            <button type="submit" className="btn btn-primary" disabled={submitting} style={{ padding: '0.875rem', fontSize: '1.05rem', fontWeight: 700, marginTop: '0.5rem' }}>
+              {submitting ? <><Loader2 size={20} className="spin" /> নিবন্ধন হচ্ছে...</> : 'নিবন্ধন সম্পন্ন করুন'}
+            </button>
+            <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+              ইতিমধ্যে একাউন্ট আছে? <Link href="/login" style={{ color: 'var(--color-primary)', fontWeight: 600 }}>লগইন করুন</Link>
+            </p>
+          </form>
+        </div>
+      )}
     </main>
   );
 }
