@@ -62,11 +62,6 @@ export async function GET(req, { params }) {
               where: { courseId: { in: courseIds } },
               select: { courseId: true, status: true, progress: true, completedModules: true, enrolledAt: true }
             } : false,
-            // Module completions for batch course modules
-            moduleCompletions: allModuleIds.length > 0 ? {
-              where: { moduleId: { in: allModuleIds } },
-              select: { moduleId: true, completedAt: true }
-            } : false,
             // Subject final exam sessions for batch subjects
             subjectFinalExamSessions: allSubjectIds.length > 0 ? {
               where: { subjectId: { in: allSubjectIds } },
@@ -82,13 +77,28 @@ export async function GET(req, { params }) {
       }
     });
 
+    const studentIds = batchStudents.map(bs => bs.userId);
+    
+    // Fetch module completions separately since the reverse relation isn't on User
+    let allModuleCompletions = [];
+    if (studentIds.length > 0 && allModuleIds.length > 0) {
+      allModuleCompletions = await prisma.moduleCompletion.findMany({
+        where: {
+          userId: { in: studentIds },
+          moduleId: { in: allModuleIds }
+        },
+        select: { userId: true, moduleId: true, completedAt: true }
+      });
+    }
+
     const STUCK_DAYS = 7;
     const now = new Date();
 
     // 3. Shape the response per student
     const result = batchStudents.map(bs => {
       const user = bs.user;
-      const completionSet = new Set((user.moduleCompletions || []).map(mc => mc.moduleId));
+      const userCompletions = allModuleCompletions.filter(mc => mc.userId === user.id);
+      const completionSet = new Set(userCompletions.map(mc => mc.moduleId));
       const examMap = Object.fromEntries(
         (user.subjectFinalExamSessions || []).map(s => [s.subjectId, s])
       );
@@ -101,7 +111,7 @@ export async function GET(req, { params }) {
 
       // Last activity = most recent module completion or exam session
       const allDates = [
-        ...(user.moduleCompletions || []).map(mc => new Date(mc.completedAt)),
+        ...(userCompletions || []).map(mc => new Date(mc.completedAt)),
         ...(user.subjectFinalExamSessions || []).map(s => new Date(s.takenAt)),
       ].filter(Boolean);
       const lastActivityAt = allDates.length > 0
