@@ -10,6 +10,7 @@ export async function GET() {
       where: { status: 'ENROLLING' },
       include: {
         courses: {
+          where: { course: { status: 'PUBLISHED' } },
           include: {
             course: { select: { id: true, title: true, level: true, type: true, coverImageUrl: true, description: true } }
           }

@@ -30,6 +30,7 @@ export async function GET(req) {
         currentStreak: true,
         createdAt: true,
         enrollments: {
+          where: { course: { status: 'PUBLISHED' } },
           orderBy: { enrolledAt: 'desc' },
           select: {
             id: true,
@@ -69,6 +70,7 @@ export async function GET(req) {
             batch: {
               include: {
                 courses: {
+                  where: { course: { status: 'PUBLISHED' } },
                   include: {
                     course: {
                       select: { id: true, title: true, coverImageUrl: true, duration: true, level: true, type: true }

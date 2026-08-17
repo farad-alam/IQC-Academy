@@ -11,6 +11,7 @@ export async function GET(req, { params }) {
       where: { id },
       include: {
         courses: {
+          where: { course: { status: 'PUBLISHED' } },
           include: {
             course: {
               select: {
