@@ -50,13 +50,13 @@ export default function LoginPage() {
         return;
       }
 
-      // Redirect ADMIN to admin dashboard, others to user dashboard
-      if (data.user?.role === 'ADMIN') {
-        router.push('/admin/dashboard');
+      // Redirect ADMIN/SUPER_ADMIN to admin dashboard, others to user dashboard
+      if (data.user?.role === 'ADMIN' || data.user?.role === 'SUPER_ADMIN') {
+        window.location.href = '/admin/dashboard';
       } else {
         router.push('/dashboard');
+        router.refresh();
       }
-      router.refresh();
     } catch {
       setServerError('নেটওয়ার্ক সমস্যা। ইন্টারনেট সংযোগ যাচাই করুন।');
     } finally {
