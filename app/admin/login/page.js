@@ -1,13 +1,11 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Lock, AlertCircle } from 'lucide-react';
 import styles from '@/app/login/login.module.css';
 import Loader from '@/components/ui/Loader';
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -37,9 +35,9 @@ export default function AdminLoginPage() {
         return;
       }
 
-      // Success — redirect to admin dashboard
-      router.push('/admin/dashboard');
-      router.refresh();
+      // Success — hard redirect to admin dashboard (forces server-side cookie re-evaluation)
+      window.location.href = '/admin/dashboard';
+
     } catch (err) {
       setError('নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।');
     } finally {
