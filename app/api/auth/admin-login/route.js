@@ -71,11 +71,15 @@ export async function POST(req) {
       }
     });
 
-    // 8. Set Cookies
+    // 8. Set Cookies — explicitly clear any existing session first
     const response = NextResponse.json({ 
       success: true, 
       user: { id: user.id, name: user.name, role: user.role, status: user.status } 
     });
+
+    // Delete old cookies first to avoid conflicts
+    response.cookies.delete('accessToken');
+    response.cookies.delete('refreshToken');
 
     response.cookies.set({
       name: 'accessToken',
@@ -93,7 +97,7 @@ export async function POST(req) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/', // '/' so middleware can read it for auto-refresh
+      path: '/',
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });
 

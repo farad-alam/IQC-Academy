@@ -18,6 +18,9 @@ export default function AdminLoginPage() {
     setError('');
 
     try {
+      // First: clear any existing session to prevent conflicts
+      await fetch('/api/auth/logout', { method: 'POST' });
+
       const res = await fetch('/api/auth/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
