@@ -53,6 +53,12 @@ export default function DashboardPage() {
     ])
       .then(async ([userData, noticeData]) => {
         if (!userData.success) { router.push('/login'); return; }
+        // Redirect admin/super admin to their own dashboard
+        const role = userData.profile?.role;
+        if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+          window.location.href = '/admin/dashboard';
+          return;
+        }
         setUser(userData.profile);
         setNotices(noticeData.notices || noticeData || []);
 
