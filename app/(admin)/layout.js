@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({ children }) {
   const user = await getAuthUser();
 
