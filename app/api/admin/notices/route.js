@@ -5,7 +5,7 @@ import { getAuthUser } from '@/lib/middleware/withAuth';
 export async function POST(req) {
   try {
     const admin = await getAuthUser();
-    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN') {
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

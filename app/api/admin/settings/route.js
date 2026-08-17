@@ -6,7 +6,7 @@ import { getSiteSettings } from '@/lib/siteSettings';
 export async function GET(req) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'SUPER_ADMIN' {
+    if (!admin || admin.role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -21,7 +21,7 @@ export async function GET(req) {
 export async function PUT(req) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'SUPER_ADMIN' {
+    if (!admin || admin.role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
