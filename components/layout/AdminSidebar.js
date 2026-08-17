@@ -2,13 +2,24 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, GraduationCap, Gift, Layers, Bell, LogOut, Target, Image as ImageIcon, Menu, Settings, Home, Users2 } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, Gift, Layers, Bell, LogOut, Target, Image as ImageIcon, Menu, Settings, Home, Users2, Shield } from 'lucide-react';
 import styles from './AdminSidebar.module.css';
 
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+
+  // Fetch current user's role on mount
+  useEffect(() => {
+    fetch('/api/users/me')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) setUserRole(d.profile.role);
+      })
+      .catch(err => console.error("Failed to fetch role", err));
+  }, []);
 
   // Close sidebar when route changes on mobile
   useEffect(() => {
@@ -35,8 +46,12 @@ export default function AdminSidebar() {
     { name: 'প্রজেক্টস', href: '/admin/projects', icon: Target },
     { name: 'গ্যালারি', href: '/admin/gallery', icon: ImageIcon },
     { name: 'নোটিশ', href: '/admin/notices', icon: Bell },
-    { name: 'সেটিংস', href: '/admin/settings', icon: Settings },
+    { name: 'এডমিন ম্যানেজ', href: '/admin/admins', icon: Shield, superAdminOnly: true },
+    { name: 'সেটিংস', href: '/admin/settings', icon: Settings, superAdminOnly: true },
   ];
+
+  const visibleNavItems = navItems.filter(item => !item.superAdminOnly || userRole === 'SUPER_ADMIN');
+
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -77,7 +92,7 @@ export default function AdminSidebar() {
         </div>
 
         <nav className={styles.nav}>
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname.startsWith(item.href);
             

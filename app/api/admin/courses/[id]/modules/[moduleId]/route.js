@@ -6,7 +6,7 @@ import { uploadImage } from '@/lib/cloudinary';
 export async function DELETE(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') {
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -43,7 +43,7 @@ export async function DELETE(req, { params }) {
 export async function PATCH(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') {
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

@@ -32,7 +32,7 @@ export async function POST(req) {
     }
 
     // 4. Verify Admin Role FIRST
-    if (user.role !== 'ADMIN') {
+    if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: 'Forbidden: Admin access required.' }, { status: 403 });
     }
 

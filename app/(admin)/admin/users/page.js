@@ -10,6 +10,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('ALL');
+  const [currentUserRole, setCurrentUserRole] = useState(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -28,6 +29,15 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     fetchUsers();
+    
+    // Fetch current user's role
+    fetch('/api/users/me')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) setCurrentUserRole(d.profile.role);
+      })
+      .catch(err => console.error("Failed to fetch role", err));
+
     // Refresh interval
     const intervalId = setInterval(fetchUsers, 30000); // 30 sec polling
     return () => clearInterval(intervalId);
@@ -182,7 +192,7 @@ export default function AdminUsersPage() {
                         <div>
                           <div>{user.name}</div>
                           <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                            {user.role === 'ADMIN' ? '👑 Admin' : 'Student'} • #{user.id.substring(user.id.length - 6)}
+                            {user.role === 'SUPER_ADMIN' ? '👑 Super Admin' : user.role === 'ADMIN' ? '🛡️ Admin' : 'Student'} • #{user.id.substring(user.id.length - 6)}
                           </div>
                         </div>
                       </div>
@@ -201,11 +211,13 @@ export default function AdminUsersPage() {
                       </span>
                     </td>
                     <td data-label="অ্যাকশন" style={{ padding: '1rem 0', textAlign: 'right' }}>
-                      {user.role !== 'ADMIN' && (
+                      {user.role !== 'SUPER_ADMIN' && (
                         <UserActionsMenu
                           userId={user.id}
                           currentStatus={user.status}
                           onUpdate={fetchUsers}
+                          currentUserRole={currentUserRole}
+                          targetUserRole={user.role}
                         />
                       )}
                     </td>

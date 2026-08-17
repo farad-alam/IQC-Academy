@@ -6,7 +6,7 @@ import { getAuthUser } from '@/lib/middleware/withAuth';
 export async function GET(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { id: courseId } = await params;
     const vivaScores = await prisma.vivaScore.findMany({
@@ -26,7 +26,7 @@ export async function GET(req, { params }) {
 export async function POST(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { id: courseId } = await params;
     const { userId, marks, remarks } = await req.json();

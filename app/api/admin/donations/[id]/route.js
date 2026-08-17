@@ -6,7 +6,7 @@ import { sendPaymentApprovedEmail, sendPaymentRejectedEmail } from '@/lib/email'
 export async function PATCH(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') {
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

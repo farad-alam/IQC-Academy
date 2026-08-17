@@ -6,7 +6,7 @@ import { getAuthUser } from '@/lib/middleware/withAuth';
 export async function GET(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { id: batchId } = await params;
 
@@ -45,7 +45,7 @@ export async function GET(req, { params }) {
 export async function POST(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { id: batchId } = await params;
     const { userId, email } = await req.json();
@@ -76,7 +76,7 @@ export async function POST(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { id: batchId } = await params;
     const { userId } = await req.json();

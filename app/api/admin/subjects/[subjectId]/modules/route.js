@@ -7,7 +7,7 @@ import { uploadImage } from '@/lib/cloudinary';
 export async function GET(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { subjectId } = await params;
     const modules = await prisma.module.findMany({
@@ -27,7 +27,7 @@ export async function GET(req, { params }) {
 export async function POST(req, { params }) {
   try {
     const admin = await getAuthUser();
-    if (!admin || admin.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { subjectId } = await params;
     const body = await req.json();

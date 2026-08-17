@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MoreVertical, CheckCircle, Ban, ShieldAlert } from 'lucide-react';
 
-export default function UserActionsMenu({ userId, currentStatus, onUpdate }) {
+export default function UserActionsMenu({ userId, currentStatus, onUpdate, currentUserRole, targetUserRole }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const menuRef = useRef(null);
@@ -39,6 +39,31 @@ export default function UserActionsMenu({ userId, currentStatus, onUpdate }) {
       setLoading(false);
     }
   };
+
+  const promoteToAdmin = async () => {
+    if (!confirm('আপনি কি নিশ্চিত যে এই ব্যবহারকারীকে অ্যাডমিন করতে চান?')) return;
+    setLoading(true);
+    setOpen(false);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/role`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'PROMOTE_TO_ADMIN' }),
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        alert(d.error || 'কোনো সমস্যা হয়েছে।');
+      } else {
+        if (onUpdate) onUpdate();
+        else router.refresh();
+      }
+    } catch {
+      alert('নেটওয়ার্ক সমস্যা।');
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <div style={{ position: 'relative' }} ref={menuRef}>
@@ -76,6 +101,16 @@ export default function UserActionsMenu({ userId, currentStatus, onUpdate }) {
               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
             >
               <Ban size={15} /> ব্যান করুন
+            </button>
+          )}
+          {currentUserRole === 'SUPER_ADMIN' && targetUserRole !== 'ADMIN' && targetUserRole !== 'SUPER_ADMIN' && (
+            <button
+              onClick={promoteToAdmin}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.6rem 0.75rem', border: 'none', background: 'none', cursor: 'pointer', borderRadius: '6px', color: 'var(--color-primary)', fontSize: '0.875rem' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-surface-alt)'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <ShieldAlert size={15} /> 👑 অ্যাডমিন করুন
             </button>
           )}
         </div>

@@ -9,6 +9,7 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
+  const [forbidden, setForbidden] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -18,7 +19,13 @@ export default function AdminSettingsPage() {
     try {
       const res = await fetch('/api/admin/settings');
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) {
+        if (res.status === 403) {
+          setForbidden(true);
+          return;
+        }
+        throw new Error(data.error);
+      }
       setSettings(data);
     } catch (err) {
       toast.error('Failed to load settings');
@@ -57,6 +64,17 @@ export default function AdminSettingsPage() {
   };
 
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}><Loader /></div>;
+  
+  if (forbidden) {
+    return (
+      <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🚫</div>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--color-error)' }}>অ্যাক্সেস নেই</h1>
+        <p style={{ color: 'var(--color-text-muted)' }}>এই পেজটি শুধুমাত্র সুপার এডমিনের জন্য।</p>
+      </div>
+    );
+  }
+
   if (!settings) return null;
 
   return (

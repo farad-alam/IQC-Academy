@@ -6,7 +6,7 @@ import { sendApprovalEmail } from '@/lib/email';
 export async function PATCH(req, { params }) {
   try {
     const user = await getAuthUser();
-    if (!user || user.role !== 'ADMIN') {
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
