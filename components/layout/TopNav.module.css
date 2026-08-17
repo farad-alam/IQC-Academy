@@ -127,7 +127,7 @@
   font-weight: 700;
   font-size: 0.9rem;
   padding: 0.5rem 1rem;
-  border-radius: 50px;
+  border-radius: 7px;
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
