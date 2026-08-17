@@ -262,7 +262,7 @@ export default function BatchDetailClient({ batch: initialBatch }) {
             )}
           </div>
         </div>
-      ) : (
+      ) : tab === 'courses' ? (
         <div>
           {/* Assign course form */}
           <div className="card" style={{ padding: '1.25rem', marginBottom: '1rem' }}>
