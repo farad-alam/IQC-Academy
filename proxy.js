@@ -81,11 +81,11 @@ export default async function proxy(request) {
     // Logged-in user visiting /login, /register, or /admin/login
     // → send them to their appropriate dashboard
     const dest =
-      user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard';
+      (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? '/admin/dashboard' : '/dashboard';
     response = NextResponse.redirect(new URL(dest, request.url));
   } else if (isAdminPage) {
-    // Admin page — must be an authenticated ADMIN
-    if (!user || user.role !== 'ADMIN') {
+    // Admin page — must be an authenticated ADMIN or SUPER_ADMIN
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
       response = NextResponse.redirect(new URL('/admin/login', request.url));
     } else {
       response = NextResponse.next();
