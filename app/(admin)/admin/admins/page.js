@@ -12,6 +12,11 @@ export default function AdminManagePage() {
   const [searching, setSearching] = useState(false);
   const [promoting, setPromoting] = useState(false);
   const [demoting, setDemoting] = useState('');
+  
+  // Invite Modal State
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteData, setInviteData] = useState({ name: '', email: '', mobile: '' });
+  const [inviting, setInviting] = useState(false);
 
   // Check current user's role
   useEffect(() => {
@@ -22,10 +27,10 @@ export default function AdminManagePage() {
 
   const fetchAdmins = useCallback(async () => {
     setLoading(true);
-    const res = await fetch('/api/admin/users?role=ADMIN');
+    const res = await fetch('/api/admin/admins');
     if (res.ok) {
       const data = await res.json();
-      setAdmins(data.users || []);
+      setAdmins(data.admins || []);
     }
     setLoading(false);
   }, []);
@@ -70,10 +75,8 @@ export default function AdminManagePage() {
   const handleDemote = async (userId, userName) => {
     if (!confirm(`আপনি কি নিশ্চিত যে "${userName}" কে অ্যাডমিন থেকে সরাতে চান?`)) return;
     setDemoting(userId);
-    const res = await fetch(`/api/admin/users/${userId}/role`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'DEMOTE_TO_STUDENT' })
+    const res = await fetch(`/api/admin/admins/${userId}`, {
+      method: 'DELETE'
     });
     if (res.ok) {
       toast.success(`${userName} কে অ্যাডমিন থেকে সরানো হয়েছে।`);
@@ -83,6 +86,34 @@ export default function AdminManagePage() {
       toast.error(d.error || 'ব্যর্থ হয়েছে।');
     }
     setDemoting('');
+  };
+
+  const handleInviteSubmit = async (e) => {
+    e.preventDefault();
+    if (!inviteData.name || !inviteData.email || !inviteData.mobile) {
+      toast.error('সব তথ্য পূরণ করুন।');
+      return;
+    }
+    setInviting(true);
+    const res = await fetch('/api/admin/admins', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(inviteData)
+    });
+    if (res.ok) {
+      toast.success('সফলভাবে আমন্ত্রণ পাঠানো হয়েছে এবং ইমেইলে পাসওয়ার্ড পাঠানো হয়েছে!');
+      setShowInviteModal(false);
+      setInviteData({ name: '', email: '', mobile: '' });
+      fetchAdmins();
+    } else {
+      const d = await res.json();
+      if (d.details) {
+        toast.error('সঠিক তথ্য দিন।');
+      } else {
+        toast.error(d.error || 'ব্যর্থ হয়েছে।');
+      }
+    }
+    setInviting(false);
   };
 
   // Access denied for non-super-admin
@@ -106,15 +137,76 @@ export default function AdminManagePage() {
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700 }}>এডমিন ব্যবস্থাপনা</h1>
         </div>
         <p style={{ color: 'var(--color-text-muted)' }}>নতুন এডমিন যোগ করুন এবং বিদ্যমান এডমিনদের পরিচালনা করুন।</p>
-        <div style={{ marginTop: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--color-primary-50)', color: 'var(--color-primary)', padding: '0.4rem 0.85rem', borderRadius: '20px', fontSize: '0.82rem', fontWeight: 600 }}>
-          <Shield size={14} /> সুপার এডমিন একমাত্র এই পেজ দেখতে পারেন
+        <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--color-primary-50)', color: 'var(--color-primary)', padding: '0.4rem 0.85rem', borderRadius: '20px', fontSize: '0.82rem', fontWeight: 600 }}>
+            <Shield size={14} /> সুপার এডমিন একমাত্র এই পেজ দেখতে পারেন
+          </div>
+          <button onClick={() => setShowInviteModal(true)} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <UserPlus size={18} /> নতুন এডমিন আমন্ত্রণ করুন
+          </button>
         </div>
       </header>
 
-      {/* Add Admin Section */}
+      {/* Invite Modal */}
+      {showInviteModal && (
+        <div className="modal-overlay" onClick={() => setShowInviteModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <UserPlus size={20} color="var(--color-primary)" /> নতুন এডমিন আমন্ত্রণ
+            </h2>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+              আমন্ত্রণ জানালে স্বয়ংক্রিয়ভাবে একটি অ্যাকাউন্ট তৈরি হবে এবং উক্ত ইমেইলে পাসওয়ার্ড পাঠানো হবে।
+            </p>
+            <form onSubmit={handleInviteSubmit}>
+              <div style={{ marginBottom: '1rem' }}>
+                <label className="form-label">পুরো নাম</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  required 
+                  value={inviteData.name} 
+                  onChange={e => setInviteData({ ...inviteData, name: e.target.value })} 
+                />
+              </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label className="form-label">ইমেইল ঠিকানা</label>
+                <input 
+                  type="email" 
+                  className="form-input" 
+                  required 
+                  value={inviteData.email} 
+                  onChange={e => setInviteData({ ...inviteData, email: e.target.value })} 
+                />
+              </div>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label className="form-label">মোবাইল নম্বর (01XXXXXXXXX)</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  required 
+                  pattern="(?:\\+8801|8801|01)[3-9]\\d{8}"
+                  title="সঠিক মোবাইল নম্বর দিন"
+                  value={inviteData.mobile} 
+                  onChange={e => setInviteData({ ...inviteData, mobile: e.target.value })} 
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                <button type="button" className="btn btn-ghost" onClick={() => setShowInviteModal(false)}>
+                  বাতিল
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={inviting}>
+                  {inviting ? <Loader2 size={18} className="spin" /> : 'আমন্ত্রণ পাঠান'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Admin Section (Promote Existing) */}
       <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <UserPlus size={18} color="var(--color-primary)" /> নতুন এডমিন যোগ করুন
+          <UserPlus size={18} color="var(--color-primary)" /> বর্তমান শিক্ষার্থী থেকে এডমিন করুন
         </h2>
         <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
@@ -198,15 +290,17 @@ export default function AdminManagePage() {
                   <td style={{ padding: '0.9rem 0', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>{admin.email}</td>
                   <td style={{ padding: '0.9rem 0', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>{admin.mobile}</td>
                   <td style={{ padding: '0.9rem 0', textAlign: 'right' }}>
-                    <button
-                      onClick={() => handleDemote(admin.id, admin.name)}
-                      disabled={demoting === admin.id}
-                      className="btn btn-ghost btn-sm"
-                      style={{ color: 'var(--color-error)' }}
-                    >
-                      {demoting === admin.id ? <Loader2 size={14} className="spin" /> : <UserMinus size={14} />}
-                      সরিয়ে দিন
-                    </button>
+                    {admin.role !== 'SUPER_ADMIN' && (
+                      <button
+                        onClick={() => handleDemote(admin.id, admin.name)}
+                        disabled={demoting === admin.id}
+                        className="btn btn-ghost btn-sm"
+                        style={{ color: 'var(--color-error)' }}
+                      >
+                        {demoting === admin.id ? <Loader2 size={14} className="spin" /> : <UserMinus size={14} />}
+                        সরিয়ে দিন
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
