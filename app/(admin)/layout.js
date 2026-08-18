@@ -1,17 +1,10 @@
-import { redirect } from 'next/navigation';
-import { getAuthUser } from '@/lib/middleware/withAuth';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 
+// Auth is handled by middleware.js — no server-side auth check needed here.
+// By the time this layout renders, the middleware has already verified the JWT.
 export const dynamic = 'force-dynamic';
 
-export default async function AdminLayout({ children }) {
-  const user = await getAuthUser();
-
-  // Redirect anyone who isn't a logged-in ADMIN or SUPER_ADMIN
-  if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
-    redirect('/admin/login');
-  }
-
+export default function AdminLayout({ children }) {
   return (
     <div className="admin-layout">
       <AdminSidebar />
