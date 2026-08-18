@@ -184,8 +184,8 @@ export default function AdminManagePage() {
                   type="text" 
                   className="form-input" 
                   required 
-                  pattern="(?:\\+8801|8801|01)[3-9]\\d{8}"
-                  title="সঠিক মোবাইল নম্বর দিন"
+                  pattern="^(?:\+8801|8801|01)[3-9][0-9]{8}$"
+                  title="সঠিক মোবাইল নম্বর দিন (যেমন: 017XXXXXXXX)"
                   value={inviteData.mobile} 
                   onChange={e => setInviteData({ ...inviteData, mobile: e.target.value })} 
                 />
