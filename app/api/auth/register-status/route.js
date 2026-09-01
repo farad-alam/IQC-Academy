@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSiteSettings } from '@/lib/siteSettings';
 
-export const dynamic = 'force-dynamic';
-
 // GET /api/auth/register-status — public, used by register page to check if open
 export async function GET() {
   try {

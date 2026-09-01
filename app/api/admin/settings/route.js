@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag, revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import { getSiteSettings } from '@/lib/siteSettings';
@@ -44,6 +45,10 @@ export async function PUT(req) {
     if ('site_is_live' in body) {
       await setSiteLiveCache(body.site_is_live === 'true' || body.site_is_live === true);
     }
+
+    // Invalidate Next.js Server Components cache for settings and layout
+    revalidateTag('settings');
+    revalidatePath('/', 'layout');
 
     return NextResponse.json({ success: true });
   } catch (error) {

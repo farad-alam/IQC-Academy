@@ -5,15 +5,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { ChevronDown, LayoutDashboard, User, LogOut, BookOpen } from 'lucide-react';
 import styles from './TopNav.module.css';
 
-const REG_STATUS_KEY = 'iqc:reg_status';
-const REG_STATUS_TTL = 10 * 60 * 1000; // 10 minutes in ms
 
-export default function TopNav() {
+export default function TopNav({ initialRegistrationOpen = true }) {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-  const [registrationOpen, setRegistrationOpen] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -40,40 +37,7 @@ export default function TopNav() {
       })
       .catch(() => {})
       .finally(() => setAuthLoading(false));
-
-    // 2. Register-status: read from sessionStorage cache first (10-min TTL).
-    // This setting changes very rarely — no need to hit DB on every navigation.
-    try {
-      const cached = sessionStorage.getItem(REG_STATUS_KEY);
-      if (cached) {
-        const { value, expiry } = JSON.parse(cached);
-        if (Date.now() < expiry) {
-          setRegistrationOpen(value);
-          return; // cache hit — skip the fetch entirely
-        }
-      }
-    } catch {
-      // sessionStorage not available (e.g. some private browsing modes)
-    }
-
-    fetch('/api/auth/register-status')
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data) {
-          setRegistrationOpen(data.open);
-          // Cache the result for 10 minutes
-          try {
-            sessionStorage.setItem(REG_STATUS_KEY, JSON.stringify({
-              value: data.open,
-              expiry: Date.now() + REG_STATUS_TTL,
-            }));
-          } catch {
-            // ignore if sessionStorage is unavailable
-          }
-        }
-      })
-      .catch(() => {});
-  }, []); // ← empty dependency array: runs once on mount only
+  }, []); // ← empty dependency: runs once on mount only
 
   // ── Close dropdown on outside click ────────────────────────────────────────
   useEffect(() => {
@@ -90,8 +54,7 @@ export default function TopNav() {
     await fetch('/api/auth/logout', { method: 'POST' });
     setUser(null);
     setDropdownOpen(false);
-    // Clear cached register-status so next session gets a fresh value
-    try { sessionStorage.removeItem(REG_STATUS_KEY); } catch {}
+    // Nothing to do for register-status here anymore
     router.push('/');
     router.refresh();
   };
@@ -189,8 +152,8 @@ export default function TopNav() {
               <Link href="/login" className={styles.loginBtn}>
                 লগইন
               </Link>
-              <Link href={registrationOpen ? "/register" : "/batches"} className={styles.registerBtn}>
-                {registrationOpen ? "রেজিস্ট্রেশন" : "ব্যাচে ভর্তি"}
+              <Link href={initialRegistrationOpen ? "/register" : "/batches"} className={styles.registerBtn}>
+                {initialRegistrationOpen ? "রেজিস্ট্রেশন" : "ব্যাচে ভর্তি"}
               </Link>
             </div>
           )}
