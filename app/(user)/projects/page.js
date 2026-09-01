@@ -2,7 +2,7 @@ import prisma from '@/lib/db';
 import Link from 'next/link';
 import styles from './projects.module.css';
 
-export const revalidate = 300; // ISR: regenerate at most every 5 minutes
+export const revalidate = 3600; // ISR: regenerate at most every 1 hour
 
 export default async function ProjectsPage() {
   const projects = await prisma.project.findMany({

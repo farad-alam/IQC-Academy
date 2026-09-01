@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata = {
   title: 'সদকাহ ও দান | IQC Academy',

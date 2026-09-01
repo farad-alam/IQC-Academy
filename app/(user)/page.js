@@ -6,7 +6,7 @@ import { mockFaq, mockTestimonials } from '@/lib/mockData';
 import FadeIn from '@/components/ui/FadeIn';
 import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer';
 
-export const revalidate = 300; // ISR: regenerate at most once every 5 minutes
+export const revalidate = 600; // ISR: regenerate at most once every 10 minutes
 
 export default async function HomePage() {
   const [courses, projects, galleryItems, latestNotice, settings] = await Promise.all([

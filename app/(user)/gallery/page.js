@@ -1,7 +1,7 @@
 import prisma from '@/lib/db';
 import Image from 'next/image';
 
-export const revalidate = 600; // ISR: regenerate at most every 10 minutes
+export const revalidate = 3600; // ISR: regenerate at most every 1 hour
 
 export default async function GalleryPage() {
   const galleryItems = await prisma.galleryItem.findMany({

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import { sendPaymentApprovedEmail, sendPaymentRejectedEmail } from '@/lib/email';
@@ -86,6 +87,14 @@ export async function PATCH(req, { params }) {
           );
         }
       }
+
+      // 4. Revalidate pages to show updated donation totals
+      revalidatePath('/');
+      revalidatePath('/projects');
+      if (donation.projectId) {
+        revalidatePath(`/projects/${donation.projectId}`);
+      }
+      revalidatePath('/donate');
 
       return NextResponse.json({ success: true, message: 'Donation verified successfully', donation: updatedDonation });
     

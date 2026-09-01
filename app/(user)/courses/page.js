@@ -3,7 +3,7 @@ import Link from 'next/link';
 import CourseCard from '@/components/features/CourseCard';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 
-export const revalidate = 300; // ISR: regenerate at most every 5 minutes
+export const revalidate = 3600; // ISR: regenerate at most every 1 hour
 
 export default async function CourseListPage({ searchParams }) {
   const resolvedParams = await searchParams;
