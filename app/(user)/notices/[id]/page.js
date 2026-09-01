@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, Bell } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // ISR: 1-hour fallback; admin edits instantly bust cache via revalidatePath
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;

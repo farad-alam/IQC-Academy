@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSiteSettings } from '@/lib/siteSettings';
 
-export const dynamic = 'force-dynamic';
+// getSiteSettings is wrapped in unstable_cache — no force-dynamic needed
 
 export async function GET() {
   try {
