@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import { uploadImage } from '@/lib/cloudinary';
@@ -51,6 +52,10 @@ export async function POST(req) {
         date: new Date(date)
       }
     });
+
+    // Revalidate public gallery pages
+    revalidatePath('/');
+    revalidatePath('/gallery');
 
     return NextResponse.json({ success: true, item });
   } catch (error) {

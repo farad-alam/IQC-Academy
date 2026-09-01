@@ -3,7 +3,7 @@ import Link from 'next/link';
 import CourseCard from '@/components/features/CourseCard';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: regenerate at most every 5 minutes
 
 export default async function CourseListPage({ searchParams }) {
   const resolvedParams = await searchParams;

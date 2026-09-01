@@ -2,8 +2,7 @@ import prisma from '@/lib/db';
 import Link from 'next/link';
 import styles from './projects.module.css';
 
-// Configure Next.js to dynamically render this page to get fresh data
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: regenerate at most every 5 minutes
 
 export default async function ProjectsPage() {
   const projects = await prisma.project.findMany({

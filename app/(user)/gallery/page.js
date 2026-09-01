@@ -1,11 +1,12 @@
 import prisma from '@/lib/db';
 import Image from 'next/image';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 600; // ISR: regenerate at most every 10 minutes
 
 export default async function GalleryPage() {
   const galleryItems = await prisma.galleryItem.findMany({
-    orderBy: { date: 'desc' }
+    orderBy: { date: 'desc' },
+    take: 50, // prevent unbounded query as gallery grows
   });
 
   return (

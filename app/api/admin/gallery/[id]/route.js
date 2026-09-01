@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 
@@ -15,6 +16,10 @@ export async function DELETE(req, { params }) {
     await prisma.galleryItem.delete({
       where: { id }
     });
+
+    // Revalidate public gallery pages
+    revalidatePath('/');
+    revalidatePath('/gallery');
 
     return NextResponse.json({ success: true, message: 'Item deleted' });
   } catch (error) {

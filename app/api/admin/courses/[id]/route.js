@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import { uploadImage } from '@/lib/cloudinary';
@@ -50,6 +51,11 @@ export async function PATCH(req, { params }) {
         _count: { select: { enrollments: true, subjects: true } },
       },
     });
+
+    // Revalidate public pages that show this course
+    revalidatePath('/');
+    revalidatePath('/courses');
+    revalidatePath(`/courses/${id}`);
 
     return NextResponse.json({ success: true, course: updated });
   } catch (error) {
@@ -107,6 +113,11 @@ export async function DELETE(req, { params }) {
         where: { id },
       });
     });
+
+    // Revalidate public pages that showed this course
+    revalidatePath('/');
+    revalidatePath('/courses');
+    revalidatePath(`/courses/${id}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {

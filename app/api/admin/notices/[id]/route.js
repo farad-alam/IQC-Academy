@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 
@@ -13,6 +14,11 @@ export async function DELETE(req, { params }) {
     const { id: noticeId } = resolvedParams;
 
     await prisma.notice.delete({ where: { id: noticeId } });
+
+    // Revalidate notice pages
+    revalidatePath('/');
+    revalidatePath('/notices');
+    revalidatePath(`/notices/${noticeId}`);
 
     return NextResponse.json({ success: true, message: 'Notice deleted' });
   } catch (error) {
@@ -47,6 +53,11 @@ export async function PATCH(req, { params }) {
         expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
       }
     });
+
+    // Revalidate notice pages
+    revalidatePath('/');
+    revalidatePath('/notices');
+    revalidatePath(`/notices/${noticeId}`);
 
     return NextResponse.json({ success: true, notice: updatedNotice }, { status: 200 });
   } catch (error) {

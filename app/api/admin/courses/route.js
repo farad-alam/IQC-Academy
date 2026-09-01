@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import { uploadImage } from '@/lib/cloudinary';
@@ -64,6 +65,10 @@ export async function POST(req) {
         isBatchCourse: Boolean(body.isBatchCourse),
       }
     });
+
+    // Revalidate all public pages that show courses
+    revalidatePath('/');
+    revalidatePath('/courses');
 
     return NextResponse.json({ success: true, course: newCourse }, { status: 201 });
 

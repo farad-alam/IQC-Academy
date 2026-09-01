@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import { uploadImage } from '@/lib/cloudinary';
@@ -36,6 +37,12 @@ export async function PATCH(req, { params }) {
       },
     });
 
+    // Revalidate public pages that show projects
+    revalidatePath('/');
+    revalidatePath('/projects');
+    revalidatePath(`/projects/${id}`);
+    revalidatePath('/donate');
+
     return NextResponse.json({ success: true, project: updated });
   } catch (error) {
     console.error('[ADMIN_PATCH_PROJECT_ERROR]', error);
@@ -52,6 +59,12 @@ export async function DELETE(req, { params }) {
 
     const { id } = await params;
     await prisma.project.delete({ where: { id } });
+
+    // Revalidate public pages that showed this project
+    revalidatePath('/');
+    revalidatePath('/projects');
+    revalidatePath(`/projects/${id}`);
+    revalidatePath('/donate');
 
     return NextResponse.json({ success: true });
   } catch (error) {

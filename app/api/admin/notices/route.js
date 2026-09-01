@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 
@@ -25,6 +26,10 @@ export async function POST(req) {
         expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
       }
     });
+
+    // Revalidate homepage which shows the notice board
+    revalidatePath('/');
+    revalidatePath('/notices');
 
     return NextResponse.json({ success: true, notice: newNotice }, { status: 201 });
 

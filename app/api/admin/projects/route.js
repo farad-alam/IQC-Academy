@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import { uploadImage } from '@/lib/cloudinary';
@@ -53,6 +54,11 @@ export async function POST(req) {
         deadline: body.deadline ? new Date(body.deadline) : null,
       }
     });
+
+    // Revalidate all public pages that show projects
+    revalidatePath('/');
+    revalidatePath('/projects');
+    revalidatePath('/donate');
 
     return NextResponse.json({ success: true, project: newProject }, { status: 201 });
 
