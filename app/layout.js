@@ -25,6 +25,7 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <meta name="google-site-verification" content="ZDPGHZT9axnZDlx27QMuz_x5Us8JSDLBE6Ot7Yxyfzc" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
