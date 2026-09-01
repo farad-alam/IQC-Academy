@@ -2,8 +2,11 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronDown, LayoutDashboard, User, LogOut, BookOpen, Bell } from 'lucide-react';
+import { ChevronDown, LayoutDashboard, User, LogOut, BookOpen } from 'lucide-react';
 import styles from './TopNav.module.css';
+
+const REG_STATUS_KEY = 'iqc:reg_status';
+const REG_STATUS_TTL = 10 * 60 * 1000; // 10 minutes in ms
 
 export default function TopNav() {
   const pathname = usePathname();
@@ -24,23 +27,53 @@ export default function TopNav() {
     { name: 'যোগাযোগ', href: '/contact' },
   ];
 
-  // ── Fetch current auth state & settings ────────────────────────────────────────────────
+  // ── Fetch auth state ONCE on mount ──────────────────────────────────────────
+  // Removed [pathname] dependency — auth state does not change on navigation.
+  // Using /api/users/me-minimal which returns only { name, email, role }
+  // instead of the full /api/users/me which loads enrollments + donations + batches.
   useEffect(() => {
-    fetch('/api/users/me', { cache: 'no-store' })
+    // 1. Lightweight auth check — runs only once
+    fetch('/api/users/me-minimal')
       .then(res => res.ok ? res.json() : null)
       .then(data => {
-        if (data?.success) setUser(data.profile);
+        if (data?.user) setUser(data.user);
       })
       .catch(() => {})
       .finally(() => setAuthLoading(false));
 
-    fetch('/api/auth/register-status', { cache: 'no-store' })
+    // 2. Register-status: read from sessionStorage cache first (10-min TTL).
+    // This setting changes very rarely — no need to hit DB on every navigation.
+    try {
+      const cached = sessionStorage.getItem(REG_STATUS_KEY);
+      if (cached) {
+        const { value, expiry } = JSON.parse(cached);
+        if (Date.now() < expiry) {
+          setRegistrationOpen(value);
+          return; // cache hit — skip the fetch entirely
+        }
+      }
+    } catch {
+      // sessionStorage not available (e.g. some private browsing modes)
+    }
+
+    fetch('/api/auth/register-status')
       .then(res => res.ok ? res.json() : null)
       .then(data => {
-        if (data) setRegistrationOpen(data.open);
+        if (data) {
+          setRegistrationOpen(data.open);
+          // Cache the result for 10 minutes
+          try {
+            sessionStorage.setItem(REG_STATUS_KEY, JSON.stringify({
+              value: data.open,
+              expiry: Date.now() + REG_STATUS_TTL,
+            }));
+          } catch {
+            // ignore if sessionStorage is unavailable
+          }
+        }
       })
       .catch(() => {});
-  }, [pathname]); // re-check on route change
+  }, []); // ← empty dependency array: runs once on mount only
 
   // ── Close dropdown on outside click ────────────────────────────────────────
   useEffect(() => {
@@ -57,12 +90,16 @@ export default function TopNav() {
     await fetch('/api/auth/logout', { method: 'POST' });
     setUser(null);
     setDropdownOpen(false);
+    // Clear cached register-status so next session gets a fresh value
+    try { sessionStorage.removeItem(REG_STATUS_KEY); } catch {}
     router.push('/');
     router.refresh();
   };
 
   const avatarInitial = user?.name?.charAt(0)?.toUpperCase() || '?';
-  const dashboardHref = user?.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard';
+  const dashboardHref = (user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN')
+    ? '/admin/dashboard'
+    : '/dashboard';
 
   return (
     <header className={styles.topNav}>
