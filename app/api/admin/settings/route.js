@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getAuthUser } from '@/lib/middleware/withAuth';
 import { getSiteSettings } from '@/lib/siteSettings';
+import { setSiteLiveCache } from '@/lib/cache/siteLive';
 
 export async function GET(req) {
   try {
@@ -38,6 +39,11 @@ export async function PUT(req) {
     });
 
     await prisma.$transaction(operations);
+
+    // Invalidate Redis cache if site_is_live was updated
+    if ('site_is_live' in body) {
+      await setSiteLiveCache(body.site_is_live === 'true' || body.site_is_live === true);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

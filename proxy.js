@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyAccessToken } from './lib/auth'; // jose — Edge compatible
+import { getSiteLiveFromCache } from './lib/cache/siteLive'; // Redis — Edge compatible
 
 // ─── Route definitions ────────────────────────────────────────────────────────
 
@@ -64,7 +65,7 @@ export default async function proxy(request) {
     }
   }
 
-  // ── 2. Security headers (applied to every passing response) ───────────────
+  // ── 2. Route classification ───────────────────────────────────────────────
 
   const isAdminPage =
     pathname.startsWith('/admin') && pathname !== '/admin/login';
@@ -97,24 +98,13 @@ export default async function proxy(request) {
     response = NextResponse.redirect(loginUrl);
   } else {
     // ── Maintenance Mode Check ────────────────────────────────────────────────
-    // If not an admin page, not an auth page, check if site is live
+    // Read from Redis cache — no HTTP round-trip, no DB query.
+    // Falls back to true (site is live) if Redis is unavailable.
     if (!isAdminPage && pathname !== '/maintenance' && !pathname.startsWith('/api')) {
-      try {
-        const baseUrl = request.nextUrl.origin;
-        const liveRes = await fetch(`${baseUrl}/api/settings/site-live`, {
-          next: { revalidate: 60 }
-        });
-        if (liveRes.ok) {
-          const liveData = await liveRes.json();
-          if (liveData.isLive === false) {
-            response = NextResponse.redirect(new URL('/maintenance', request.url));
-          } else {
-            response = NextResponse.next();
-          }
-        } else {
-          response = NextResponse.next();
-        }
-      } catch (err) {
+      const isLive = await getSiteLiveFromCache();
+      if (!isLive) {
+        response = NextResponse.redirect(new URL('/maintenance', request.url));
+      } else {
         response = NextResponse.next();
       }
     } else {
