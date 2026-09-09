@@ -11,11 +11,11 @@ export default function LearnSidebar({ isOpen, setIsOpen }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    fetch('/api/users/me')
+    fetch('/api/users/me-minimal')
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
-          setUser(data.profile);
+        if (data.user) {
+          setUser(data.user);
         }
       });
   }, []);

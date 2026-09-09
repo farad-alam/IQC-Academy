@@ -10,6 +10,16 @@ const AUTH_PAGES = ['/login', '/register', '/admin/login'];
 // Pages that require an authenticated (any role) user
 const PROTECTED_USER_PAGES = ['/dashboard', '/profile', '/donate', '/quizzes'];
 
+// ── Paths that don't exist in this app — fast-reject scanner/bot traffic ──────
+// These paths appear thousands of times in Vercel logs (bots probing for
+// common CMS/API endpoints). Return immediately — no Redis, no JWT, no CPU.
+const SCANNER_PATH_PREFIXES = [
+  '/api/demo', '/api/generate', '/api/blog',
+  '/blog/', '/wp-', '/wordpress', '/xmlrpc',
+  '/.env', '/admin.php', '/phpmyadmin',
+  '/api/v1', '/api/v2', '/api/v3',
+];
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function getUserFromToken(token) {
@@ -27,6 +37,14 @@ async function getUserFromToken(token) {
 
 export default async function proxy(request) {
   const { pathname } = request.nextUrl;
+
+  // ── 0. Fast-exit: scanner/bot paths that don't exist in this app ──────────
+  // These generate tens of thousands of hits. Skip ALL processing and let
+  // Next.js serve a 404 instantly with zero CPU cost.
+  if (SCANNER_PATH_PREFIXES.some(prefix => pathname.startsWith(prefix))) {
+    return NextResponse.next();
+  }
+
   const accessToken = request.cookies.get('accessToken')?.value;
   const refreshToken = request.cookies.get('refreshToken')?.value;
 
@@ -85,22 +103,29 @@ export default async function proxy(request) {
       (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? '/admin/dashboard' : '/dashboard';
     response = NextResponse.redirect(new URL(dest, request.url));
   } else if (isAdminPage) {
-    // Admin page — must be an authenticated ADMIN or SUPER_ADMIN
+    // Admin page — must be an authenticated ADMIN or SUPER_ADMIN.
+    // Skip maintenance check: admins are already authenticated and the admin
+    // panel must always be accessible even when site is in maintenance mode.
     if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
       response = NextResponse.redirect(new URL('/admin/login', request.url));
     } else {
-      response = NextResponse.next();
+      response = NextResponse.next(); // ← no Redis call needed
     }
   } else if (isProtectedUserPage && !user) {
     // Protected user page — must be logged in
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     response = NextResponse.redirect(loginUrl);
+  } else if (isProtectedUserPage && user) {
+    // Protected user page and user IS logged in — skip maintenance check.
+    // These are personal dashboards, not public content.
+    response = NextResponse.next(); // ← no Redis call needed
   } else {
     // ── Maintenance Mode Check ────────────────────────────────────────────────
     // Read from Redis cache — no HTTP round-trip, no DB query.
     // Falls back to true (site is live) if Redis is unavailable.
-    if (!isAdminPage && pathname !== '/maintenance' && !pathname.startsWith('/api')) {
+    // Only run for public pages (not admin, not /api, not already handled above).
+    if (pathname !== '/maintenance' && !pathname.startsWith('/api')) {
       const isLive = await getSiteLiveFromCache();
       if (!isLive) {
         response = NextResponse.redirect(new URL('/maintenance', request.url));
@@ -132,6 +157,6 @@ export default async function proxy(request) {
 // API routes handle their own auth via getAuthUser() — no need to intercept them here.
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|images/|.*\\.png|.*\\.jpg|api).*)',
+    '/((?!_next/static|_next/image|favicon.ico|favicon.png|images/|.*\\.png|.*\\.jpg|.*\\.ico|.*\\.svg|.*\\.webp|api).*)',
   ],
 };

@@ -11,14 +11,13 @@ export default function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [userRole, setUserRole] = useState(null);
 
-  // Fetch current user's role on mount
   useEffect(() => {
-    fetch('/api/users/me')
+    fetch('/api/users/me-minimal')
       .then(r => r.json())
       .then(d => {
-        if (d.success) setUserRole(d.profile.role);
+        if (d.user) setUserRole(d.user.role);
       })
-      .catch(err => console.error("Failed to fetch role", err));
+      .catch(err => console.error('Failed to fetch role', err));
   }, []);
 
   // Close sidebar when route changes on mobile

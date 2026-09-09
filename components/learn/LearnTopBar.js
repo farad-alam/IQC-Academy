@@ -26,10 +26,10 @@ export default function LearnTopBar({ title = "ড্যাশবোর্ড", 
 
   // Fetch current user
   useEffect(() => {
-    fetch('/api/users/me')
+    fetch('/api/users/me-minimal')
       .then(res => res.ok ? res.json() : null)
       .then(data => {
-        if (data?.success) setUser(data.profile);
+        if (data?.user) setUser(data.user);
       })
       .catch(() => {});
   }, []);

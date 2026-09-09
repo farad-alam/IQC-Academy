@@ -1,44 +1,48 @@
 import prisma from '@/lib/db';
 import Link from 'next/link';
 import CourseCard from '@/components/features/CourseCard';
-import { getAuthUser } from '@/lib/middleware/withAuth';
+import EnrolledCoursesFilter from './EnrolledCoursesFilter';
 
-export const revalidate = 3600; // ISR: regenerate at most every 1 hour
+// ── ISR: The course list is fully public content. No auth here.
+// Enrollment badges are loaded client-side by EnrolledCoursesFilter.
+// revalidatePath('/courses') is called by admin APIs on course create/update/delete.
+export const revalidate = 3600;
 
 export default async function CourseListPage({ searchParams }) {
   const resolvedParams = await searchParams;
   const filter = resolvedParams?.filter || 'all';
-  const user = await getAuthUser();
 
-  // Base query for PUBLISHED courses, excluding batch-only courses
+  // Base query — public, no user-specific data
   const where = { status: 'PUBLISHED', isBatchCourse: false };
-  if (filter === 'paid') {
-    where.type = 'PAID';
-  } else if (filter === 'free') {
-    where.type = 'FREE';
-  }
+  if (filter === 'paid') where.type = 'PAID';
+  else if (filter === 'free') where.type = 'FREE';
 
-  // Fetch courses with their instructors and module counts
   const courses = await prisma.course.findMany({
     where,
-    include: { 
-      instructor: true,
+    include: {
+      instructor: { select: { name: true } },
       _count: { select: { subjects: true } }
     },
     orderBy: { createdAt: 'desc' }
   });
 
-  // Fetch user enrollments if logged in
-  let enrollments = [];
-  if (user) {
-    enrollments = await prisma.enrollment.findMany({
-      where: { userId: user.id }
-    });
-  }
-
-  const displayCourses = filter === 'enrolled' 
-    ? courses.filter(c => enrollments.some(e => e.courseId === c.id))
-    : courses;
+  // Serialize for client — only what CourseCard actually needs
+  const serializedCourses = courses.map(course => ({
+    id: course.id,
+    title: course.title,
+    description: course.description,
+    level: course.level,
+    duration: course.duration,
+    type: course.type === 'PAID' ? 'paid' : 'free',
+    price: course.price ? course.price.toString() : 0,
+    cover: course.coverImageUrl,
+    instructor: course.instructor?.name || 'IQC Instructor',
+    totalSubjects: course._count.subjects,
+    // Enrollment fields default — overridden client-side for logged-in users
+    status: course.type === 'PAID' ? 'locked' : 'available',
+    progress: 0,
+    completedModules: 0,
+  }));
 
   return (
     <div className="container" style={{ padding: '2rem 1rem' }}>
@@ -64,41 +68,10 @@ export default async function CourseListPage({ searchParams }) {
         </Link>
       </div>
 
-      {displayCourses.length > 0 ? (
-        <div className="grid grid-3 gap-6">
-          {displayCourses.map((course) => {
-            const enrollment = enrollments.find(e => e.courseId === course.id);
-            let status = course.type === 'PAID' ? 'locked' : 'available';
-            if (enrollment) {
-              status = enrollment.status === 'COMPLETED' ? 'completed' : 'enrolled';
-            }
-            
-            const uiCourse = {
-              id: course.id,
-              title: course.title,
-              description: course.description,
-              level: course.level,
-              duration: course.duration,
-              type: course.type === 'PAID' ? 'paid' : 'free',
-              price: course.price ? course.price.toString() : 0,
-              cover: course.coverImageUrl,
-              instructor: course.instructor?.name || 'IQC Instructor',
-              status,
-              progress: enrollment ? enrollment.progress : 0,
-              completedModules: enrollment ? enrollment.completedModules : 0,
-              totalSubjects: course._count.subjects
-            };
-
-            return <CourseCard key={course.id} course={uiCourse} />;
-          })}
-        </div>
-      ) : (
-        <div className="empty-state">
-          <div className="empty-state-icon">🎓</div>
-          <h3>কোনো কোর্স পাওয়া যায়নি</h3>
-          <p>এই মুহূর্তে এই বিভাগে কোনো কোর্স নেই।</p>
-        </div>
-      )}
+      {/* EnrolledCoursesFilter is a client component that hydrates enrollment badges
+          after mount via /api/users/me-minimal + enrollment data, without blocking
+          the initial static render of this page. */}
+      <EnrolledCoursesFilter courses={serializedCourses} filter={filter} />
     </div>
   );
 }
