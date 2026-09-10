@@ -50,9 +50,14 @@ export default async function HomePage() {
               বিশুদ্ধ ইলম অর্জন করুন এবং নিজের জীবনকে আলোকিত করুন।
             </p>
             
-            <Link href="/courses" className={`btn ${styles.primaryBtn}`}>
-              কোর্সসমূহ শুরু করুন
-            </Link>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignSelf: 'flex-start' }}>
+              <Link href="/courses" className={`btn ${styles.primaryBtn}`} style={{ alignSelf: 'auto' }}>
+                কোর্সসমূহ শুরু করুন
+              </Link>
+              <Link href="/batches" className={`btn ${styles.secondaryBtn}`}>
+                ব্যাচে ভর্তি হন
+              </Link>
+            </div>
 
             <div className={styles.statsWidget}>
               <div className={styles.avatars}>
