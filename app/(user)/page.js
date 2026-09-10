@@ -51,11 +51,11 @@ export default async function HomePage() {
             </p>
             
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignSelf: 'flex-start' }}>
-              <Link href="/courses" className={`btn ${styles.primaryBtn}`} style={{ alignSelf: 'auto' }}>
-                কোর্সসমূহ শুরু করুন
-              </Link>
               <Link href="/batches" className={`btn ${styles.secondaryBtn}`}>
                 ব্যাচে ভর্তি হন
+              </Link>
+              <Link href="/courses" className={`btn ${styles.primaryBtn}`} style={{ alignSelf: 'auto' }}>
+                কোর্সসমূহ শুরু করুন
               </Link>
             </div>
 
