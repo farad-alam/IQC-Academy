@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ========================================
    DESIGN SYSTEM — IQC ACADEMY
@@ -47,7 +47,7 @@
   --color-info-bg:        hsl(210, 60%, 95%);
 
   /* Typography */
-  --font-bengali:         'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+  --font-bengali:         'Tiro Bangla', 'Noto Sans Bengali', serif;
   --font-arabic:          'Amiri', 'Traditional Arabic', serif;
   --font-latin:           'Inter', system-ui, sans-serif;
 
