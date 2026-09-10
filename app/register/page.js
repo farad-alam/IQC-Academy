@@ -269,7 +269,7 @@ export default function RegisterPage() {
         <Link href="/" className={styles.backLink}>← ফিরে যান</Link>
 
         <div className={styles.logoArea} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-          <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '48px', width: 'auto' }} />
+          <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '64px', width: 'auto' }} />
           <p className={styles.logoSub}>IQC Academy-তে আপনাকে স্বাগতম</p>
         </div>
 

@@ -69,7 +69,7 @@ export default function TopNav({ initialRegistrationOpen = true }) {
       <div className={styles.container}>
         {/* Logo */}
         <Link href="/" className={styles.logoArea}>
-          <img src="/images/iqc-academy-white-logo.png" alt="IQC Academy Logo" style={{ height: '36px', width: 'auto' }} />
+          <img src="/images/iqc-academy-white-logo.png" alt="IQC Academy Logo" style={{ height: '52px', width: 'auto' }} />
         </Link>
 
         {/* Desktop Navigation */}

@@ -42,7 +42,7 @@ export default function LearnSidebar({ isOpen, setIsOpen }) {
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
         <div className={styles.logoArea} style={{ display: 'flex', justifyContent: 'center' }}>
           <Link href="/dashboard" onClick={closeSidebar} style={{ display: 'block', textDecoration: 'none' }}>
-            <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '40px', width: 'auto' }} />
+            <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '56px', width: 'auto' }} />
           </Link>
         </div>
 

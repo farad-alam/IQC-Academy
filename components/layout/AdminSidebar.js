@@ -83,7 +83,7 @@ export default function AdminSidebar() {
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
         <div className={styles.header} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '1rem' }}>
-          <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '45px', width: 'auto' }} />
+          <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '64px', width: 'auto' }} />
           <p className={styles.subtitle} style={{ margin: 0 }}>এডমিন প্যানেল</p>
         </div>
 

@@ -80,7 +80,7 @@ export default function LoginPage() {
         </Link>
 
         <div className={styles.logoArea} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-          <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '48px', width: 'auto' }} />
+          <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '64px', width: 'auto' }} />
           <p className={styles.logoSub}>আবার স্বাগতম!</p>
         </div>
 
