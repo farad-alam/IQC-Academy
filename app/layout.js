@@ -10,6 +10,7 @@ export const metadata = {
     title: "IQC Academy",
     description: "ইসলাম শেখার একটি আনন্দময় ও অনুপ্রেরণাদায়ক প্ল্যাটফর্ম",
     type: "website",
+    images: ['/images/iqc-academy-og-image.png'],
   },
 };
 
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
         />
         <meta name="google-site-verification" content="ZDPGHZT9axnZDlx27QMuz_x5Us8JSDLBE6Ot7Yxyfzc" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/images/iqc-academy-favicon.ico" sizes="any" />
       </head>
       <body>
         <NextTopLoader color="var(--color-primary)" height={4} showSpinner={true} easing="ease" speed={200} shadow="0 0 10px var(--color-primary),0 0 5px var(--color-primary)" />

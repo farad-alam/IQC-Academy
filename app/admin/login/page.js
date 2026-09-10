@@ -51,11 +51,9 @@ export default function AdminLoginPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg)', padding: '1rem' }}>
       <div className="card" style={{ width: '100%', maxWidth: '400px', padding: '3rem 2rem', textAlign: 'center' }}>
-        <div style={{ width: '64px', height: '64px', backgroundColor: 'var(--color-primary)', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-          <Lock size={32} />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '56px', width: 'auto' }} />
         </div>
-
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem', fontFamily: 'var(--font-latin)' }}>IQC Academy</h1>
         <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>এডমিন প্যানেলে লগইন করুন</p>
 
         {error && (

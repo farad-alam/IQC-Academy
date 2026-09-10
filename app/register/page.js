@@ -268,8 +268,8 @@ export default function RegisterPage() {
       <div className={styles.container} style={{ maxWidth: '600px' }}>
         <Link href="/" className={styles.backLink}>← ফিরে যান</Link>
 
-        <div className={styles.logoArea} style={{ marginBottom: '1.5rem' }}>
-          <h1 className={styles.logoTitle} style={{ fontSize: '1.75rem' }}>নতুন অ্যাকাউন্ট তৈরি করুন</h1>
+        <div className={styles.logoArea} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+          <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '48px', width: 'auto' }} />
           <p className={styles.logoSub}>IQC Academy-তে আপনাকে স্বাগতম</p>
         </div>
 

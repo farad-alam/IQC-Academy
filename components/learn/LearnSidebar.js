@@ -40,13 +40,9 @@ export default function LearnSidebar({ isOpen, setIsOpen }) {
       <div className={`${styles.overlay} ${isOpen ? styles.open : ''}`} onClick={closeSidebar} />
 
       <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
-        <div className={styles.logoArea}>
-          <Link href="/dashboard" onClick={closeSidebar} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-            <div style={{ fontSize: '1.75rem', lineHeight: 1 }}>🕌</div>
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--color-primary-dark)', letterSpacing: '1px' }}>IQC</span>
-              <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#F59E0B', letterSpacing: '1px' }}>ACADEMY</span>
-            </div>
+        <div className={styles.logoArea} style={{ display: 'flex', justifyContent: 'center' }}>
+          <Link href="/dashboard" onClick={closeSidebar} style={{ display: 'block', textDecoration: 'none' }}>
+            <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '40px', width: 'auto' }} />
           </Link>
         </div>
 

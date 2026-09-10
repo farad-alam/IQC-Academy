@@ -69,11 +69,7 @@ export default function TopNav({ initialRegistrationOpen = true }) {
       <div className={styles.container}>
         {/* Logo */}
         <Link href="/" className={styles.logoArea}>
-          <div className={styles.logoIcon}>🕌</div>
-          <div className={styles.logoTextWrapper}>
-            <span className={styles.logoTextWhite}>IQC</span>
-            <span className={styles.logoTextYellow}>ACADEMY</span>
-          </div>
+          <img src="/images/iqc-academy-white-logo.png" alt="IQC Academy Logo" style={{ height: '36px', width: 'auto' }} />
         </Link>
 
         {/* Desktop Navigation */}

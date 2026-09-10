@@ -79,9 +79,8 @@ export default function LoginPage() {
           ← ফিরে যান
         </Link>
 
-        <div className={styles.logoArea}>
-          <div className={styles.logoIcon}>📖</div>
-          <h1 className={styles.logoTitle}>IQC Academy</h1>
+        <div className={styles.logoArea} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+          <img src="/images/iqc-academy-green-logo.png" alt="IQC Academy Logo" style={{ height: '48px', width: 'auto' }} />
           <p className={styles.logoSub}>আবার স্বাগতম!</p>
         </div>
 

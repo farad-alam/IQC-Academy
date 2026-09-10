@@ -8,28 +8,28 @@ datasource db {
 }
 
 model User {
-  id              String     @id @default(cuid())
-  name            String
-  email           String     @unique
-  mobile          String     @unique
-  whatsapp        String?
-  facebook        String?
-  passwordHash    String
-  role            Role       @default(STUDENT)
-  status          UserStatus @default(ACTIVE)
-  avatarUrl       String?
-  institution     String?
-  division        String?
-  district        String?
-  upazila         String?
-  dob             DateTime?
-  sscYear         String?
-  sscBoard        String?
-  sscGpa          String?
-  totalPoints     Int        @default(0)
-  currentStreak   Int        @default(0)
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  id            String     @id @default(cuid())
+  name          String
+  email         String     @unique
+  mobile        String     @unique
+  whatsapp      String?
+  facebook      String?
+  passwordHash  String
+  role          Role       @default(STUDENT)
+  status        UserStatus @default(ACTIVE)
+  avatarUrl     String?
+  institution   String?
+  division      String?
+  district      String?
+  upazila       String?
+  dob           DateTime?
+  sscYear       String?
+  sscBoard      String?
+  sscGpa        String?
+  totalPoints   Int        @default(0)
+  currentStreak Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   enrollments              Enrollment[]
   quizAttempts             QuizAttempt[]
@@ -179,9 +179,9 @@ enum CourseStatus {
 }
 
 model Subject {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   courseId    String
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course      Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title       String
   order       Int
   description String?
@@ -194,12 +194,14 @@ model Subject {
 
   finalExamQuizzes  SubjectFinalExamQuiz[]
   finalExamSessions SubjectFinalExamSession[]
+
+  @@index([courseId, order])
 }
 
 model SubjectFinalExamQuiz {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   subjectId   String
-  subject     Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   question    String
   options     String[]
   correct     Int
@@ -222,9 +224,9 @@ model SubjectFinalExamSession {
 }
 
 model Module {
-  id               String             @id @default(cuid())
+  id               String              @id @default(cuid())
   subjectId        String
-  subject          Subject            @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subject          Subject             @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   title            String
   order            Int
   duration         String?
@@ -232,11 +234,13 @@ model Module {
   body             String?
   videoUrl         String?
   pdfUrl           String?
-  quizPassMark     Int                @default(80)
-  quizDisplayCount Int                @default(20)
+  quizPassMark     Int                 @default(80)
+  quizDisplayCount Int                 @default(20)
   quizzes          Quiz[]
   completions      ModuleCompletion[]
   quizSessions     ModuleQuizSession[]
+
+  @@index([subjectId, order])
 }
 
 enum ContentType {

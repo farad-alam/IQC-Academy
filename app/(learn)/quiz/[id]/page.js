@@ -14,22 +14,36 @@ export default async function QuizPage({ params, searchParams }) {
   const resolvedSearchParams = await searchParams;
   const isLocked = resolvedSearchParams?.locked === 'true';
 
-  const module = await prisma.module.findUnique({
-    where: { id },
-    include: {
-      quizzes: true,
-      subject: { include: { course: { select: { id: true, title: true } } } }
-    }
-  });
+  // --- STAGE 1: Module info & History (Parallel) ---
+  const [module, history] = await Promise.all([
+    prisma.module.findUnique({
+      where: { id },
+      include: {
+        subject: { select: { course: { select: { id: true, title: true } } } },
+        quizzes: { select: { id: true, question: true, options: true } } // Slim fetch!
+      }
+    }),
+    prisma.moduleQuizSession.findMany({
+      where: { userId: user.id, moduleId: id },
+      orderBy: { attemptNum: 'desc' },
+      take: 5
+    })
+  ]);
 
   if (!module || !module.subject || !module.subject.course) redirect('/courses');
 
   const courseId = module.subject.course.id;
 
-  // --- MODULE LOCK LOGIC ---
+  // --- STAGE 2: Course Modules (for lock check) ---
   const allModules = await prisma.module.findMany({
-    where: { subject: { courseId: courseId } },
-    include: { subject: true, _count: { select: { quizzes: true } } },
+    where: { subject: { courseId } },
+    select: { 
+      id: true, 
+      order: true, 
+      subjectId: true, 
+      subject: { select: { order: true } }, 
+      _count: { select: { quizzes: true } } 
+    }
   });
   
   allModules.sort((a, b) => {
@@ -39,57 +53,52 @@ export default async function QuizPage({ params, searchParams }) {
 
   const currentIndex = allModules.findIndex(m => m.id === id);
 
+  // --- STAGE 3: Lock Check Query ---
+  let lockResult = null;
   if (currentIndex > 0) {
     const prevModule = allModules[currentIndex - 1];
     
     if (prevModule._count.quizzes > 0) {
-      const passedQuiz = await prisma.moduleQuizSession.findFirst({
-        where: { userId: user.id, moduleId: prevModule.id, passed: true }
-      });
-      if (!passedQuiz) {
-        redirect(`/quiz/${prevModule.id}?locked=true`);
-      }
+      lockResult = await prisma.moduleQuizSession.findFirst({
+        where: { userId: user.id, moduleId: prevModule.id, passed: true },
+        select: { id: true }
+      }).then(r => ({ type: 'quiz', passed: !!r, prevModuleId: prevModule.id }));
     } else {
-      const prevCompletion = await prisma.moduleCompletion.findUnique({
-        where: { userId_moduleId: { userId: user.id, moduleId: prevModule.id } }
-      });
-      if (!prevCompletion) {
-        redirect(`/content/${prevModule.id}`);
-      }
+      lockResult = await prisma.moduleCompletion.findUnique({
+        where: { userId_moduleId: { userId: user.id, moduleId: prevModule.id } },
+        select: { id: true }
+      }).then(r => ({ type: 'completion', done: !!r, prevModuleId: prevModule.id }));
     }
   }
 
-  // Get previous history for this module
-  const history = await prisma.moduleQuizSession.findMany({
-    where: { userId: user.id, moduleId: id },
-    orderBy: { attemptNum: 'desc' },
-    take: 5
-  });
+  // --- Apply Lock Redirects ---
+  if (lockResult) {
+    if (lockResult.type === 'quiz' && !lockResult.passed) {
+      redirect(`/quiz/${lockResult.prevModuleId}?locked=true`);
+    }
+    if (lockResult.type === 'completion' && !lockResult.done) {
+      redirect(`/content/${lockResult.prevModuleId}`);
+    }
+  }
 
   const passedSession = history.find(h => h.passed);
 
-  const unattemptedQuizzes = module.quizzes; // We don't exclude anymore, draw from full pool
+  const unattemptedQuizzes = module.quizzes; // Safe because we excluded correct/explanation in DB select
   const shuffled = unattemptedQuizzes.sort(() => 0.5 - Math.random());
   const displayCount = module.quizDisplayCount || 20;
-  const selectedQuizzes = shuffled.slice(0, displayCount);
+  const safeQuizzes = shuffled.slice(0, displayCount);
 
-  if (selectedQuizzes.length === 0) {
+  if (safeQuizzes.length === 0) {
     return (
       <div className="container" style={{ padding: '4rem 1rem', textAlign: 'center', maxWidth: '600px' }}>
         <div className="card" style={{ padding: '3rem 2rem' }}>
           <h2 style={{ marginBottom: '1rem' }}>সব কুইজ সম্পন্ন</h2>
           <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>আপনি ইতিমধ্যে এই মডিউলের সমস্ত কুইজ সম্পন্ন করেছেন। নতুন কোনো কুইজ নেই।</p>
-          <a href={`/learn/${module.subject.course.id}`} className="btn btn-primary">কোর্সে ফিরে যান</a>
+          <a href={`/learn/${courseId}`} className="btn btn-primary">কোর্সে ফিরে যান</a>
         </div>
       </div>
     );
   }
-
-  const safeQuizzes = selectedQuizzes.map(q => ({
-    id: q.id,
-    question: q.question,
-    options: q.options
-  }));
 
   return <QuizClient module={module} quizzes={safeQuizzes} history={history} isLocked={isLocked} alreadyPassed={!!passedSession} />;
 }

@@ -19,12 +19,15 @@ export async function POST(req, { params }) {
         return NextResponse.json({ error: 'Expected array of answers' }, { status: 400 });
     }
 
-    // Verify enrollment
+    // Verify enrollment & Get quizzes
     const module = await prisma.module.findUnique({
       where: { id: moduleId },
-      include: { 
-        quizzes: true,
-        subject: { include: { course: true } }
+      select: {
+        id: true,
+        order: true,
+        quizPassMark: true,
+        subject: { select: { course: { select: { id: true } } } },
+        quizzes: { select: { id: true, correct: true, explanation: true } }
       }
     });
 
@@ -34,37 +37,39 @@ export async function POST(req, { params }) {
 
     const courseId = module.subject.course.id;
 
-    const enrollment = await prisma.enrollment.findUnique({
-      where: { userId_courseId: { userId: user.id, courseId } }
-    });
-
-    const batchAccess = await prisma.batchCourse.findFirst({
-      where: {
-        courseId,
-        batch: {
-          students: { some: { userId: user.id } },
-          status: { in: ['ACTIVE', 'ENROLLING'] }
-        }
-      }
-    });
+    // Parallelize pre-checks
+    const [enrollment, batchAccess, maxExamAttempt] = await Promise.all([
+      prisma.enrollment.findUnique({
+        where: { userId_courseId: { userId: user.id, courseId } }
+      }),
+      prisma.batchCourse.findFirst({
+        where: {
+          courseId,
+          batch: {
+            students: { some: { userId: user.id } },
+            status: { in: ['ACTIVE', 'ENROLLING'] }
+          }
+        },
+        select: { id: true } // optimization
+      }),
+      prisma.moduleQuizSession.aggregate({
+        where: { userId: user.id, moduleId },
+        _max: { attemptNum: true }
+      })
+    ]);
 
     if ((!enrollment || enrollment.status !== 'ACTIVE') && !batchAccess) {
       return NextResponse.json({ error: 'Not actively enrolled' }, { status: 403 });
     }
 
-    // Max Attempts Logic
-    // We are no longer limiting attempts for modules, allowing unlimited retries.
-    // Let's get the current attempt number for this module.
-    const maxExamAttempt = await prisma.moduleQuizSession.aggregate({
-      where: { userId: user.id, moduleId },
-      _max: { attemptNum: true }
-    });
-    
     const currentExamAttemptNum = (maxExamAttempt._max.attemptNum || 0) + 1;
 
     let score = 0;
     const results = [];
     const answersToSave = [];
+
+    // O(1) Quiz Lookup Map
+    const quizMap = new Map(module.quizzes.map(q => [q.id, q]));
 
     // Evaluate answers
     for (const item of body) {
@@ -72,7 +77,7 @@ export async function POST(req, { params }) {
       const parsed = quizAttemptSchema.safeParse({ answer });
       if (!parsed.success) continue;
 
-      const quiz = module.quizzes.find(q => q.id === quizId);
+      const quiz = quizMap.get(quizId);
       if (!quiz) continue;
 
       const passed = quiz.correct === answer;
@@ -109,32 +114,40 @@ export async function POST(req, { params }) {
       }
     });
 
-    // If passed, add points and mark module as completed
+    let nextModuleId = null;
+
     if (passedModule) {
-      // Upsert module completion so it doesn't fail if already completed
-      await prisma.moduleCompletion.upsert({
-        where: { userId_moduleId: { userId: user.id, moduleId } },
-        update: {},
-        create: {
-          userId: user.id,
-          moduleId
-        }
+      const [, , nextMod] = await Promise.all([
+        prisma.moduleCompletion.upsert({
+          where: { userId_moduleId: { userId: user.id, moduleId } },
+          update: {},
+          create: { userId: user.id, moduleId }
+        }),
+        prisma.user.update({
+          where: { id: user.id },
+          data: { totalPoints: { increment: 50 } }
+        }),
+        prisma.module.findFirst({
+          where: { 
+            subject: { courseId: courseId }, 
+            order: { gt: module.order }
+          },
+          orderBy: { order: 'asc' },
+          select: { id: true }
+        })
+      ]);
+      nextModuleId = nextMod?.id;
+    } else {
+      const nextMod = await prisma.module.findFirst({
+        where: { 
+          subject: { courseId: courseId }, 
+          order: { gt: module.order }
+        },
+        orderBy: { order: 'asc' },
+        select: { id: true }
       });
-
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { totalPoints: { increment: 50 } }
-      });
+      nextModuleId = nextMod?.id;
     }
-
-    // Find next module ID for navigation
-    const nextModule = await prisma.module.findFirst({
-      where: { 
-        subject: { courseId: courseId }, 
-        order: { gt: module.order }
-      },
-      orderBy: { order: 'asc' }
-    });
 
     return NextResponse.json({ 
       success: true, 
@@ -143,7 +156,7 @@ export async function POST(req, { params }) {
       passMark,
       passedModule,
       results,
-      nextModuleId: nextModule?.id
+      nextModuleId
     });
 
   } catch (error) {
