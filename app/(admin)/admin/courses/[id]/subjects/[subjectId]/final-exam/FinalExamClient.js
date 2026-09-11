@@ -122,6 +122,13 @@ export default function SubjectFinalExamClient({ courseId, subjectId, subjectTit
               <label className="form-label" style={{ fontSize: '0.85rem' }}>প্রদর্শিত প্রশ্নের সংখ্যা</label>
               <input type="number" className="form-input" value={data.subject.finalExamDisplayCount} disabled style={{ backgroundColor: 'var(--color-surface-alt)', cursor: 'not-allowed', color: 'var(--color-text-muted)' }} />
             </div>
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label" style={{ fontSize: '0.85rem' }}>সময়সীমা (মিনিট, 0 = আনলিমিটেড)</label>
+              <input type="number" className="form-input" min="0" defaultValue={data.subject.finalExamTimerMinutes || 0}
+                onBlur={e => updateConfig('finalExamTimerMinutes', parseInt(e.target.value) || 0)}
+              />
+            </div>
           </div>
           
           <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '1rem' }}>মোট প্রশ্ন ব্যাংক: <strong>{data.quizzes.length} টি</strong></div>

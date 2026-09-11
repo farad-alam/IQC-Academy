@@ -76,7 +76,8 @@ export async function GET(req, { params }) {
         id: subject.id,
         title: subject.title,
         finalExamPassMark: subject.finalExamPassMark,
-        finalExamDisplayCount: subject.finalExamDisplayCount
+        finalExamDisplayCount: subject.finalExamDisplayCount,
+        finalExamTimerMinutes: subject.finalExamTimerMinutes
       }
     });
   } catch (error) {

@@ -10,7 +10,7 @@ export default function SubjectsClient({ courseId, courseTitle }) {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingSubject, setEditingSubject] = useState(null);
-  const [form, setForm] = useState({ title: '', description: '', finalExamEnabled: false, finalExamPassMark: 40, finalExamDisplayCount: 20 });
+  const [form, setForm] = useState({ title: '', description: '', finalExamEnabled: false, finalExamPassMark: 40, finalExamDisplayCount: 20, finalExamTimerMinutes: 0 });
   const [saving, setSaving] = useState(false);
   const [deletingSubjectId, setDeletingSubjectId] = useState(null);
 
@@ -23,8 +23,8 @@ export default function SubjectsClient({ courseId, courseTitle }) {
 
   useEffect(() => { fetchSubjects(); }, [fetchSubjects]);
 
-  const openAdd = () => { setEditingSubject(null); setForm({ title: '', description: '', finalExamEnabled: false, finalExamPassMark: 40, finalExamDisplayCount: 20 }); setShowForm(true); };
-  const openEdit = (s) => { setEditingSubject(s); setForm({ title: s.title, description: s.description || '', finalExamEnabled: s.finalExamEnabled, finalExamPassMark: s.finalExamPassMark, finalExamDisplayCount: s.finalExamDisplayCount }); setShowForm(true); };
+  const openAdd = () => { setEditingSubject(null); setForm({ title: '', description: '', finalExamEnabled: false, finalExamPassMark: 40, finalExamDisplayCount: 20, finalExamTimerMinutes: 0 }); setShowForm(true); };
+  const openEdit = (s) => { setEditingSubject(s); setForm({ title: s.title, description: s.description || '', finalExamEnabled: s.finalExamEnabled, finalExamPassMark: s.finalExamPassMark, finalExamDisplayCount: s.finalExamDisplayCount, finalExamTimerMinutes: s.finalExamTimerMinutes || 0 }); setShowForm(true); };
   const closeForm = () => { setShowForm(false); setEditingSubject(null); };
 
   const handleSave = async (e) => {
@@ -114,6 +114,10 @@ export default function SubjectsClient({ courseId, courseTitle }) {
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">প্রদর্শিত প্রশ্নের সংখ্যা</label>
                     <input type="number" className="form-input" value={form.finalExamDisplayCount} disabled style={{ backgroundColor: 'var(--color-surface-alt)', cursor: 'not-allowed', color: 'var(--color-text-muted)' }} />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label className="form-label">সময়সীমা (মিনিট, 0 = আনলিমিটেড)</label>
+                    <input type="number" className="form-input" min="0" value={form.finalExamTimerMinutes} onChange={e => setForm(p => ({ ...p, finalExamTimerMinutes: parseInt(e.target.value) || 0 }))} />
                   </div>
                 </div>
               )}

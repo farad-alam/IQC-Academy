@@ -37,7 +37,7 @@ export async function PATCH(req, { params }) {
 
     const { subjectId } = await params;
     const body = await req.json();
-    const { title, description, order, finalExamEnabled, finalExamPassMark, finalExamDisplayCount } = body;
+    const { title, description, order, finalExamEnabled, finalExamPassMark, finalExamDisplayCount, finalExamTimerMinutes } = body;
 
     const updateData = {};
     if (title !== undefined) updateData.title = title.trim();
@@ -46,6 +46,7 @@ export async function PATCH(req, { params }) {
     if (finalExamEnabled !== undefined) updateData.finalExamEnabled = finalExamEnabled;
     if (finalExamPassMark !== undefined) updateData.finalExamPassMark = parseInt(finalExamPassMark);
     if (finalExamDisplayCount !== undefined) updateData.finalExamDisplayCount = parseInt(finalExamDisplayCount);
+    if (finalExamTimerMinutes !== undefined) updateData.finalExamTimerMinutes = parseInt(finalExamTimerMinutes);
 
     const subject = await prisma.subject.update({ where: { id: subjectId }, data: updateData });
     return NextResponse.json(subject);

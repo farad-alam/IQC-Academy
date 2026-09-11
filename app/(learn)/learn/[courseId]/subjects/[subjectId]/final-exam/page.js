@@ -1,7 +1,7 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ClipboardList, CheckCircle, XCircle, Trophy, Loader2 } from 'lucide-react';
+import { ChevronLeft, ClipboardList, CheckCircle, XCircle, Trophy, Loader2, Clock } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
 export default function SubjectFinalExamPage() {
@@ -12,33 +12,73 @@ export default function SubjectFinalExamPage() {
   const [result, setResult] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [current, setCurrent] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(null); // seconds left or null if unlimited
+
+  const answersRef = useRef(answers);
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
 
   useEffect(() => {
     fetch(`/api/subjects/${subjectId}/final-exam`)
       .then(async r => {
         const d = await r.json();
         if (r.status === 409) { setResult(d.session); setStatus('done'); }
-        else if (r.ok) { setExam(d); setStatus('ready'); }
+        else if (r.ok) {
+          setExam(d);
+          setStatus('ready');
+          if (d.subject?.finalExamTimerMinutes > 0) {
+            setTimeLeft(d.subject.finalExamTimerMinutes * 60);
+          }
+        }
         else setStatus('error_' + (d.error || 'unknown'));
       });
   }, [subjectId]);
 
-  const handleAnswer = (quizId, idx) => setAnswers(p => ({ ...p, [quizId]: idx }));
-
-  const handleSubmit = async () => {
-    if (Object.keys(answers).length < exam.quizzes.length) {
-      if (!confirm(`আপনি ${exam.quizzes.length - Object.keys(answers).length} টি প্রশ্নের উত্তর দেননি। তবুও জমা দিতে চান?`)) return;
+  const handleSubmit = async (isAutoSubmit = false) => {
+    const currentAnswers = answersRef.current;
+    if (!isAutoSubmit && exam?.quizzes && Object.keys(currentAnswers).length < exam.quizzes.length) {
+      if (!confirm(`আপনি ${exam.quizzes.length - Object.keys(currentAnswers).length} টি প্রশ্নের উত্তর দেননি। তবুও জমা দিতে চান?`)) return;
     }
     setSubmitting(true);
+    setTimeLeft(null);
     try {
       const res = await fetch(`/api/subjects/${subjectId}/final-exam/attempt`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers })
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: currentAnswers })
       });
       const data = await res.json();
       if (res.ok) { setResult(data); setStatus('result'); }
       else alert(data.error || 'ত্রুটি হয়েছে');
     } finally { setSubmitting(false); }
   };
+
+  useEffect(() => {
+    if (status !== 'ready' || timeLeft === null) return;
+    if (timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev === null) return null;
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleSubmit(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [status, timeLeft === null]);
+
+  const formatTime = (seconds) => {
+    if (seconds === null || seconds === undefined) return '';
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
+  const handleAnswer = (quizId, idx) => setAnswers(p => ({ ...p, [quizId]: idx }));
 
   if (status === 'loading') return <main style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></main>;
 
@@ -130,11 +170,36 @@ export default function SubjectFinalExamPage() {
   if (status === 'ready') return (
     <main style={{ padding: '2rem 1.5rem', maxWidth: '700px', margin: '0 auto' }}>
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', padding: '0.5rem 1.25rem', background: 'var(--color-primary-50)', borderRadius: '20px', color: 'var(--color-primary)', fontWeight: 700 }}>
-          <ClipboardList size={18} /> ফাইনাল পরীক্ষা
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1.25rem', background: 'var(--color-primary-50)', borderRadius: '20px', color: 'var(--color-primary)', fontWeight: 700 }}>
+            <ClipboardList size={18} /> ফাইনাল পরীক্ষা
+          </div>
+
+          {timeLeft !== null && (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              padding: '0.45rem 1rem',
+              borderRadius: '20px',
+              fontWeight: 800,
+              fontSize: '1.05rem',
+              fontFamily: 'var(--font-latin)',
+              background: timeLeft <= 60 ? '#fee2e2' : '#dcfce7',
+              color: timeLeft <= 60 ? '#dc2626' : '#15803d',
+              border: timeLeft <= 60 ? '1.5px solid #fca5a5' : '1.5px solid #86efac',
+              transition: 'all 0.3s ease'
+            }}>
+              <Clock size={18} /> {formatTime(timeLeft)}
+            </div>
+          )}
         </div>
+
         <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>{exam.subject.title}</h1>
-        <p style={{ color: 'var(--color-text-muted)' }}>মোট প্রশ্ন: {exam.quizzes.length} | পাস মার্ক: {exam.subject.finalExamPassMark}</p>
+        <p style={{ color: 'var(--color-text-muted)' }}>
+          মোট প্রশ্ন: {exam.quizzes.length} | পাস মার্ক: {exam.subject.finalExamPassMark}
+          {exam.subject?.finalExamTimerMinutes > 0 ? ` | সময়সীমা: ${exam.subject.finalExamTimerMinutes} মিনিট` : ''}
+        </p>
         <p style={{ color: '#dc2626', fontWeight: 600, marginTop: '0.5rem', fontSize: '0.9rem' }}>⚠️ এই পরীক্ষা একবারই দেওয়া যাবে</p>
       </div>
 
@@ -174,7 +239,7 @@ export default function SubjectFinalExamPage() {
         {current < exam.quizzes.length - 1 ? (
           <button className="btn btn-primary" onClick={() => setCurrent(p => Math.min(exam.quizzes.length - 1, p + 1))}>পরবর্তী →</button>
         ) : (
-          <button className="btn btn-primary" onClick={handleSubmit} disabled={submitting} style={{ background: 'linear-gradient(135deg, var(--color-accent-dark), var(--color-accent))' }}>
+          <button className="btn btn-primary" onClick={() => handleSubmit(false)} disabled={submitting} style={{ background: 'linear-gradient(135deg, var(--color-accent-dark), var(--color-accent))' }}>
             {submitting ? <><Loader2 size={16} className="spin" /> জমা হচ্ছে...</> : '✅ পরীক্ষা জমা দিন'}
           </button>
         )}

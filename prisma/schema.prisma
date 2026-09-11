@@ -191,6 +191,7 @@ model Subject {
   finalExamEnabled      Boolean @default(false)
   finalExamPassMark     Int     @default(40)
   finalExamDisplayCount Int     @default(20)
+  finalExamTimerMinutes Int     @default(0)
 
   finalExamQuizzes  SubjectFinalExamQuiz[]
   finalExamSessions SubjectFinalExamSession[]
