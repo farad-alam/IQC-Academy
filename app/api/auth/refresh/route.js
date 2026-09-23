@@ -56,7 +56,7 @@ export async function POST(req) {
     const newTokenHash = crypto.createHash('sha256').update(newRefreshTokenPlain).digest('hex');
     
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
+    expiresAt.setDate(expiresAt.getDate() + 30);
 
     await prisma.refreshToken.create({
       data: {
@@ -87,7 +87,7 @@ export async function POST(req) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/', // '/' so middleware can read it for auto-refresh
-      maxAge: 7 * 24 * 60 * 60,
+      maxAge: 30 * 24 * 60 * 60,
     });
 
     return response;

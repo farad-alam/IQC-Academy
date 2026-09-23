@@ -59,7 +59,7 @@ export async function POST(req) {
     // 7. Store Refresh Token Hash in DB
     const tokenHash = crypto.createHash('sha256').update(refreshTokenPlain).digest('hex');
     const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
+    expiresAt.setDate(expiresAt.getDate() + 30); // 30 days
 
     await prisma.refreshToken.create({
       data: {
@@ -98,7 +98,7 @@ export async function POST(req) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      maxAge: 30 * 24 * 60 * 60, // 30 days
     });
 
     return response;
