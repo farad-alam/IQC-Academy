@@ -31,7 +31,7 @@ export async function POST(req, { params }) {
     if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const { id: courseId } = await params;
-    const { title, description, finalExamEnabled, finalExamPassMark, finalExamDisplayCount, finalExamTimerMinutes } = await req.json();
+    const { title, description, finalExamEnabled, finalExamPublished, finalExamPassMark, finalExamDisplayCount, finalExamTimerMinutes } = await req.json();
 
     if (!title?.trim()) return NextResponse.json({ error: 'Title is required.' }, { status: 400 });
 
@@ -49,6 +49,7 @@ export async function POST(req, { params }) {
         description: description?.trim() || null,
         order,
         finalExamEnabled: finalExamEnabled ?? false,
+        finalExamPublished: finalExamPublished ?? false,
         finalExamPassMark: finalExamPassMark ? parseInt(finalExamPassMark) : 40,
         finalExamDisplayCount: finalExamDisplayCount ? parseInt(finalExamDisplayCount) : 20,
         finalExamTimerMinutes: finalExamTimerMinutes ? parseInt(finalExamTimerMinutes) : 0,

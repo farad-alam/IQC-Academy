@@ -10,7 +10,7 @@ export default function SubjectsClient({ courseId, courseTitle }) {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingSubject, setEditingSubject] = useState(null);
-  const [form, setForm] = useState({ title: '', description: '', finalExamEnabled: false, finalExamPassMark: 40, finalExamDisplayCount: 20, finalExamTimerMinutes: 0 });
+  const [form, setForm] = useState({ title: '', description: '', finalExamEnabled: false, finalExamPublished: false, finalExamPassMark: 40, finalExamDisplayCount: 20, finalExamTimerMinutes: 0 });
   const [saving, setSaving] = useState(false);
   const [deletingSubjectId, setDeletingSubjectId] = useState(null);
 
@@ -23,8 +23,8 @@ export default function SubjectsClient({ courseId, courseTitle }) {
 
   useEffect(() => { fetchSubjects(); }, [fetchSubjects]);
 
-  const openAdd = () => { setEditingSubject(null); setForm({ title: '', description: '', finalExamEnabled: false, finalExamPassMark: 40, finalExamDisplayCount: 20, finalExamTimerMinutes: 0 }); setShowForm(true); };
-  const openEdit = (s) => { setEditingSubject(s); setForm({ title: s.title, description: s.description || '', finalExamEnabled: s.finalExamEnabled, finalExamPassMark: s.finalExamPassMark, finalExamDisplayCount: s.finalExamDisplayCount, finalExamTimerMinutes: s.finalExamTimerMinutes || 0 }); setShowForm(true); };
+  const openAdd = () => { setEditingSubject(null); setForm({ title: '', description: '', finalExamEnabled: false, finalExamPublished: false, finalExamPassMark: 40, finalExamDisplayCount: 20, finalExamTimerMinutes: 0 }); setShowForm(true); };
+  const openEdit = (s) => { setEditingSubject(s); setForm({ title: s.title, description: s.description || '', finalExamEnabled: s.finalExamEnabled, finalExamPublished: s.finalExamPublished, finalExamPassMark: s.finalExamPassMark, finalExamDisplayCount: s.finalExamDisplayCount, finalExamTimerMinutes: s.finalExamTimerMinutes || 0 }); setShowForm(true); };
   const closeForm = () => { setShowForm(false); setEditingSubject(null); };
 
   const handleSave = async (e) => {
@@ -102,7 +102,12 @@ export default function SubjectsClient({ courseId, courseTitle }) {
                 <label htmlFor="finalExamEnabled" style={{ fontWeight: 600, cursor: 'pointer' }}>ফাইনাল পরীক্ষা সক্রিয় করুন</label>
               </div>
               {form.finalExamEnabled && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '0.75rem' }}>
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', paddingLeft: '2rem' }}>
+                    <input type="checkbox" id="finalExamPublished" checked={form.finalExamPublished} onChange={e => setForm(p => ({ ...p, finalExamPublished: e.target.checked }))} style={{ width: '18px', height: '18px', accentColor: 'var(--color-success)' }} />
+                    <label htmlFor="finalExamPublished" style={{ fontWeight: 600, cursor: 'pointer', color: form.finalExamPublished ? 'var(--color-success)' : 'var(--color-text-muted)' }}>ফাইনাল পরীক্ষা পাবলিশ করুন (শিক্ষার্থীরা দেখতে পাবে)</label>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '0.75rem' }}>
                   <div className="form-group" style={{ marginBottom: 0 }}>
                     <label className="form-label">ফাইনাল পরীক্ষার মোট নম্বর</label>
                     <input type="number" className="form-input" min="1" value={form.finalExamDisplayCount} onChange={e => setForm(p => ({ ...p, finalExamDisplayCount: parseInt(e.target.value) || 20 }))} />
@@ -120,6 +125,7 @@ export default function SubjectsClient({ courseId, courseTitle }) {
                     <input type="number" className="form-input" min="0" value={form.finalExamTimerMinutes} onChange={e => setForm(p => ({ ...p, finalExamTimerMinutes: parseInt(e.target.value) || 0 }))} />
                   </div>
                 </div>
+                </>
               )}
             </div>
 
@@ -152,7 +158,10 @@ export default function SubjectsClient({ courseId, courseTitle }) {
                     <div style={{ display: 'flex', gap: '1rem', marginTop: '0.4rem', fontSize: '0.8rem' }}>
                       <span style={{ color: 'var(--color-text-muted)' }}><BookOpen size={12} style={{ display: 'inline', marginRight: '3px' }} />{subject._count?.modules || 0} মডিউল</span>
                       {subject.finalExamEnabled && (
-                        <span style={{ color: 'var(--color-accent-dark)' }}><ClipboardList size={12} style={{ display: 'inline', marginRight: '3px' }} />ফাইনাল পরীক্ষা ({subject._count?.finalExamQuizzes || 0} প্রশ্ন)</span>
+                        <span style={{ color: subject.finalExamPublished ? 'var(--color-success)' : 'var(--color-accent-dark)' }}>
+                          <ClipboardList size={12} style={{ display: 'inline', marginRight: '3px' }} />
+                          {subject.finalExamPublished ? 'ফাইনাল (পাবলিশড)' : 'ফাইনাল (ড্রাফট)'} ({subject._count?.finalExamQuizzes || 0} প্রশ্ন)
+                        </span>
                       )}
                     </div>
                   </div>

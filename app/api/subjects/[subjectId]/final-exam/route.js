@@ -19,6 +19,7 @@ export async function GET(req, { params }) {
 
     if (!subject) return NextResponse.json({ error: 'Subject not found' }, { status: 404 });
     if (!subject.finalExamEnabled) return NextResponse.json({ error: 'Final exam not enabled for this subject.' }, { status: 403 });
+    if (!subject.finalExamPublished) return NextResponse.json({ error: 'Final exam is not published yet.' }, { status: 403 });
 
     // Enforce all modules completed + quizzes passed
     const modules = await prisma.module.findMany({

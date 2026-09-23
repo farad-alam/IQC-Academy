@@ -203,7 +203,7 @@ export default async function CourseDetailPage({ params }) {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    {subject.finalExamEnabled && isEnrolled && !batchLocked && (
+                    {subject.finalExamEnabled && subject.finalExamPublished && isEnrolled && !batchLocked && (
                       examSession ? (
                         <span style={{ padding: '0.35rem 0.85rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 700, background: examSession.passed ? '#dcfce7' : '#fee2e2', color: examSession.passed ? '#16a34a' : '#dc2626' }}>
                           {examSession.passed ? '✅ পাস' : '❌ ফেইল'} ({examSession.score}/{examSession.total})

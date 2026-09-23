@@ -189,6 +189,7 @@ model Subject {
   modules Module[]
 
   finalExamEnabled      Boolean @default(false)
+  finalExamPublished    Boolean @default(false)
   finalExamPassMark     Int     @default(40)
   finalExamDisplayCount Int     @default(20)
   finalExamTimerMinutes Int     @default(0)

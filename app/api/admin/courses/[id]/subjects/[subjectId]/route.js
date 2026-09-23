@@ -37,13 +37,14 @@ export async function PATCH(req, { params }) {
 
     const { subjectId } = await params;
     const body = await req.json();
-    const { title, description, order, finalExamEnabled, finalExamPassMark, finalExamDisplayCount, finalExamTimerMinutes } = body;
+    const { title, description, order, finalExamEnabled, finalExamPublished, finalExamPassMark, finalExamDisplayCount, finalExamTimerMinutes } = body;
 
     const updateData = {};
     if (title !== undefined) updateData.title = title.trim();
     if (description !== undefined) updateData.description = description?.trim() || null;
     if (order !== undefined) updateData.order = order;
     if (finalExamEnabled !== undefined) updateData.finalExamEnabled = finalExamEnabled;
+    if (finalExamPublished !== undefined) updateData.finalExamPublished = finalExamPublished;
     if (finalExamPassMark !== undefined) updateData.finalExamPassMark = parseInt(finalExamPassMark);
     if (finalExamDisplayCount !== undefined) updateData.finalExamDisplayCount = parseInt(finalExamDisplayCount);
     if (finalExamTimerMinutes !== undefined) updateData.finalExamTimerMinutes = parseInt(finalExamTimerMinutes);
