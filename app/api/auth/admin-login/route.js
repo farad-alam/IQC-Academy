@@ -88,7 +88,7 @@ export async function POST(req) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 15 * 60, // 15 minutes
+      maxAge: 24 * 60 * 60, // 24 hours — must match JWT expirationTime in lib/auth.js
     });
 
     response.cookies.set({

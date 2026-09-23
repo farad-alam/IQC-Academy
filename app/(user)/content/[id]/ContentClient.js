@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText, File } from 'lucide-react';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 export default function ContentClient({ module, isCompleted, hasQuiz, quizPassed, nextModuleId }) {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function ContentClient({ module, isCompleted, hasQuiz, quizPassed
   const handleComplete = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/courses/${module.subject.course.id}/modules/${module.id}/complete`, {
+      const res = await fetchWithAuth(`/api/courses/${module.subject.course.id}/modules/${module.id}/complete`, {
         method: 'POST'
       });
       const data = await res.json();

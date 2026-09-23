@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, HelpCircle, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import styles from '@/app/(learn)/quiz/[id]/quiz.module.css';
 import Loader from '@/components/ui/Loader';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 export default function FinalExamClient({ course, quizzes, history, alreadyPassed }) {
   const [quizState, setQuizState] = useState('start'); // start, active, result
@@ -41,7 +42,7 @@ export default function FinalExamClient({ course, quizzes, history, alreadyPasse
 
     try {
       // 2. Submit to backend
-      const res = await fetch(`/api/courses/${course.id}/final-exam/attempt`, {
+      const res = await fetchWithAuth(`/api/courses/${course.id}/final-exam/attempt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

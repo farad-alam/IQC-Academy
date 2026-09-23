@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft, HelpCircle, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import styles from './quiz.module.css';
 import Loader from '@/components/ui/Loader';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 export default function QuizClient({ module, quizzes, history, isLocked, alreadyPassed }) {
   const [quizState, setQuizState] = useState('start'); // start, active, result
@@ -41,7 +42,7 @@ export default function QuizClient({ module, quizzes, history, isLocked, already
 
     try {
       // 2. Submit to backend
-      const res = await fetch(`/api/quizzes/${module.id}/attempt`, {
+      const res = await fetchWithAuth(`/api/quizzes/${module.id}/attempt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

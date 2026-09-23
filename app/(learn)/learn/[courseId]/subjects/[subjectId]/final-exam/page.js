@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ClipboardList, CheckCircle, XCircle, Trophy, Loader2, Clock } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { fetchWithAuth } from '@/lib/fetchWithAuth';
 
 export default function SubjectFinalExamPage() {
   const { courseId, subjectId } = useParams();
@@ -20,7 +21,7 @@ export default function SubjectFinalExamPage() {
   }, [answers]);
 
   useEffect(() => {
-    fetch(`/api/subjects/${subjectId}/final-exam`)
+    fetchWithAuth(`/api/subjects/${subjectId}/final-exam`)
       .then(async r => {
         const d = await r.json();
         if (r.status === 409) { setResult(d.session); setStatus('done'); }
@@ -43,7 +44,7 @@ export default function SubjectFinalExamPage() {
     setSubmitting(true);
     setTimeLeft(null);
     try {
-      const res = await fetch(`/api/subjects/${subjectId}/final-exam/attempt`, {
+      const res = await fetchWithAuth(`/api/subjects/${subjectId}/final-exam/attempt`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: currentAnswers })
       });
       const data = await res.json();
