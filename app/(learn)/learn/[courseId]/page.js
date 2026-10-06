@@ -161,8 +161,13 @@ export default async function CourseDetailPage({ params }) {
               <div className="progress-bar-track">
                 <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
               </div>
-
+              <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                <Link href={`/learn/${course.id}/leaderboard`} className="btn btn-ghost btn-sm" style={{ color: 'var(--color-primary-dark)', background: 'white' }}>
+                  <Trophy size={16} /> লিডারবোর্ড দেখুন
+                </Link>
+              </div>
             </div>
+
           )}
         </div>
       </div>

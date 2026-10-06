@@ -344,7 +344,12 @@ export default function DashboardPage() {
                             <span className={styles.moduleMeta}>{completed}/{totalModules} মডিউল সম্পন্ন | বিষয়: {course._count?.subjects || 0}টি</span>
                           </div>
                         </div>
-                        <ChevronRight size={18} className={styles.courseArrow} />
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                          <ChevronRight size={18} className={styles.courseArrow} style={{ position: 'static', opacity: 1, color: 'var(--color-primary)' }} />
+                          <div onClick={(e) => { e.preventDefault(); router.push(`/learn/${course.id}/leaderboard`); }} className="btn btn-ghost btn-sm" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', color: '#b45309', background: '#fffbeb', borderRadius: '4px' }}>
+                            🏆 র‍্যাংকিং
+                          </div>
+                        </div>
                       </Link>
                     );
                   })}
