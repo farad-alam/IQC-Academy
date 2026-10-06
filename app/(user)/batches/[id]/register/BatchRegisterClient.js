@@ -21,7 +21,7 @@ export default function BatchRegisterClient({ batchId }) {
   const [form, setForm] = useState({
     name: '', email: '', mobile: '', password: '', confirmPassword: '',
     whatsapp: '', institution: '', division: '', district: '', upazila: '',
-    dob: '', sscYear: '', sscBoard: '', sscGpa: ''
+    dob: '', sscYear: '', sscBoard: '', sscRoll: '', sscGpa: ''
   });
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function BatchRegisterClient({ batchId }) {
     try {
       const res = await fetch(`/api/auth/batch-register/${batchId}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: form.name, email: form.email, mobile: form.mobile, password: form.password, whatsapp: form.whatsapp || undefined, institution: form.institution || undefined, division: form.division || undefined, district: form.district || undefined, upazila: form.upazila || undefined, dob: form.dob || undefined, sscYear: form.sscYear || undefined, sscBoard: form.sscBoard || undefined, sscGpa: form.sscGpa || undefined })
+        body: JSON.stringify({ name: form.name, email: form.email, mobile: form.mobile, password: form.password, whatsapp: form.whatsapp || undefined, institution: form.institution || undefined, division: form.division || undefined, district: form.district || undefined, upazila: form.upazila || undefined, dob: form.dob || undefined, sscYear: form.sscYear || undefined, sscBoard: form.sscBoard || undefined, sscRoll: form.sscRoll || undefined, sscGpa: form.sscGpa || undefined })
       });
       const data = await res.json();
       if (res.ok) {
@@ -266,6 +266,11 @@ export default function BatchRegisterClient({ batchId }) {
                   {SSC_BOARDS.map(b => <option key={b}>{b}</option>)}
                 </select>
                 {fieldErrors.sscBoard && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.sscBoard[0]}</div>}
+              </div>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label htmlFor="sscRoll" className="form-label">SSC রোল</label>
+                <input id="sscRoll" name="sscRoll" type="text" maxLength={20} className="form-input" value={form.sscRoll} onChange={e => set('sscRoll', e.target.value)} placeholder="SSC রোল (ঐচ্ছিক)" style={{ borderColor: fieldErrors.sscRoll ? 'var(--color-error)' : '' }} />
+                {fieldErrors.sscRoll && <div style={{ color: 'var(--color-error)', fontSize: '0.8rem', marginTop: '4px' }}>{fieldErrors.sscRoll[0]}</div>}
               </div>
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label htmlFor="sscGpa" className="form-label">SSC GPA</label>

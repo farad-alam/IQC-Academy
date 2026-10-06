@@ -138,7 +138,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({
     name: '', mobile: '', email: '', facebook: '',
     institution: '', division: '', district: '', upazila: '',
-    dob: '', sscYear: '', sscBoard: '', sscGpa: '',
+    dob: '', sscYear: '', sscBoard: '', sscRoll: '', sscGpa: '',
     whatsapp: '', password: '', confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
@@ -484,6 +484,17 @@ export default function RegisterPage() {
                       placeholder="যেমন: ঢাকা"
                     />
                     <FieldError msg={errors.sscBoard} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">রোল নম্বর (ঐচ্ছিক)</label>
+                    <input
+                      type="text"
+                      className={`form-input ${errors.sscRoll ? 'error' : ''}`}
+                      value={form.sscRoll}
+                      onChange={handleChange('sscRoll')}
+                      placeholder="SSC রোল"
+                    />
+                    <FieldError msg={errors.sscRoll} />
                   </div>
                   <div className="form-group">
                     <label className="form-label">জিপিএ</label>

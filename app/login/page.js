@@ -77,6 +77,10 @@ function LoginForm() {
       <div className={styles.patternBg} aria-hidden="true" />
 
       <div className={styles.container}>
+        <p className={styles.footerNote} style={{ marginTop: 0, marginBottom: '1rem' }}>
+          بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+        </p>
+
         <Link href="/" className={styles.backLink} id="login-back-link">
           ← ফিরে যান
         </Link>
@@ -182,10 +186,6 @@ function LoginForm() {
             </Link>
           </p>
         </div>
-
-        <p className={styles.footerNote}>
-          بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
-        </p>
       </div>
     </main>
   );

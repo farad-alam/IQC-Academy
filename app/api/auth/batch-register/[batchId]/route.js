@@ -84,6 +84,7 @@ export async function POST(req, { params }) {
           dob: data.dob ? new Date(data.dob) : null,
           sscYear: data.sscYear,
           sscBoard: data.sscBoard,
+          sscRoll: data.sscRoll,
           sscGpa: data.sscGpa,
           status: 'ACTIVE', // Auto-activated immediately
           role: 'STUDENT',

@@ -36,6 +36,8 @@ export default function BatchDetailClient({ batch: initialBatch }) {
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const [addingCourse, setAddingCourse] = useState(false);
   const [isDeletingBatch, setIsDeletingBatch] = useState(false);
+  const [isDeletingCourse, setIsDeletingCourse] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
 
   const fetchStudents = useCallback(async () => {
     const res = await fetch(`/api/admin/batches/${batch.id}/students`);
@@ -116,12 +118,33 @@ export default function BatchDetailClient({ batch: initialBatch }) {
     } finally { setAddingCourse(false); }
   };
 
-  const handleRemoveCourse = async (courseId) => {
-    if (!confirm('এই কোর্সটি ব্যাচ থেকে সরাতে চান?')) return;
-    await fetch(`/api/admin/batches/${batch.id}/courses`, {
-      method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ courseId })
-    });
-    fetchCourses();
+  const handleRemoveCourse = (courseId) => {
+    setCourseToDelete(courseId);
+    setIsDeletingCourse(true);
+  };
+
+  const confirmDeleteCourse = async (securityKey) => {
+    try {
+      const res = await fetch(`/api/admin/batches/${batch.id}/courses`, {
+        method: 'DELETE', 
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-deletion-key': securityKey 
+        }, 
+        body: JSON.stringify({ courseId: courseToDelete })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('কোর্সটি ব্যাচ থেকে সরানো হয়েছে');
+        setIsDeletingCourse(false);
+        setCourseToDelete(null);
+        fetchCourses();
+      } else {
+        toast.error(data.error || 'ত্রুটি হয়েছে');
+      }
+    } catch (err) {
+      toast.error('নেটওয়ার্ক সমস্যা');
+    }
   };
 
   const confirmDeleteBatch = async (securityKey) => {
@@ -329,6 +352,14 @@ export default function BatchDetailClient({ batch: initialBatch }) {
         onConfirm={confirmDeleteBatch}
         title="ব্যাচ মুছে ফেলুন"
         message="আপনি কি নিশ্চিত যে এই ব্যাচটি মুছে ফেলতে চান? এর সাথে যুক্ত সকল কোর্সের অ্যাসাইনমেন্ট ও শিক্ষার্থীদের এনরোলমেন্ট মুছে যাবে (তবে মূল কোর্স ও শিক্ষার্থীদের প্রোফাইল ঠিক থাকবে)।"
+      />
+
+      <ProtectedDeleteModal 
+        isOpen={isDeletingCourse}
+        onClose={() => { setIsDeletingCourse(false); setCourseToDelete(null); }}
+        onConfirm={confirmDeleteCourse}
+        title="কোর্স সরান"
+        message="আপনি কি নিশ্চিত যে এই কোর্সটি এই ব্যাচ থেকে সরাতে চান?"
       />
     </div>
   );
