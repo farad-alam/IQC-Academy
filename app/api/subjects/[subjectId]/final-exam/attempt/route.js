@@ -32,26 +32,39 @@ export async function POST(req, { params }) {
       where: { id: { in: quizIds }, subjectId }
     });
 
-    // Calculate score — 1 mark per correct answer, total is always 50
+    // Calculate score — 1 mark per correct answer
     let score = 0;
     for (const quiz of quizzes) {
       if (parseInt(answers[quiz.id]) === quiz.correct) score++;
     }
 
-    const total = 50; // Always out of 50 marks
+    // Total = number of questions actually served (display count capped by question bank size)
+    const bankSize = await prisma.subjectFinalExamQuiz.count({ where: { subjectId } });
+    const total = Math.max(1, Math.min(subject.finalExamDisplayCount || 20, bankSize));
     const passed = score >= (subject.finalExamPassMark || 30);
 
-    // Save session
-    const session = await prisma.subjectFinalExamSession.create({
-      data: {
-        userId: user.id,
-        subjectId,
-        score,
-        total,
-        passed,
-        answers
+    // Save session (a concurrent double-submit hits the unique constraint -> treat as already taken)
+    let session;
+    try {
+      session = await prisma.subjectFinalExamSession.create({
+        data: {
+          userId: user.id,
+          subjectId,
+          score,
+          total,
+          passed,
+          answers
+        }
+      });
+    } catch (e) {
+      if (e?.code === 'P2002') {
+        const saved = await prisma.subjectFinalExamSession.findUnique({
+          where: { userId_subjectId: { userId: user.id, subjectId } }
+        });
+        return NextResponse.json({ error: 'You have already taken this exam.', session: saved }, { status: 409 });
       }
-    });
+      throw e;
+    }
 
     // Build result with explanations
     const results = quizzes.map(quiz => ({

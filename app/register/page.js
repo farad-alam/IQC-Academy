@@ -250,8 +250,8 @@ export default function RegisterPage() {
     <main className={styles.page}>
       <div className={styles.patternBg} aria-hidden="true" />
       <div className={styles.container} style={{ maxWidth: '500px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', textAlign: 'center' }}>
-        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1rem' }}>রেজিস্ট্রেশন বর্তমানে বন্ধ আছে</h1>
+        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎓</div>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1rem' }}>ব্যাচে ভর্তি হন</h1>
         <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', lineHeight: 1.7 }}>ব্যক্তিগত রেজিস্ট্রেশন সাময়িকভাবে বন্ধ আছে। ব্যাচে ভর্তি হতে অথবা আরও তথ্যের জন্য আমাদের সাথে যোগাযোগ করুন।</p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
           <Link href="/batches" className="btn btn-primary">ব্যাচে ভর্তি হন</Link>

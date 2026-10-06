@@ -135,7 +135,7 @@ export async function GET(req, { params }) {
             order: subject.order,
             totalModules: modulesInSubject.length,
             completedModules: completedInSubject,
-            finalExam: subject.finalExamEnabled ? {
+            finalExam: (subject.finalExamEnabled || examSession) ? {
               enabled: true,
               taken: !!examSession,
               passed: examSession?.passed || false,

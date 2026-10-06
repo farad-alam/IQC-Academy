@@ -1,13 +1,15 @@
 'use client';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 import styles from './login.module.css';
 import Loader from '@/components/ui/Loader';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const resetSuccess = searchParams.get('reset') === 'success';
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
@@ -89,6 +91,14 @@ export default function LoginPage() {
             <h2 className={styles.cardTitle}>লগইন করুন</h2>
             <p className={styles.cardSub}>আপনার অ্যাকাউন্টে প্রবেশ করুন</p>
           </div>
+
+          {/* Password reset success banner */}
+          {resetSuccess && (
+            <div style={{ background: 'var(--color-success-bg)', border: '1px solid var(--color-primary-200)', borderRadius: '10px', padding: '0.875rem 1rem', marginBottom: '1rem', color: 'var(--color-success)', fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+              <CheckCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <span>পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে। এখন লগইন করুন।</span>
+            </div>
+          )}
 
           {/* Server error */}
           {serverError && (
@@ -178,5 +188,13 @@ export default function LoginPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

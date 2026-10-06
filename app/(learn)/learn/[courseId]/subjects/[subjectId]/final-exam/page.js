@@ -20,57 +20,87 @@ export default function SubjectFinalExamPage() {
     answersRef.current = answers;
   }, [answers]);
 
+  const storageKey = `iqc_subject_exam_${subjectId}`;
+  const submittingRef = useRef(false);
+  const endsAtRef = useRef(null);
+
+  const clearBackup = () => { try { localStorage.removeItem(storageKey); } catch {} };
+  const saveBackup = (patch) => {
+    try {
+      const prev = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      localStorage.setItem(storageKey, JSON.stringify({ ...prev, ...patch }));
+    } catch {}
+  };
+
   useEffect(() => {
     fetchWithAuth(`/api/subjects/${subjectId}/final-exam`)
       .then(async r => {
         const d = await r.json();
-        if (r.status === 409) { setResult(d.session); setStatus('done'); }
-        else if (r.ok) {
-          setExam(d);
-          setStatus('ready');
-          if (d.subject?.finalExamTimerMinutes > 0) {
-            setTimeLeft(d.subject.finalExamTimerMinutes * 60);
-          }
+        if (r.status === 409) { clearBackup(); setResult(d.session); setStatus('done'); return; }
+        if (!r.ok) { setStatus('error_' + (d.error || 'unknown')); return; }
+
+        // Restore the same questions / answers / deadline after a refresh
+        let saved = null;
+        try { saved = JSON.parse(localStorage.getItem(storageKey) || 'null'); } catch {}
+        const useSaved = saved?.quizzes?.length > 0;
+        const examData = useSaved ? { ...d, quizzes: saved.quizzes } : d;
+        setExam(examData);
+
+        const restoredAnswers = useSaved && saved.answers ? saved.answers : {};
+        setAnswers(restoredAnswers);
+        answersRef.current = restoredAnswers;
+
+        const timerMin = d.subject?.finalExamTimerMinutes || 0;
+        if (timerMin > 0) {
+          const endsAt = useSaved && saved.endsAt ? saved.endsAt : Date.now() + timerMin * 60 * 1000;
+          endsAtRef.current = endsAt;
+          setTimeLeft(Math.max(0, Math.ceil((endsAt - Date.now()) / 1000)));
+          saveBackup({ quizzes: examData.quizzes, endsAt, answers: restoredAnswers });
+        } else {
+          saveBackup({ quizzes: examData.quizzes, answers: restoredAnswers });
         }
-        else setStatus('error_' + (d.error || 'unknown'));
-      });
+        setStatus('ready');
+      })
+      .catch(() => setStatus('error_network'));
   }, [subjectId]);
 
   const handleSubmit = async (isAutoSubmit = false) => {
+    if (submittingRef.current) return;
     const currentAnswers = answersRef.current;
     if (!isAutoSubmit && exam?.quizzes && Object.keys(currentAnswers).length < exam.quizzes.length) {
       if (!confirm(`আপনি ${exam.quizzes.length - Object.keys(currentAnswers).length} টি প্রশ্নের উত্তর দেননি। তবুও জমা দিতে চান?`)) return;
     }
+    submittingRef.current = true;
     setSubmitting(true);
-    setTimeLeft(null);
     try {
       const res = await fetchWithAuth(`/api/subjects/${subjectId}/final-exam/attempt`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answers: currentAnswers })
       });
-      const data = await res.json();
-      if (res.ok) { setResult(data); setStatus('result'); }
-      else alert(data.error || 'ত্রুটি হয়েছে');
-    } finally { setSubmitting(false); }
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) { clearBackup(); setTimeLeft(null); setResult(data); setStatus('result'); }
+      else if (res.status === 409) { clearBackup(); setTimeLeft(null); setResult(data.session); setStatus('done'); }
+      else alert((data.error || 'ত্রুটি হয়েছে') + '\nআপনার উত্তর সংরক্ষিত আছে, আবার "জমা দিন" চাপুন।');
+    } catch {
+      alert('ইন্টারনেট সংযোগ সমস্যা। আপনার উত্তর সংরক্ষিত আছে, সংযোগ ঠিক হলে আবার "জমা দিন" চাপুন।');
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
+    }
   };
 
+  // Countdown based on an absolute deadline (survives tab sleep / refresh)
   useEffect(() => {
-    if (status !== 'ready' || timeLeft === null) return;
-    if (timeLeft <= 0) return;
-
+    if (status !== 'ready' || !endsAtRef.current) return;
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev === null) return null;
-        if (prev <= 1) {
-          clearInterval(timer);
-          handleSubmit(true);
-          return 0;
-        }
-        return prev - 1;
-      });
+      const left = Math.max(0, Math.ceil((endsAtRef.current - Date.now()) / 1000));
+      setTimeLeft(left);
+      if (left <= 0) {
+        clearInterval(timer);
+        handleSubmit(true);
+      }
     }, 1000);
-
     return () => clearInterval(timer);
-  }, [status, timeLeft === null]);
+  }, [status, exam]);
 
   const formatTime = (seconds) => {
     if (seconds === null || seconds === undefined) return '';
@@ -79,7 +109,12 @@ export default function SubjectFinalExamPage() {
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
-  const handleAnswer = (quizId, idx) => setAnswers(p => ({ ...p, [quizId]: idx }));
+  const handleAnswer = (quizId, idx) => setAnswers(p => {
+    const next = { ...p, [quizId]: idx };
+    answersRef.current = next;
+    saveBackup({ answers: next });
+    return next;
+  });
 
   if (status === 'loading') return <main style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="spinner" /></main>;
 
