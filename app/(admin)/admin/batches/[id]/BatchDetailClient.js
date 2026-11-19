@@ -2,9 +2,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Users, BookOpen, Lock, Unlock, UserPlus, Trash2, Plus, CheckCircle2, XCircle, Loader2, Trophy, BarChart2, Phone, ChevronDown, ChevronRight, Clock, Award, AlertTriangle } from 'lucide-react';
+import { ChevronLeft, Users, BookOpen, Lock, Unlock, UserPlus, Trash2, Plus, CheckCircle2, XCircle, Loader2, Trophy, BarChart2, Phone, ChevronDown, ChevronRight, Clock, Award, AlertTriangle, Download } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import ProtectedDeleteModal from '@/components/admin/ProtectedDeleteModal';
+import { downloadCsv, sanitizeFilename, formatPhoneForExcel } from '@/lib/exportCsv';
 
 const STATUS_OPTIONS = [
   { value: 'UPCOMING', label: 'আসন্ন' },
@@ -336,6 +337,7 @@ export default function BatchDetailClient({ batch: initialBatch }) {
         </div>
       ) : tab === 'monitoring' ? (
         <MonitoringTab
+          batchName={batch.name}
           progressData={progressData}
           progressLoading={progressLoading}
           progressFilter={progressFilter}
@@ -372,6 +374,18 @@ const STATUS_META = {
   IN_PROGRESS: { label: 'চলমান',        color: '#3b82f6', bg: '#eff6ff', icon: '🔵' },
   COMPLETED:   { label: 'সম্পন্ন',      color: '#16a34a', bg: '#f0fdf4', icon: '🟢' },
 };
+
+const ACCOUNT_STATUS_LABELS = {
+  ACTIVE: 'সক্রিয়',
+  PENDING: 'অপেক্ষমাণ',
+  BANNED: 'নিষিদ্ধ',
+};
+
+function formatExamResult(exam) {
+  if (!exam?.enabled) return '';
+  if (!exam.taken) return 'দেওয়া হয়নি';
+  return exam.passed ? `পাস ${exam.score}/${exam.total}` : `ফেল ${exam.score}/${exam.total}`;
+}
 
 function relativeTime(date) {
   if (!date) return 'কোনো কার্যক্রম নেই';
@@ -416,7 +430,7 @@ function ExamBadge({ exam }) {
   );
 }
 
-function MonitoringTab({ progressData, progressLoading, progressFilter, setProgressFilter, expandedStudents, setExpandedStudents, onRefresh }) {
+function MonitoringTab({ batchName, progressData, progressLoading, progressFilter, setProgressFilter, expandedStudents, setExpandedStudents, onRefresh }) {
   const toggleExpand = (id) => {
     setExpandedStudents(prev => {
       const next = new Set(prev);
@@ -434,6 +448,81 @@ function MonitoringTab({ progressData, progressLoading, progressFilter, setProgr
   };
 
   const filtered = progressFilter === 'ALL' ? progressData : progressData.filter(s => s.overallStatus === progressFilter);
+
+  const handleExport = () => {
+    if (filtered.length === 0) {
+      toast.error('ডাউনলোড করার জন্য কোনো শিক্ষার্থী নেই।');
+      return;
+    }
+
+    const headers = [
+      'ক্রমিক', 'নাম', 'ইমেইল', 'মোবাইল', 'হোয়াটসঅ্যাপ', 'প্রতিষ্ঠান',
+      'জেলা', 'বিভাগ', 'উপজেলা', 'ভর্তির তারিখ', 'শেষ কার্যক্রম', 'স্ট্যাটাস',
+      'অ্যাকাউন্ট স্ট্যাটাস', 'সম্পন্ন মডিউল', 'মোট মডিউল', 'সামগ্রিক অগ্রগতি (%)',
+    ];
+
+    (filtered[0]?.courses || []).forEach(course => {
+      headers.push(
+        `${course.title} — এনরোলড`,
+        `${course.title} — মডিউল`,
+        `${course.title} — অগ্রগতি (%)`,
+        `${course.title} — ভাইভা`
+      );
+      course.subjects.forEach(subject => {
+        headers.push(
+          `${course.title} / ${subject.title} — মডিউল`,
+          `${course.title} / ${subject.title} — পরীক্ষা`
+        );
+      });
+    });
+
+    const rows = filtered.map((student, index) => {
+      const meta = STATUS_META[student.overallStatus];
+      const row = [
+        index + 1,
+        student.name,
+        student.email,
+        formatPhoneForExcel(student.mobile),
+        formatPhoneForExcel(student.whatsapp),
+        student.institution || '',
+        student.district || '',
+        student.division || '',
+        student.upazila || '',
+        student.batchJoinedAt ? new Date(student.batchJoinedAt).toLocaleDateString('en-GB') : '',
+        student.lastActivityAt
+          ? `${relativeTime(student.lastActivityAt)} (${new Date(student.lastActivityAt).toLocaleDateString('en-GB')})`
+          : 'কোনো কার্যক্রম নেই',
+        meta ? meta.label : (student.overallStatus || ''),
+        ACCOUNT_STATUS_LABELS[student.accountStatus] || student.accountStatus || '',
+        student.completedModulesAcrossAll,
+        student.totalModulesAcrossAll,
+        student.overallProgressPercent,
+      ];
+
+      student.courses.forEach(course => {
+        row.push(
+          course.enrolled ? 'হ্যাঁ' : 'না',
+          `${course.completedModules}/${course.totalModules}`,
+          course.progressPercent,
+          course.vivaScore ? course.vivaScore.marks : '--'
+        );
+        course.subjects.forEach(subject => {
+          row.push(
+            `${subject.completedModules}/${subject.totalModules}`,
+            formatExamResult(subject.finalExam)
+          );
+        });
+      });
+
+      return row;
+    });
+
+    downloadCsv(
+      `${sanitizeFilename(batchName)}-students-${new Date().toISOString().slice(0, 10)}.csv`,
+      headers,
+      rows
+    );
+  };
 
   if (progressLoading) return (
     <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>
@@ -460,9 +549,14 @@ function MonitoringTab({ progressData, progressLoading, progressFilter, setProgr
               </button>
             ))}
           </div>
-          <button onClick={onRefresh} className="btn btn-ghost btn-sm" style={{ flexShrink: 0 }}>
-            🔄 রিফ্রেশ
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0, flexWrap: 'wrap' }}>
+            <button onClick={handleExport} className="btn btn-outline btn-sm" disabled={filtered.length === 0} style={{ gap: '4px' }}>
+              <Download size={15} /> শিক্ষার্থী তালিকা ডাউনলোড
+            </button>
+            <button onClick={onRefresh} className="btn btn-ghost btn-sm">
+              🔄 রিফ্রেশ
+            </button>
+          </div>
         </div>
       </div>
 

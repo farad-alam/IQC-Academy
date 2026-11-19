@@ -56,7 +56,8 @@ export async function GET(req, { params }) {
         user: {
           select: {
             id: true, name: true, email: true, mobile: true,
-            institution: true, district: true, division: true,
+            whatsapp: true, institution: true, district: true, division: true, upazila: true,
+            status: true,
             // Course enrollments for batch courses
             enrollments: courseIds.length > 0 ? {
               where: { courseId: { in: courseIds } },
@@ -187,9 +188,12 @@ export async function GET(req, { params }) {
         name: user.name,
         email: user.email,
         mobile: user.mobile,
+        whatsapp: user.whatsapp,
         institution: user.institution,
         district: user.district,
         division: user.division,
+        upazila: user.upazila,
+        accountStatus: user.status,
         batchJoinedAt: bs.enrolledAt,
         lastActivityAt,
         overallStatus,
