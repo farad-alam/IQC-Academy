@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Search, UserCheck, UserX, Shield, MoreVertical } from 'lucide-react';
+import { useState, useEffect, Fragment } from 'react';
+import { Search, UserCheck, UserX, Shield, MoreVertical, ChevronDown, ChevronRight } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 import UserActionsMenu from '@/components/admin/UserActionsMenu';
+import UserDetailsPanel from '@/components/admin/UserDetailsPanel';
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState([]);
@@ -11,6 +12,7 @@ export default function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('ALL');
   const [currentUserRole, setCurrentUserRole] = useState(null);
+  const [expandedUserId, setExpandedUserId] = useState(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -169,60 +171,90 @@ export default function AdminUsersPage() {
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>কোর্স এনরোলমেন্ট</th>
                 <th style={{ padding: '1rem 0', fontWeight: 500 }}>স্ট্যাটাস</th>
                 <th style={{ padding: '1rem 0', fontWeight: 500, textAlign: 'right' }}>অ্যাকশন</th>
+                <th style={{ padding: '1rem 0', fontWeight: 500, textAlign: 'right' }}>বিস্তারিত</th>
               </tr>
             </thead>
             <tbody>
               {loading && filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+                  <td colSpan="7" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
                     <Loader variant="button" color="var(--color-primary)" />
                     লোড হচ্ছে...
                   </td>
                 </tr>
               ) : filteredUsers.length === 0 ? (
-                <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>কোনো ব্যবহারকারী পাওয়া যায়নি।</td></tr>
+                <tr><td colSpan="7" style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>কোনো ব্যবহারকারী পাওয়া যায়নি।</td></tr>
               ) : (
-                filteredUsers.map((user) => (
-                  <tr key={user.id} style={{ borderBottom: '1px solid var(--color-earth-1)' }}>
-                    <td data-label="নাম" style={{ padding: '1rem 0', fontWeight: 500 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', fontWeight: 700, flexShrink: 0 }}>
-                          {user.name.charAt(0)}
-                        </div>
-                        <div>
-                          <div>{user.name}</div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-                            {user.role === 'SUPER_ADMIN' ? '👑 Super Admin' : user.role === 'ADMIN' ? '🛡️ Admin' : 'Student'} • #{user.id.substring(user.id.length - 6)}
+                filteredUsers.map((user) => {
+                  const isExpanded = expandedUserId === user.id;
+                  return (
+                    <Fragment key={user.id}>
+                      <tr style={{ borderBottom: '1px solid var(--color-earth-1)' }}>
+                        <td data-label="নাম" style={{ padding: '1rem 0', fontWeight: 500 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--color-primary-50)', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', fontWeight: 700, flexShrink: 0 }}>
+                              {user.name.charAt(0)}
+                            </div>
+                            <div>
+                              <div>{user.name}</div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                                {user.role === 'SUPER_ADMIN' ? '👑 Super Admin' : user.role === 'ADMIN' ? '🛡️ Admin' : 'Student'} • #{user.id.substring(user.id.length - 6)}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td data-label="যোগাযোগ" style={{ padding: '1rem 0' }}>
-                      <div style={{ fontSize: '0.875rem' }}>{user.mobile}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{user.email}</div>
-                    </td>
-                    <td data-label="যোগদানের তারিখ" style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-                      {new Date(user.createdAt).toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' })}
-                    </td>
-                    <td data-label="কোর্স এনরোলমেন্ট" style={{ padding: '1rem 0' }}>{user._count?.enrollments || 0}</td>
-                    <td data-label="স্ট্যাটাস" style={{ padding: '1rem 0' }}>
-                      <span className={`badge ${user.status === 'ACTIVE' ? 'badge-success' : user.status === 'PENDING' ? 'badge-warning' : 'badge-earth'}`}>
-                        {user.status === 'PENDING' ? 'অপেক্ষমাণ' : user.status === 'ACTIVE' ? 'সক্রিয়' : 'ব্যান করা'}
-                      </span>
-                    </td>
-                    <td data-label="অ্যাকশন" style={{ padding: '1rem 0', textAlign: 'right' }}>
-                      {user.role !== 'SUPER_ADMIN' && (
-                        <UserActionsMenu
-                          userId={user.id}
-                          currentStatus={user.status}
-                          onUpdate={fetchUsers}
-                          currentUserRole={currentUserRole}
-                          targetUserRole={user.role}
-                        />
+                        </td>
+                        <td data-label="যোগাযোগ" style={{ padding: '1rem 0' }}>
+                          <div style={{ fontSize: '0.875rem' }}>{user.mobile}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{user.email}</div>
+                        </td>
+                        <td data-label="যোগদানের তারিখ" style={{ padding: '1rem 0', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+                          {new Date(user.createdAt).toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' })}
+                        </td>
+                        <td data-label="কোর্স এনরোলমেন্ট" style={{ padding: '1rem 0' }}>{user._count?.enrollments || 0}</td>
+                        <td data-label="স্ট্যাটাস" style={{ padding: '1rem 0' }}>
+                          <span className={`badge ${user.status === 'ACTIVE' ? 'badge-success' : user.status === 'PENDING' ? 'badge-warning' : 'badge-earth'}`}>
+                            {user.status === 'PENDING' ? 'অপেক্ষমাণ' : user.status === 'ACTIVE' ? 'সক্রিয়' : 'ব্যান করা'}
+                          </span>
+                        </td>
+                        <td data-label="অ্যাকশন" style={{ padding: '1rem 0', textAlign: 'right' }}>
+                          {user.role !== 'SUPER_ADMIN' && (
+                            <UserActionsMenu
+                              userId={user.id}
+                              currentStatus={user.status}
+                              onUpdate={fetchUsers}
+                              currentUserRole={currentUserRole}
+                              targetUserRole={user.role}
+                            />
+                          )}
+                        </td>
+                        <td data-label="বিস্তারিত" style={{ padding: '1rem 0', textAlign: 'right' }}>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm"
+                            style={{ padding: '0.5rem' }}
+                            onClick={() => setExpandedUserId(prev => (prev === user.id ? null : user.id))}
+                            aria-expanded={isExpanded}
+                            aria-label={isExpanded ? 'বিস্তারিত বন্ধ করুন' : 'বিস্তারিত দেখুন'}
+                          >
+                            {isExpanded ? <ChevronDown size={18} color="var(--color-text-muted)" /> : <ChevronRight size={18} color="var(--color-text-muted)" />}
+                          </button>
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr className="user-detail-row">
+                          <td colSpan={7} style={{ padding: '0 0 1rem 0' }}>
+                            <UserDetailsPanel
+                              userId={user.id}
+                              currentStatus={user.status}
+                              targetUserRole={user.role}
+                              onUpdated={fetchUsers}
+                            />
+                          </td>
+                        </tr>
                       )}
-                    </td>
-                  </tr>
-                ))
+                    </Fragment>
+                  );
+                })
               )}
             </tbody>
           </table>

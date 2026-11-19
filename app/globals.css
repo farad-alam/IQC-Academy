@@ -1007,6 +1007,23 @@ tbody tr:hover { background: var(--color-primary-50); }
     flex-direction: row;
     justify-content: flex-end;
   }
+  .mobile-card-list tr.user-detail-row {
+    padding: 0;
+    background: transparent;
+    border: none !important;
+    box-shadow: none;
+  }
+  .mobile-card-list tr.user-detail-row td {
+    display: block;
+    padding: 0;
+  }
+  .mobile-card-list tr.user-detail-row td:last-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none !important;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
 }
 
 /* ========================================
