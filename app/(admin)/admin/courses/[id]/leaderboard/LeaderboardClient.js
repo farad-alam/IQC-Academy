@@ -42,6 +42,7 @@ export default function LeaderboardClient({ courseId, courseTitle }) {
           <tr style={{ borderBottom: '2px solid var(--color-earth-1)', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
             <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>র‍্যাংক</th>
             <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>শিক্ষার্থী</th>
+            <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>জেলা</th>
             {data.subjects.map(s => <th key={s.id} style={{ padding: '0.75rem 0.5rem', textAlign: 'center', fontSize: '0.8rem' }}>{s.title}</th>)}
             <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>মোট নম্বর</th>
             {showViva && <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>ভাইভা নম্বর</th>}
@@ -58,6 +59,7 @@ export default function LeaderboardClient({ courseId, courseTitle }) {
                 <div style={{ fontWeight: 600 }}>{entry.user.name}</div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{entry.user.mobile}</div>
               </td>
+              <td style={{ padding: '1rem', color: 'var(--color-text-muted)' }}>{entry.user.district || '—'}</td>
               {data.subjects.map(s => (
                 <td key={s.id} style={{ padding: '0.75rem 0.5rem', textAlign: 'center' }}>
                   {entry.subjectScores[s.id] ? (
@@ -83,7 +85,7 @@ export default function LeaderboardClient({ courseId, courseTitle }) {
               {showViva && <td style={{ padding: '1rem', textAlign: 'center', fontWeight: 800, fontSize: '1.1rem', color: 'var(--color-primary)' }}>{entry.grandTotal}</td>}
             </tr>
           ))}
-          {entries.length === 0 && <tr><td colSpan={4 + data.subjects.length + (showViva ? 2 : 0)} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>কোনো তথ্য পাওয়া যায়নি।</td></tr>}
+          {entries.length === 0 && <tr><td colSpan={5 + data.subjects.length + (showViva ? 2 : 0)} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>কোনো তথ্য পাওয়া যায়নি।</td></tr>}
         </tbody>
       </table>
     </div>

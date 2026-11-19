@@ -82,17 +82,6 @@ export default function CourseLeaderboardPage() {
   }
 
   const entries = data?.withViva || [];
-  
-  // Format masked name function (e.g. Farad -> F***d)
-  // Or display full name if it's the logged-in user
-  const displayName = (user, isMe) => {
-    if (isMe) return user.name;
-    const parts = user.name.split(' ');
-    return parts.map(p => {
-      if (p.length <= 2) return p;
-      return p[0] + '*'.repeat(p.length - 2) + p[p.length - 1];
-    }).join(' ');
-  };
 
   return (
     <main style={{ padding: '2rem 1.5rem', maxWidth: '800px', margin: '0 auto' }}>
@@ -137,6 +126,7 @@ export default function CourseLeaderboardPage() {
               <tr style={{ borderBottom: '2px solid var(--color-earth-1)', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>র‍্যাংক</th>
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>নাম</th>
+                <th style={{ padding: '0.75rem 1rem', textAlign: 'left' }}>জেলা</th>
                 {data?.subjects?.map(s => <th key={s.id} style={{ padding: '0.75rem 0.5rem', textAlign: 'center', fontSize: '0.8rem' }}>{s.title}</th>)}
                 <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>মোট নম্বর</th>
               </tr>
@@ -151,7 +141,10 @@ export default function CourseLeaderboardPage() {
                       {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `#${entry.rank}`}
                     </td>
                     <td style={{ padding: '1rem', fontWeight: isMe ? 800 : 600, color: isMe ? 'var(--color-primary-dark)' : 'var(--color-text-dark)' }}>
-                      {displayName(entry.user, isMe)} {isMe && <span style={{ fontSize: '0.7rem', background: 'var(--color-primary)', color: 'white', padding: '0.1rem 0.4rem', borderRadius: '4px', marginLeft: '0.5rem', verticalAlign: 'middle' }}>আপনি</span>}
+                      {entry.user.name} {isMe && <span style={{ fontSize: '0.7rem', background: 'var(--color-primary)', color: 'white', padding: '0.1rem 0.4rem', borderRadius: '4px', marginLeft: '0.5rem', verticalAlign: 'middle' }}>আপনি</span>}
+                    </td>
+                    <td style={{ padding: '1rem', color: 'var(--color-text-muted)' }}>
+                      {entry.user.district || '—'}
                     </td>
                     {data?.subjects?.map(s => {
                       const subjScore = entry.subjectScores[s.id];
@@ -178,7 +171,7 @@ export default function CourseLeaderboardPage() {
                 );
               })}
               {(!entries || entries.length === 0) && (
-                <tr><td colSpan={4 + (data?.subjects?.length || 0)} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>এখনো কেউ পরীক্ষা দেয়নি।</td></tr>
+                <tr><td colSpan={5 + (data?.subjects?.length || 0)} style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>এখনো কেউ পরীক্ষা দেয়নি।</td></tr>
               )}
             </tbody>
           </table>

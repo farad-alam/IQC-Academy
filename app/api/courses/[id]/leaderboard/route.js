@@ -57,7 +57,7 @@ export async function GET(req, { params }) {
     const subjectIds = allSubjects.map(s => s.id);
     const sessions = await prisma.subjectFinalExamSession.findMany({
       where: { subjectId: { in: subjectIds } },
-      include: { user: { select: { id: true, name: true, role: true, status: true } } }
+      include: { user: { select: { id: true, name: true, district: true, role: true, status: true } } }
     });
 
     // Determine subjects to show
@@ -77,7 +77,7 @@ export async function GET(req, { params }) {
       const uid = session.userId;
       if (!userMap.has(uid)) {
         userMap.set(uid, { 
-          user: { id: session.user.id, name: session.user.name }, 
+          user: { id: session.user.id, name: session.user.name, district: session.user.district }, 
           subjectScores: {}, 
           totalExamScore: 0, 
           vivaMarks: 0, 

@@ -24,7 +24,7 @@ export async function GET(req, { params }) {
     const sessions = await prisma.subjectFinalExamSession.findMany({
       where: { subjectId: { in: subjectIds } },
       include: {
-        user: { select: { id: true, name: true, email: true, mobile: true, role: true, status: true } }
+        user: { select: { id: true, name: true, email: true, mobile: true, district: true, role: true, status: true } }
       }
     });
 
